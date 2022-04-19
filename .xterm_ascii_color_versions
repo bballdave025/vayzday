@@ -4,14 +4,14 @@ PuTTY's colors - Not the original. Better than the xterm I had
                                       PuTTY as changed   |     First try tweaked xterm  |   For new try (xterm/tmux)
                                                          |        ( from ~/.Xresources) |
                                                          |                              |
-Default_Foreground:               250     240     230    |     240     236     211      |   250     240     230
-                                  0xfa    0xf0    0xe6   |     0xf0    0xec    0xd3     |   0xfa    0xf0    0xe6
+Default_Foreground:               250     240     230    |     240     236     211      |>P>   250     240     230
+                                  0xfa    0xf0    0xe6   |     0xf0    0xec    0xd3     |>P>   0xfa    0xf0    0xe6
 
 Default_Bold_Foreground:          255     255     255    |                              |
                                   0xff    0xff    0xff   |                              |
 
-Default_Background:               0       0       0      |     0       0       0        |   0       0      0
-                                  0x00    0x00    0x00   |     0x00    0x00    0x00     |   0x00    0x00   0x00
+Default_Background:               0       0       0      |     0       0       0        |>P>   0       0      0
+                                  0x00    0x00    0x00   |     0x00    0x00    0x00     |>P>   0x00    0x00   0x00
 
 Default_Bold_Background:          85      85      85     |                              |
                                   0x55    0x55    0x55   |                              |
