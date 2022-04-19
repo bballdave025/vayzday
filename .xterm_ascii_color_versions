@@ -1,0 +1,77 @@
+PuTTY's colors - Not the original. Better than the xterm I had
+                 (though that one did have some nice colors)
+
+                                      PuTTY as changed   |     First try tweaked xterm  |   For new try (xterm/tmux)
+                                                         |        ( from ~/.Xresources) |
+                                                         |                              |
+Default_Foreground:               250     240     230    |     240     236     211      |   250     240     230
+                                  0xfa    0xf0    0xe6   |     0xf0    0xec    0xd3     |   0xfa    0xf0    0xe6
+
+Default_Bold_Foreground:          255     255     255    |                              |
+                                  0xff    0xff    0xff   |                              |
+
+Default_Background:               0       0       0      |     0       0       0        |   0       0      0
+                                  0x00    0x00    0x00   |     0x00    0x00    0x00     |   0x00    0x00   0x00
+
+Default_Bold_Background:          85      85      85     |                              |
+                                  0x55    0x55    0x55   |                              |
+
+Cursor_Text:                      0       0       0      |                              |
+                                  0x00    0x00    0x00   |                              |
+
+Cursor_Colour:                    200     50      47     |                              |
+                                  0xc8    0x32    0x2f   |                              |
+
+ANSI_Black_(colour0):             7       54      66     |     0       0       0        |>P>   7       54      66
+                                  0x07    0x36    0x42   |     0x00    0x00    0x00     |>P> 0x07    0x36    0x42
+
+ANSI_Black_Bold_(colour8):        0       43      54     |     84      84      84       |>P>   0       43      54
+                                  0x00    0x2b    0x36   |     0x54    0x54    0x54     |>P>   0x00    0x2b    0x36
+
+ANSI_Red_(colour1):               200     50      47     |     168     0       0        |>P>   200     50      47
+                                  0xc8    0x32    0x2f   |     0xa8    0x00    0x00     |>P>   0xc8    0x32    0x2f
+
+ANSI_Red_Bold_(colour9):          203     75      22     |     252     84      84       |>P>   203     75      22
+                                  0xcb    0x4b    0x16   |     0xfc    0x54    0x54     |>P>   0xcb    0x4b    0x16
+
+ANSI_Green_(colour2):             0       200     132    |     0       168     0        |>P>   0       200     132
+                                  0x00    0xc8    0x84   |     0x00    0xa8    0x00     |>P>___0x00____0xc8____0x84_____                                 
+                                                                                  (maybe 1)N   127     255     0
+ANSI_Green_Bold_(colour10):       0       200     132    |     84      252     84       |NNN   0x7f    0xff    0x00
+                                  0x00    0xc8    0x84   |     0x54    0xfc    0x54     |NNN   99      183     108
+                                                                                  (maybe 2)N__0x63____0xb7____0x6c_____
+ANSI_Yellow_(colour3):            204     204     102    |     168     84      0        |NNN   204     204     102
+                                  0xcc    0xcc    0x66   |     0xa8    0x54    0x00     |NNN   0xcc    0xcc    0x66
+                                                                               (maybe 1)-N>>>--v-->->--v-->->--v--
+ANSI_Yellow_Bold_(colour11):      204     204     102    |     252     252     84       |???   248     213     104
+                                  0xcc    0xcc    0x66   |     0xfc    0xfc    0x54     |???   0xf8    0xd5    0x68
+
+ANSI_Blue_(colour4):              102     153     204    |     64      128     191      |>P>   102     153     204
+                                  0x66    0x99    0xcc   |     0x40    0x80    0xbf     |>P>___0x66____0x99____0xcc_____
+                                                          #^to_differentiate_from_PuTTY^vvNNvv 82 vvvv 163 vvv 136
+ANSI_Blue_Bold_(colour12):        102     153     204    |     72      204     205      |NNN   0x52    0xa3    0x88
+                                  0x66    0x99    0xcc   |     0x48    0xcc    0xcd     |NNN   72      204     205
+                                                                                         NNN___0x48____0xcc____0xcd_____
+ANSI_Magenta_(colour5):           211     54      130    |     168     0       168      |>P>   211     54      130
+                                  0xd3    0x36    0x82   |     0xa8    0x00    0xa8     |>P>   0xd3    0x36    0x82
+
+ANSI_Magenta_Bold_(colour13):     108     113     196    |     252     84      252      |>P>   108     113     196
+                                  0x6c    0x71    0xc4   |     0xfc    0x54    0xfc     |>P>   0x6c    0x71    0xc4
+
+ANSI_Cyan_(colour6):              42      161     152    |     0       168     168      |>P>   42      161     152
+                                  0x2a    0xa1    0x98   |     0x00    0xa8    0xa8     |>P>   0x2a    0xa1    0x98
+
+ANSI_Cyan_Bold_(colour14):        147     161     161    |     84      252     252      |>P>   147     161     161
+                                  0x93    0xa1    0xa1   |     0x54    0xfc    0xfc     |>P>   0x93    0xa1    0xa1
+
+ANSI_White_(colour7):             238     232     213    |     168     168     168      |>P>   238     232     213
+                                  0xee    0xe8    0xd5   |     0xa8    0xa8    0xa8     |>P>   0xee    0xe8    0xd5
+
+ANSI_White_Bold_(colour15):       253     255     227    |     252     252     252      |>P>   253     255     227
+                                  0xfd    0xff    0xe3   |     0xfc    0xfc    0xfc     |>P>   0xfd    0xff    0xe3
+
+      __________________[THIS ___IS___ THE ___BETTER___ VERSION]__________________
+
+
+
+ANSI_(colourX):
