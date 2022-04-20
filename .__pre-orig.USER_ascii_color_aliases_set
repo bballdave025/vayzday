@@ -1,0 +1,121 @@
+# .dwb_ascii_color_aliases_set
+#
+# @author: David Wallace BLACK
+#
+# Give access to the ascii color codes as if through constant variables.
+#
+#ref: https://stackoverflow.com/a/5947802/6505499
+#Black        0;30     Dark Gray     1;30
+#Red          0;31     Light Red     1;31
+#Green        0;32     Light Green   1;32
+#Brown/Orange 0;33     Yellow        1;33
+#Blue         0;34     Light Blue    1;34
+#Purple       0;35     Light Purple  1;35
+#Cyan         0;36     Light Cyan    1;36
+#Light Gray   0;37     White         1;37
+#
+#Also:
+#$ man xterm | grep -A 6 color7 | tail -6
+#           These specify the colors for the ISO-6429 extension.  The
+#           defaults are, respectively, black, red3, green3, yellow3, a
+#           customizable dark blue, magenta3, cyan3, and gray90.  The
+#           default shades of color are chosen to allow the colors 8–15 to
+#           be used as brighter versions.
+#
+# $ man xterm | grep -m 1 -A 5 color15 | tail -5
+#           These specify the colors for the ISO-6429 extension if the bold
+#           attribute is also enabled.  The default resource values are
+#           respectively, gray30, red, green, yellow, a customizable light
+#           blue, magenta, cyan, and white.
+#
+# Note that none of the colors have leading zeros according to the
+#+ xterm documentation. If they're used, they're used this way.
+#+ I'm using the same notation with my constants.
+
+do_testing=1
+
+alias ASCII_NO_COLOR='\033[0m'   # Turns off any color
+
+alias ASCII_COLOR0='\033[0;30m'  # Black
+alias ASCII_COLOR1='\033[0;31m'  # Red
+alias ASCII_COLOR2='\033[0;32m'  # Green
+alias ASCII_COLOR3='\033[0;33m'  # Brown/Orange
+alias ASCII_COLOR4='\033[0;34m'  # Blue
+alias ASCII_COLOR5='\033[0;35m'  # Purple
+alias ASCII_COLOR6='\033[0;36m'  # Cyan
+alias ASCII_COLOR7='\033[0;37m'  # Light Gray
+
+alias ASCII_COLOR8='\033[1;30m'  # Dark Gray
+alias ASCII_COLOR9='\033[1;31m'  # Light Red
+alias ASCII_COLOR10='\033[1;32m' # Light Green
+alias ASCII_COLOR11='\033[1;33m' # Yellow
+alias ASCII_COLOR12='\033[1;34m' # Light Blue
+alias ASCII_COLOR13='\033[1;35m' # Light Purple
+alias ASCII_COLOR14='\033[1;36m' # Light Cyan
+alias ASCII_COLOR15='\033[1;37m' # White
+
+
+alias ASCII_BLACK='\033[0;30m'         # color0
+alias ASCII_RED='\033[0;31m'           # color1
+alias ASCII_GREEN='\033[0;32m'         # color2
+alias ASCII_BROWN_ORANGE='\033[0;33m'  # color3
+alias ASCII_BLUE='\033[0;34m'          # color4
+alias ASCII_PURPLE='\033[0;35m'        # color5
+alias ASCII_CYAN='\033[0;36m'          # color6
+alias ASCII_LIGHT_GRAY='\033[0;37m'    # color7
+
+alias ASCII_DARK_GRAY='\033[1;30m'     # color8
+alias ASCII_LIGHT_RED='\033[1;31m'     # color9
+alias ASCII_LIGHT_GREEN='\033[1;32m'   # color10
+alias ASCII_YELLOW='\033[1;33m'        # color11
+alias ASCII_LIGHT_BLUE='\033[1;34m'    # color12
+alias ASCII_LIGHT_PURPLE='\033[1;35m'  # color13
+alias ASCII_LIGHT_CYAN='\033[1;36m'    # color14
+alias ASCII_WHITE='\033[1;37m'         # color15
+
+# aliases for the colors which have been aliased
+alias ASCII_BROWN='ASCII_BROWN_ORANGE'         # color3
+alias ASCII_ORANGE='ASCII_BROWN_ORANGE'        # color3
+alias ASCII_DARK_YELLOW='ASCII_BROWN_ORANGE'   # color3
+alias ASCII_VIOLET='ASCII_PURPLE'              # color5
+alias ASCII_LIGHT_VIOLET='ASCII_LIGHT_PURPLE'  # color13
+alias ASCII_LIGHT_GREY='ASCII_LIGHT_GRAY'      # color7
+alias ASCII_DARK_GREY='ASCII_DARK_GRAY'        # color8
+
+
+## @todo: It would be nice to have some basic backgrounds/highlights.
+
+test_ascii_colors()
+{
+  echo
+  echo    "ASCII colors from: ${BASH_SHOURCE[0]}"
+  echo
+  echo -e "Now for some        ASCII_BLACK (color0) ${ASCII_BLACK}text"\
+"${ASCII_NO_COLOR}."
+  echo -e "Now for some          ASCII_RED (color1) ${ASCII_RED}text"\
+"${ASCII_NO_COLOR}."
+  echo -e "Now for some        ASCII_GREEN (color2) ${ASCII_GREEN}text"\
+"${ASCII_NO_COLOR}."
+  echo -e "Now for some ASCII_BROWN_ORANGE (color3) ${ASCII_BROWN_ORANGE}text"\
+"${ASCII_NO_COLOR}."
+  echo -e "Now for some         ASCII_BLUE (color4) ${ASCII_BLUE}text"\
+"${ASCII_NO_COLOR}."
+  echo -e "Now for some       ASCII_PURPLE (color5) ${ASCII_PURPLE}text"\
+"${ASCII_NO_COLOR}."
+  echo -e "Now for some         ASCII_CYAN (color6) ${ASCII_CYAN}text"\
+"${ASCII_NO_COLOR}."
+  echo -e "Now for some   ASCII_LIGHT_GRAY (color7) ${ASCII_LIGHT_GRAY}text"\
+"${ASCII_NO_COLOR}."
+  echo
+  echo -e "Now for some ASCII_BLACK (color8) ${ASCII_BLACK}text"\
+"${ASCII_NO_COLOR}."
+  echo -e "Now for some ASCII_BLACK (color9) ${ASCII_BLACK}text"\
+"${ASCII_NO_COLOR}."
+  echo -e "Now for some ASCII_BLACK (color9) ${ASCII_BLACK}text"\
+"${ASCII_NO_COLOR}."
+
+fi ##endof:  if [ $do_test -eq 1 ]
+
+echo
+echo "The ASCII colors set here come from ${BASH_SOURCE[0]}"
+echo
