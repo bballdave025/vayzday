@@ -1,0 +1,263 @@
+# .USER_bash_aliases
+#
+#DWB 2022-02-26
+#+ changing filename from `.bash_aliases_4_dwb' to `.${USER}_bash_aliases'
+#+ and sourcing it from a new `.bash_aliases' file
+#+
+#+ One reason for doing this is to change the `ttdate' alias to sort
+#+ chronologically.
+
+alias runlog="$HOME/run_script.sh"
+
+alias catwithcontrol="cat -ETv"
+
+alias atree='tree --charset=ascii'
+
+alias checksituation='echo; echo " Current date/time is"; trpdate; '\
+'echo; echo " Current directory ( pwd ) is "; pwd; echo;'
+
+#eof err#set_command_color_aliases()
+#eof err#{
+#eof err#  this_help_str='
+#eof err#
+#eof err#
+#eof err#Help for:
+#eof err# set_command_color_aliases
+#eof err#
+#eof err#@AUTHOR : David Wallace BLACK
+#eof err#           contact via email
+#eof err#          uname: dblack         domain: captioncall   tld: com
+#eof err#          uname: bballdave025   domain: yahoo         tld: com
+#eof err#           Stack Exchange username @bballdave025
+#eof err#
+#eof err#@SINCE : 2022-03-02
+#eof err#
+#eof err#@DESCRIPTION
+#eof err# Changes certain commands from the binary behavior to
+#eof err#the often-Linux-flavor-default colorized behavior.
+#eof err#Commands now changed are \`ls\' and \`grep\'.
+#eof err#I prefer the binary by itself as a default, and I want
+#eof err#to set and see any changes.
+#eof err#
+#eof err#@USAGE
+#eof err# set_color_command_aliases
+#eof err#
+#eof err# The \`-h\' flag or the \`--help\' flag will return this message.
+#eof err#
+#eof err#
+#eof err#'
+#eof err#
+#eof err#  if [ "$1" = "-h" -o "$1" = "--help" -o -z "$1" ]; then
+#eof err#    echo $this_help_str
+#eof err#
+#eof err#    echo "with double quotes"
+#eof err#    echo "$this_help_str"
+#eof err#  fi
+#eof err#
+#eof err#  source "$HOME/.dwb_color4commands_set"
+#eof err#
+#eof err#} ##endof:  set_color_command_aliases
+
+# Oh yeah, easier. ##DWB 2022-03-02
+alias set_color_command_aliases='source "${HOME}/.dwb_color4commands_set"'
+
+alias set_aliases_coco='set_color_command_aliases'
+alias seta_coco='set_color_command_aliases'
+alias sacoco='set_color_command_aliases'
+
+#eof err#set_ascii_color_aliases()
+#eof err#{
+#eof err#  this_help_str='
+#eof err#
+#eof err#
+#eof err#Help for:
+#eof err# set_ascii_color_aliases
+#eof err#
+#eof err#@AUTHOR : David Wallace BLACK
+#eof err#           contact via email
+#eof err#          uname: dblack         domain: captioncall   tld: com
+#eof err#          uname: bballdave025   domain: yahoo         tld: com
+#eof err#           Stack Exchange username @bballdave025
+#eof err#
+#eof err#@SINCE : 2022-03-02
+#eof err#
+#eof err#@DESCRIPTION
+#eof err# Gives what look like constants which can be used to
+#eof err#change text color. Note that things must be used so
+#eof err#that the shell expands escapes. For example, you
+#eof err#could use
+#eof err#
+#eof err# $ echo -e \"Look, some ${ASCII_RED}colored${ASCII_NOCOLOR} text\"
+#eof err#
+#eof err#but not \`echo\' by itself. \`printf\' would work by
+#eof err#itself, however. The following would not work.
+#eof err#
+#eof err# $ echo -e \
+#eof err#\'You will not see any ${ASCII_BLUE}colors${ASCII_NOCOLOR} here\'
+#eof err#
+#eof err#@USAGE
+#eof err# set_ascii_color_aliases
+#eof err#
+#eof err# The \`-h\' flag or the \`--help\' flag will return this message.
+#eof err#
+#eof err#
+#eof err#'
+#eof err#
+#eof err#  if [ "$1" = "-h" -o "$1" = "--help" -o -z "$1" ]; then
+#eof err#    echo $this_help_str
+#eof err#
+#eof err#    echo "with double quotes"
+#eof err#    echo "$this_elp_str"
+#eof err#  fi
+#eof err#
+#eof err#  source "$HOME/.dwb_ascii_color_aliases_set"
+#eof err#
+#eof err#} ##endof:  set_ascii_color_aliases
+
+# Oh yeah, easier. ##DWB 2022-03-02
+alias set_ascii_color_aliases='source "${HOME}/.dwb_ascii_color_aliases_set"'
+
+alias set_aliases_asco='set_ascii_color_aliases'
+alias seta_asco='set_ascii_color_aliases'
+alias saasco='set_ascii_color_aliases'
+
+alias set_main_terminal_aliases=\
+'source "${HOME}/.dwb_main_terminal_aliases_set"'
+
+alias set_aliases_mt='set_main_terminal_aliases'
+alias seta_mt='set_main_terminal_aliases'
+alias samt='set_main_terminal_aliases'
+
+
+#alias whereispythonstuff='find /usr/lib/ '\
+#'/cygdrive/c/Users/$USER/AppData/Local/Programs/Python/ '\
+#'/cygdrive/c/Program\ Files/Python/ '\
+#'/cygdrive/c/Program\ Files\ \(x86\)/Python/ '\
+#'-mindepth 1 -maxdepth 1 -type d '\
+#'-name "*[Pp]ython[0-9]*[0-9]*" 2>/dev/null'
+
+
+#### DWB 2022-02-02 Let's put the long one in the middle
+## DWB 2020-05-29 - 2020-05-30 (designed before)
+## Gets all extensions, meaning both
+##   1) everything in the bare filename after the first dot ('.')
+##   2) only what's after the last dot in the bare filename
+alias extsindir="ts=\$(date +'%s'); echo \"Finding extensions in\"; "\
+"echo \" \$(pwd) \"; echo \"AT\"; date && date +'%s'; "\
+"find . -type f -print0 | "\
+"  xargs -I'{}' -0 "\
+"    bash -c 'orig=\"{}\"; "\
+"      find_two_dots=\$(echo \"\${orig}\" | "\
+"                        grep \"^[.].*[.].*\$\"); "\
+"      if [ ! -z \"\${find_two_dots}\" ]; then "\
+"        this_ext=\$(echo \"\${orig}\" | "\
+"          awk -F '\"'\"'/'\"'\"' '\"'\"'{print \$NF}'\"'\"' | "\
+"          awk -F '\"'\"'.'\"'\"' "\
+"                 '\"'\"'BEGIN{OFS=\".\"} {\$1=\"\"; print \$0}'\"'\"' | "\
+"          tr -d \" \"); "\
+"      fi; "\
+"echo \"\${this_ext}\";' | "\
+"  sort | uniq -c | sort -rn > "\
+"    exts_in_\$(pwd | awk -F'/' '{print \$NF}')_\${ts}.lst && "\
+"  awk -F'.' '{print \$NF}' "\
+"         exts_in_\$(pwd | awk -F'/' '{print \$NF'})_\${ts}.lst | "\
+"          sort -u > last_exts_\$(pwd | awk -F'/' '{print \$NF'})_\${ts}.lst;"\
+"  echo \"Finished finding at\"; date && date +'%s'; "\
+"  echo; "\
+"  echo -e \" Full extension list in the file:\"; "\
+"  echo \"exts_in_\$(pwd | awk -F'/' '{print \$NF}')_\${ts}.lst\"; "\
+"  echo \" After the last dot extensions in the file:\"; "\
+"  echo \"last_exts_\$(pwd | awk -F'/' '{print \$NF}')_\${ts}.lst\"; "
+
+#############
+# date stuff
+alias dbldate="date && date +'%s'"
+alias tripledate="date && date +'%s' && date +'%s_%Y%m%dT%H%M%S%z'"
+alias trpdate=tripledate
+alias tsdate="date +'%s'"
+alias oldformatdatestr="echo '%Y%m%dT%H%M%S%z'"
+alias ofdatecmd="echo \"date +'%Y%m%dT%H%M%S%z'\""
+alias ofdate="date +'%Y%m%dT%H%M%S'"
+alias ttdate="date +'%s_%Y%m%dT%H%M%S%z'"
+
+
+################################
+# xterm stuff, including sizes
+# ref="https://unix.stackexchange.com/a/269553/291375" # for offset
+# Remember an extra character vertically for the tmux info stuff, one
+#+ for the separating line,
+#+ and an extra character horizontally for the middle separating line
+alias xterm_double_wide='dw_width=161; dw_height=47; '\
+'                        dw_xoffset=20; dw_yoffset=15; '\
+'uxterm -geometry ${dw_width}x${dw_height}+${dw_xoffset}+${dw_yoffset}'
+
+# Note the standard 80x24 with one status line (in this case, for tmux), cf.
+#+ ref1="https://softwareengineering.stackexchange.com/a/148765/319033"
+#+ ref2="https://softwareengineering.stackexchange.com/questions/"\
+#+"148754/why-is-24-lines-a-common-default-terminal-height"\
+#+"#comment677689_148754"
+#+ ref3="https://softwareengineering.stackexchange.com/a/148678/319033"
+alias xterm_std='std_width=80; std_height=25; '\
+'                std_xoffset=400; std_yoffset=350; '\
+'uxterm -geometry ${std_width}x${std_height}+${std_xoffset}+${std_yoffset}'
+
+alias xterm_std_width_dbl_height='swdh_width=80; swdh_height=455555; '\
+'                                 swdh_xoffset=175; swdh_yoffset=500; '\
+'uxterm -geometry ${swdh_width}x${swdh_height}+${swdh_xoffset}+${swdh_yoffset}'
+
+alias xterm_std_height_dbl_width='shdw_width=161; shdw_height=25; '\
+'                                 shdw_xoffset=100; shdw_yoffset=100; '\
+'uxterm -geometry ${shdw_width}x${shdw_height}+${shdw_xoffset}+${shdw_yoffset}'
+
+# top focus
+# standard width, but can do something
+# <------   (80)  ------>
+# =======================     (1)        (1)  =======================
+# .---------------------. -^- (1)        (1)  .---------------------.
+# |                     |  |                  |                     |
+# |                     |  |                  |                     |
+# |                     | (28)          (28)  |                     |
+# |                     |  |                  |                     |
+# |                     |  |                  |                     |
+# :---------------------: --- (1)   OR   (1)  :---------------------:  etc.
+# |          |          |  |             (7)  |          |          |
+# |          |          | (15)           (1)  :----------|----------|
+# |          |          |  |             (7)  |          |          |
+# '---------------------' -v- (1)        (1)  '---------------------'
+#                        total  = (47) =  total
+# -ish
+#
+alias xterm_top_focus='tpfc_width=80; tpfc_height=47; '\
+'                                 tpfc_xoffset=200; tpfc_yoffset=25; '\
+'uxterm -geometry ${tpfc_width}x${tpfc_height}+${tpfc_xoffset}+${tpfc_yoffset}'
+
+
+alias xtdblw='xterm_double_wide'
+alias xtstnd='xterm_std'
+alias xtswdh='xterm_std_width_dbl_height'
+alias xtshdw='xterm_std_height_dbl_width'
+alias xttpfc='xterm_top_focus'
+
+
+###############################################################
+# TMUX session stuff - starting with just info  DWB 2022-03-30
+#
+# From the command line, I had:
+# tmux list-panes -aF '\\n::Session: #{session_id} , #{session_name} , atta
+#ched=#{session_attached}\\n:: Window: #{window_id} , #{window_name} , #{wi
+#ndow_width}x#{window_height} , active=#{window_active}\\n:: Pane: #{pane_i
+#d} , #{pane_name} , #{pane_title}, #{pane_width}x#{pane_height} , active=#
+#{pane_active}\\n' | xargs -I'{}' echo -e "{}" ; echo
+# Where I've split in the middle of words, etc. to note it all went on one
+#+ long line. It would have been too long. I had lots of trouble trying to
+#+ get it into an alias-able format.)
+alias tmux_all_info='\
+tmux list-panes -aF '"'"'
+\\n::Session: #{session_id} , #{session_name} , '\
+'attached=#{session_attached}\
+:: Window: #{window_id} , #{window_name} , '\
+'#{window_width}x#{window_height} , active=#{window_active}\
+::   Pane: #{pane_id} , #{pane_name} , #{pane_title}, '\
+'#{pane_width}x#{pane_height} , active=#{pane_active}'"'"' | \
+  xargs -I'"'"'{}'"'"' echo -e "{}" ; echo; trpdate; echo;'
+alias tmux_tai='tmux_all_info'
