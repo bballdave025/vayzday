@@ -1,0 +1,20 @@
+# .USER_main_terminal_aliases_set
+#
+# Change the system commands to have colored output as is
+#+ often done in default shell-launch scripts. I prefer
+#+ the binary by itself as the default, and I want to set
+#+ and see any changes.
+#+ `ls' and `grep' are colorized in `set_color_command_aliases'
+#+
+#+ The commands with a preferred subcommand is (are)
+#+  xterm -> uxterm
+
+set_color_command_aliases
+
+# Always want unicode-based xterm , want xterm -> uxterm
+echo "Aliasing \`xterm' to \`uxterm'"
+type uxterm
+alias xterm='uxterm' && echo "Done" || \
+  echo -e "Not done\n Try \`alias grep='grepc'' to see the error. \
+\n The attempt to alias was from ${BASH_SOURCE[0]}"
+echo
