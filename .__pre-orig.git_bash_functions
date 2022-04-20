@@ -1,0 +1,80 @@
+#.git_bash_functions
+#
+##DWB, 2022-02-26
+#+ renamed from .bash_functions_4_ben_git
+#+ and sourced from .bash_functions
+
+#
+## Change for nice view of git branch, etc. ### Git Command Prompt ###
+#!/bin/bash
+# check if directory belongs to a git repo
+# if it does, errorcode ($?) will be 0
+function isgit() {
+        git worktree list > /dev/null 2>&1
+}
+function git_branch() {
+        isgit # check if folder is in a git repo
+        if [[ $? == 0 ]]; then # check error code of last command
+        # __git_ps1 puts the branch surrounded with round braces (())
+        # the sed commmand replaces () braces with [] braces.
+                echo "$(__git_ps1)" | sed -e 's/(\(.*\))/[\1]/'
+        fi
+}
+# PS1 string will be set here. Special is only the $(git_branch).
+# If we are in a repo it will return a colorized string with the branch
+# otherwise it will have no affect[sic]
+source ~/.git-prompt.sh
+## Immediately below is colleague's original
+export BM_ORIG_PS1='${debian_chroot:+($debian_chroot)}'\
+'\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\W'\
+'\[\e[00m\]\[\e[1;36m\]$(git_branch)\[\e[00m\]$ '
+#DWB 2022-02-09 The PS1 -^-  and PROMPT_COMMAND changes are now only in
+#+ `.bash_functions_4_dwb', which might get renamed to
+#+ `.USER_bash_functions' and called by `.bash_functions'.
+#+ The same thing might happen to this file, now named
+#+ `.bash_functions_4_git', but likely renamed to
+#+  `.git_bash_functions
+## Don't necessarily need to export PS1 - it's local - but I believe this
+#+ will allow it to be the default for any opened xterm terminals.
+
+function gitcommits(){
+        pushd . "$@" > /dev/null
+        cd $INTERNAL_SOFTWARE_DIR
+        lines=""
+        for f in *; do
+                cd $f
+                commits=$(git log | head -n 1 | cut -f 2- -d ' ')
+                lines=$(printf "%b\n" "$lines" "$f" "\t\t$commits\n")
+                cd $INTERNAL_SOFTWARE_DIR
+        done
+        printf "%s\n" "$lines"
+        popd "$@" > /dev/null
+}
+function gitbranches(){
+        pushd . "$@" > /dev/null
+        cd $INTERNAL_SOFTWARE_DIR
+        lines=""
+        for f in *; do
+                cd $f
+                branches=$(git branch | grep "\*" | cut -f 2- -d ' ')
+                lines=$(printf "%b\n" "$lines" "$f" "\t\t$branches\n")
+                cd $INTERNAL_SOFTWARE_DIR
+        done
+        printf "%s\n" "$lines"
+        popd "$@" > /dev/null
+}
+function gitmodifications(){
+        pushd . "$@" > /dev/null
+        cd $INTERNAL_SOFTWARE_DIR
+        for product in *; do
+                cd $product
+                num_files_changed=$(git status --porcelain=v1 2>/dev/null | wc -l)
+                printf "%s\n" "$product: $num_files_changed changed file(s)."
+                cd $INTERNAL_SOFTWARE_DIR
+        done
+        popd "$@" > /dev/null
+}
+function gittouch(){
+        touch $1
+        git add --force $1
+}
