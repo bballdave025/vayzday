@@ -19,21 +19,21 @@ xterm*foreground: rgb:fa/f0/e6
 xterm*background: rgb:00/00/00
 
 xterm*color0: rgb:00/00/00
-!!                      '-> black
+!!                      `-> black
 xterm*color1: rgb:c8/32/2f
-!!                      '-> red
+!!                      `-> red
 xterm*color2: rgb:00/c8/84
-!!                      '-> green
+!!                      `-> green
 xterm*color3: rgb:cc/cc/66
-!!                      '-> yellow
+!!                      `-> yellow
 xterm*color4: rgb:66/99/cc
-!!                      '-> blue (customizable dark blue)
+!!                      `-> blue (customizable light blue)
 xterm*color5: rgb:d3/36/82
-!!                      '-> magenta
+!!                      `-> magenta
 xterm*color6: rgb:2a/a1/98
-!!                      '-> cyan
+!!                      `-> cyan
 xterm*color7: rgb:ee/e8/d5
-!!                      '-> white
+!!                      `-> white
 !! From 'man xterm | grep -A5 color7 | tail -5'
 !+ > These specify the colors for the ISO-6429 extension.  The
 !+ > defaults are, respectively, black, red3, green3, yellow3, a
@@ -43,21 +43,21 @@ xterm*color7: rgb:ee/e8/d5
 !+ Basically, they are the ASCII colors 0-7
 
 xterm*color8: rgb:80/2b/36
-!!                      '-> black bold
+!!                      `-> black bold
 xterm*color9: rgb:cb/4b/16
-!!                      '-> red bold
+!!                      `-> red bold
 xterm*color10: rgb:63/b7/6c
-!!                      '-> green bold
+!!                      `-> green bold
 xterm*color11: rgb:f8/d5/68
-!!                      '-> yellow bold
+!!                      `-> yellow bold
 xterm*color12: rgb:48/cc/cd
-!!                      '-> blue bold (a customizable light blue)
+!!                      `-> blue bold
 xterm*color13: rgb:6c/71/c4
-!!                      '-> magenta bold
+!!                      `-> magenta bold
 xterm*color14: rgb:93/a1/a1
-!!                      '-> cyan bold
+!!                      `-> cyan bold
 xterm*color15: rgb:fd/ff/e3
-!!                      '-> white bold
+!!                      `-> white bold
 !! From 'man xterm | grep -m1 -A4 color15 | tail -4'
 !+ > These specify the colors for the ISO-6429 extension if the bold
 !+ > attribute is also enabled.  The default resource values are
