@@ -1,0 +1,125 @@
+!! @file: $HOME/.Xresources
+!!
+!! to apply, type the command,
+!+
+!+ xrdb -merge $HOME/.Xresources
+
+!xterm*font: Unifont:style=Regular
+!xterm*boldFont: Unifont:style=Regular
+!xterm*faceName: Unifont:style=Regular
+!xterm*boldFaceName: Unifont:style=Regular
+xterm*faceName: Monospace
+xterm*faceSize: 16.0
+!| -^- works for larger multi-screens - too bit for laptop screen
+!! -v- works for laptop screen - get two terminals across
+!!!xterm*faceSize: 12.0
+!!xterm*cjkWidth: true
+!!xterm*fontDoubleSize: true
+!xterm*faceName: Unifont:pixelsize=12
+!xterm*boldFaceName: Unifont:pixelsize=12
+!xterm*vt100*geometry: 80x50
+xterm*geometry: 80x31
+xterm*saveLines: 5000
+
+!! double-click to select a word
+!+ cf. https://unix4lyfe.org/xterm/
+!xterm*charClass: 33:48,35:48,37:48,43:48,45-47:48,64:48,95:48,126:48
+
+xterm*termName: xterm-color
+xterm*eightBitInput: false
+
+!! dosbox colors, with some tweaking, again from unix4lyfe
+!xterm*foreground: rgb:a8/a8/a8
+xterm*foreground: rgb:f0/ec/d3
+xterm*background: rgb:00/00/00
+xterm*color0: rgb:00/00/00
+xterm*color1: rgb:a8/00/00
+xterm*color2: rgb:00/a8/00
+xterm*color3: rgb:a8/54/00
+!!! I think this should be okay - not too dark. I now have changed color12.
+!!! -v- Nope, definitely too dark for anything.
+!xterm*color4: rgb:00/00/a8
+!!! -v- 1st try lightening things but still keeping "(customizable) dark blue"
+!xterm*color4: rgb:66/99/cc
+!! -v- Darker version of the blue-gray above - avoid confusion with PuTTY
+xterm*color4: rgb:40/80/bf
+xterm*color5: rgb:a8/00/a8
+xterm*color6: rgb:00/a8/a8
+xterm*color7: rgb:a8/a8/a8
+!! From 'man xterm | grep -A5 color7 | tail -5'
+!+ > These specify the colors for the ISO-6429 extension.  The
+!+ > defaults are, respectively, black, red3, green3, yellow3, a
+!+ > customizable dark blue, magenta3, cyan3, and gray90.  The
+!+ > default shades of color are chosen to allow the colors 8–15 to
+!+ > be used as brighter versions.
+!+ Basically, they are the ASCII colors 0-7
+
+xterm*color8: rgb:54/54/54
+xterm*color9: rgb:fc/54/54
+!! Not sure why I had two color10 lines, nor which was what
+xterm*color10: rgb:54/fc/54
+!!! Nix this, for now.
+!xterm*color10: rgb:44/d3/9e
+!! the color below would make the user -at- MACHINE the same color as in PuTTY.
+!+ the difference in colors lets me know when I am in XTerm
+!xterm*color10: #00C886
+xterm*color11: rgb:fc/fc/54
+!! DWB 2022-02-17, getting rid of annoying dark blue.
+!!! -v- original from where I got it (DOSBOX from unix4lyfe)
+!xterm*color12: rgb:54/54/fc
+!!! -v- darker aquamarine
+!xterm*color12: rgb:52/a3/88
+!! -v- darker turquoise
+xterm*color12: rgb:48/cc/cd
+xterm*color13: rgb:fc/54/fc
+xterm*color14: rgb:54/fc/fc
+xterm*color15: rgb:fc/fc/fc
+!! From 'man xterm | grep -m1 -A4 color15 | tail -4'
+!+ > These specify the colors for the ISO-6429 extension if the bold
+!+ > attribute is also enabled.  The default resource values are
+!+ > respectively, gray30, red, green, yellow, a customizable light
+!+ > blue, magenta, cyan, and white.
+!+ Basically, they are the ASCII colors 8-15
+
+!! instead of unreadable bold-face text, bold makes the text bright
+!+ brighter is better than fat and illegible, again from unix4life
+xterm*boldMode: false
+
+!! make bolded foreground (usually color7) go from lightgray to white
+xterm*colorBDMode: true
+xterm*colorBD: rgb:fc/fc/fc
+
+!! selection to clipboard (like copy/paste); default is just to cut buffer
+!+ Note, cf. https://askubuntu.com/a/541730/838537
+!+ > The `xcb` program ... provides command-line access to the cut buffers.
+!+ > I can ... [select some text, which] highlights it and puts it in
+!+ > cut buffer 0. I can then run `xcb -p 0` which prints the line out
+!+ > on stdout
+!+ That person can, but it did not work for me. -DWB 2022-02-17
+xterm*selectToClipboard: true
+
+!! Make a visual flash instead of a bell sound.
+!+ Some other nice resources found from a great resource:
+!+ https://invisible-island.net/xterm/xterm.faq.html
+xterm*visualBell: true
+xterm*cursesemul: true
+!! for below, see https://unix.stackexchange.com/a/483833/291375
+!+ and https://stackoverflow.com/a/35939559/6505499
+xterm*loginshell: true
+
+!! allow changes of the title (top of window) and
+!+ icon title (in taskbar or leftmost stack of icons)
+!+ cf. https://stackoverflow.com/a/6526803/6505499
+!+ cf. https://bugs.launchpad.net/ubuntu/+source/xterm/+bug/495733
+!++ (more detail, but kind of wrong)
+!(needed?)!*VT100*allowSendEvents: on
+xterm*allowTitleOps: true
+xterm*allowWindowOps: true
+
+!! Allow Ctrl+Shift+C and Ctrl+Shift+C for copy/paste, as well as Shift+Insert
+! https://invisible-island.net/xterm/manpage/xterm.html#h3-Custom-Key-Bindings
+!xterm*VT100.Translations: #override \n\
+xterm*Translations: #override \n\
+    Ctrl Shift <Key>C:    copy-selection(CLIPBOARD,PRIMARY) \n\
+    Ctrl Shift <Key>V:    insert-selection(CLIPBOARD,PRIMARY) \n\
+    ~Ctrl ~Meta <Btn2Up>: insert-selection(CLIPBOARD,PRIMARY)
