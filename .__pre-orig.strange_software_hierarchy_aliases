@@ -1,0 +1,53 @@
+# also referred to as .dev_bash_aliases
+
+# .cc_dev_bash_aliases
+#
+#DWB 2022-02-26 Changing from .bash_aliases_4_ben_dev to .cc_dev_bash_aliases
+#+ and sourcing from .bash_aliases
+
+alias dwb='echo "dwb"'
+
+
+## I don't like it based in $HOME, I'd prefer /usr/src/ or something
+#
+software_root=$HOME/software
+data_root=$HOME/data
+dwb_stuff_software_dir=${software_root}/dwb_internal_stuff
+oth_stuff_software_dir=${software_root}/oth_external_stuff
+dwb_stuff_data_dir=${data_root}/dwb_internal_stuff
+oth_stuff_data_dir=${data_root}/oth_external_stuff
+export DWB_SOFTWARE_DIR=${dwb_stuff_software_dir}
+export OTH_SOFTWARE_DIR=${oth_stuff_software_dir}
+export DWB_DATA_DIR=${dwb_stuff_data_dir}
+export OTH_DATA_DIR=${oth_stuff_data_dir}
+export PYTHONPATH=${DWB_SOFTWARE_DIR}:$PYTHONPATH
+for experiment in these constituent parts of the experiment
+do
+    experiment_dir=${experiment^^}_DIR
+    data_dir=${experiment^^}_DATA_DIR
+    logs_dir=${experiment^^}_LOGS_DIR
+    docs_dir=${experiment^^}_DOCS_DIR
+    export ${experiment_dir}=${DWB_SOFTWARE_DIR}/${experiment}
+    export ${docs_dir}=${DWB_SOFTWARE_DIR}/${experiment}/docs
+    export ${data_dir}=${DWB_DATA_DIR}/${experiment}
+    export ${logs_dir}=${DWB_DATA_DIR}/${experiment}/logs
+    export PATH=${DWB_SOFTWARE_DIR}/${experiment}/bin:$PATH
+    export PYTHONPATH=${DWB_SOFTWARE_DIR}/${experiment}/src:$PYTHONPATH
+done
+#
+
+## examples of mounting external drives
+# Way I, Drive-type I
+alias mount_pdrive=\
+'sudo mount -t cifs -o credentials=/etc/my_credentials,sec=ntlmsspi '\
+'//some.domain.net/filer /mnt/my_qdrive'
+# Way I, Drive-type II
+alias mount_rdrive=\
+'sudo mount -t cifs '\
+'-o credentials=/etc/my_credentials,sec=ntlmsspi,mfsymlinks '\
+'//some-split-share/onesharedgroup$ /mnt/my_rdrive'
+# Way I, Drive-type III
+alias mount_wdrive=\
+'sudo mount -t cifs -o credentials=/etc/my_credentials,sec=ntlmsspi '\
+'//some-base-of-server.prod.some-domain.com/partofshare$ /mnt/my_wdrive'
+#
