@@ -1,0 +1,30 @@
+# This is Git's per-user configuration file
+# @file    .gitconfig
+# @author  David Wallace BLACK
+# @since   2023-02-18
+[user]
+  name = David Black
+  email = bballdave025@yahoo.com
+[diff]
+  tool = vimdiff
+[merge]
+  tool = vimdiff
+# Aliases shared by Ben MURPHY. 
+#+ I'll keep them here, 
+#+ but I don't use them much,
+#+ with the exception of the
+#+ wonderful 'not'. I might
+#+ try that 'whenadded'.
+[aliases]
+  cob = checkout -b
+  co = checkout
+  br = branch
+  ci = commit
+  st = status
+  aa = add --all
+  af = add --force
+  cm = commit -m
+  not = ls-files --others --ignored --exclude-from=.gitignore
+  whenadded = log --diff-filter=A --
+[core]
+  pager = less -R
