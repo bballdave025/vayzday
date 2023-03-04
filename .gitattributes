@@ -1,0 +1,155 @@
+# A general, hopefully informative .gitattributes file
+#+ Created for a repo with Jupyter Notebooks in it.
+##############################################################################
+#@file     .gitattributes
+#@author   David Wallace BLACK (bballdave025)
+#@since    2023-02-08
+# Mostly here to preserve *NIX-style line endings, which are very important
+#+ for certain data andtext files in the Bourne Again SHell (bash) files, 
+#+ ... The python files don't care.
+#
+#@ref : https://stackoverflow.com/a/59644154/6505499
+#@archived-ref = "https://web.archive.org/web/20200527202619/" + \
+#                "https://stackoverflow.com/questions/57960566/" + \
+#                "how-to-force-consistent-line-endings-in-git-commits-" + \
+#                "with-cross-platform-compatib/59644154"
+#
+#@ref = "https://www.edwardthomson.com/blog/" + \
+#       "advent_day_1_gitattributes_for_text_files.html"
+#@archived-ref = "https://web.archive.org/web/20200527202804/" + \
+#                "https://www.edwardthomson.com/blog/" + \
+#                "advent_day_1_gitattributes_for_text_files.html"
+#
+#@ref : https://git-scm.com/docs/gitattributes
+#@archived-ref = "https://web.archive.org/web/20200527202947/" + \
+#                "https://git-scm.com/docs/gitattributes"
+#     The rules by which the pattern matches paths are the same as in
+#    .gitignore files (see gitignore[5]), with a few exceptions:
+#      - negative patterns are forbidden
+#      - patterns that match a directory do not recursively match paths
+#        inside that directory (so using the trailing-slash path/ syntax
+#        is pointless in an attributes file;
+#        use path/** instead)
+#     When deciding what attributes are assigned to a path, Git consults
+#    $GIT_DIR/info/attributes file (which has the highest precedence),
+#    .gitattributes file in the same directory as the path in question,
+#    and its parent directories up to the toplevel of the work tree
+#    (the further the directory that contains .gitattributes is from the
+#    path in question, the lower its precedence). Finally global and
+#    system-wide files are considered (they have the lowest precedence).
+#
+#@ref = "https://help.github.com/en/github/using-git/" + \
+#       "configuring-git-to-handle-line-endings#per-repository-settings"
+#@archived-ref = "https://web.archive.org/web/20200527203232/" + \
+#                "https://help.github.com/en/github/using-git/" + \
+#                "configuring-git-to-handle-line-" + \
+#                "endings#per-repository-settings"
+#    Per-repository settings
+#      Optionally, you can configure a .gitattributes file to manage how
+#     Git reads line endings in a specific repository. When you commit
+#     this file to a repository, it overrides the core.autocrlf setting
+#     for all repository contributors. This ensures consistent behavior
+#     for all users, regardless of their Git settings and environment.
+#      The .gitattributes file must be created in the root of the
+#     repository and committed like any other file.
+#
+#
+# My file is based on the example from this previous reference - DWB 20200527
+##############################################################################
+
+#
+## Set the default behavior, in case people don't have `core.autocrlf` set.
+# I don't know how to make this match core.autocrlf = input
+# The closest I can find is
+#@ref : https://stackoverflow.com/a/46592252/6505499
+#@archived-ref = "https://web.archive.org/web/20200527203643/" + \
+#                "https://stackoverflow.com/questions/46590142/" + \
+#                "what-is-the-differrence-between-text-auto-and-" + \
+#                "text-eol-lf-in-gitattribu/46592252#46592252"
+#   If you write, in a single .gitattributes file, the two line sequence:
+#      `* text=auto`
+#      `* text eol=lf`
+#  the second line's `text` overrides the first one's, so that `text`
+#  is set (but not to a value) and `eol` is set to a value, with the
+#  value being `lf`. Both lines matched, and the second line overrode
+#  the first.
+#   If you reverse the two lines:
+#      `* text eol=lf`
+#      `* text=auto`
+#  then again both lines match but now the second line only
+#  overrides the text setting, so now you have `text` set to `auto`
+#  and eol set to lf.
+#      `* text eol=lf`
+#      `* text=auto`
+#
+# I'm pretty sure this second version is giving me what I want.
+#
+
+#
+## Again, setting the default behavior, in case people don't have
+## `core.autocrlf` set.
+* text eol=lf
+* text=auto
+
+
+## Specific files that ABSOLUTELY need to be treated as text and have
+## *NIX-style endings. (Note we have no `*.ext text`, because we do
+## not want any files normalized and converted to native line endings
+## on checkout.) We also hate CRLF endings, unless someone has built
+## on VS.
+## The LF line endings should always be there on checkout.
+*.ipynb          text eol=lf
+*.glm            text eol=lf
+*.ref            text eol=lf
+*.hyp            text eol=lf
+*.glmbld         text eol=lf
+*.list           text eol=lf
+*.lst            text eol=lf
+
+*.uc             text eol=lf
+*.in             text eol=lf
+PKG-INFO         text eol=lf
+
+
+## Probably found automatically, but let's make sure
+*.sh             text eol=lf
+*.py             text eol=lf
+*.md             text eol=lf
+*.txt            text eol=lf
+*.cfg            text eol=lf
+#*.bak            text eol=lf  ## .gitignore shouldn't let any through
+#*.log            text eol=lf  ## .gitignore shouldn't let any through
+#*.out            text eol=lf  ## .gitignore shouldn't let any through
+.gitignore       text eol=lf
+.gitattributes   text eol=lf
+
+
+## Denote all files that aren't binary, but which we don't want normalized
+*.zip           -text
+*.pdf           -text
+*.docx          -text
+*.doc           -text
+*.rtf           -text
+## I only had those for some testing. They might
+## go back in ... (?)
+
+
+## Denote all files that are truly binary and should not be modified
+*.dll           binary
+*.exe           binary
+asclite         binary
+rfilter1        binary
+rover           binary
+sclite          binary
+sctkUnit        binary
+sc_stats        binary
+#*.pyc           binary  ## .gitignore shouldn't let any through, since
+                         ## I don't use them in this project
+#no image files in package
+#no audio files in package
+#no video files in package
+
+
+## The following extensions exist on files inside the .git directory.
+## I assume that, with the 'auto', git will take care of them.
+# *.sample ; *.pack ; *.idx
