@@ -84,7 +84,12 @@ gethex4char()
     echo " GOOD)% gethex4char \"\\\"\""
     echo
     echo "A few examples with the full input and output"
-    
+    echo "% gethex4char "
+    echo "% gethex4char "
+    echo "% gethex4char "
+    echo "% gethex4char "
+    echo "% gethex4char "
+    echo "% gethex4char "
   elif [ "$@" = "'" ]; then
     echo "0x22"
   elif [ "$@" = "\"" ]; then
@@ -141,6 +146,13 @@ getbinary4char()
     echo "--BAD)% getbinary4char \"\"\""
     echo " instead, use single quotes or"
     echo " GOOD)% getbinary4char \"\\\"\""
+    echo
+    echo "A few examples with the full input and output"
+    echo "% getbinary4char "
+    echo "% getbinary4char "
+    echo "% getbinary4char "
+    echo "% getbinary4char "
+    echo "% getbinary4char "
   elif [ "$@" = "'" ]; then
     hex_str="22"
   elif [ "$@" = "\"" ]; then
@@ -208,6 +220,14 @@ getunicode4char()
     echo "--BAD)% getunicode4char \"\"\""
     echo " instead, use single quotes or"
     echo " GOOD)% getunicode4char \"\\\"\""
+    echo
+    echo "A few examples with the full input and output"
+    echo "% getunicode4char "
+    echo "% getunicode4char "
+    echo "% getunicode4char "
+    echo "% getunicode4char "
+    echo "% getunicode4char "
+    echo "% getunicode4char "
   elif [ "$@" = "'" ]; then
     echo "U+0022"
   elif [ "$@" = "\"" ]; then
@@ -270,7 +290,14 @@ getbytes4unicode()
     echo "You can include leading zeros or not, but make sure that you don't"
     echo "end up using more than eight hex digits."
     
-
+    
+    echo
+    echo "A few examples with the full input and output"
+    echo "% getbytes4unicode "
+    echo "% getbytes4unicode "
+    echo "% getbytes4unicode "
+    echo "% getbytes4unicode "
+    echo "% getbytes4unicode "
   else
     codepoint_str="$@"
     to_print_str="\\U${codepoint_str}"
