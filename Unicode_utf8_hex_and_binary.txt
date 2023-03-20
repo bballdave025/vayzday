@@ -1,0 +1,292 @@
+########################################################################################
+#@author: David BLACK    GH @bballdave025
+#@since: ... Probably around 2017 is when I started using pieces of what became
+#            these functions
+#@brief(ly) I'll say that I hope this helps you, Sergei
+
+##  In some flavors of Linux and with some programs - I imagine it works in a
+##+ variety of Linux situations - you can use [Ctrl] + [Shift] + [u] (after
+##+ which you will probably see an underlined 'u' character flashing. Enter
+##+ the hex representation of the Unicode codepoint, then press [Enter]. The
+##+ character will be there if the behavior is supported.
+##
+## If you are on Windows and need similar functionality, you can open
+
+##+ These functions are alternatives, and they give more operations.
+
+##  This can be added to `~/.bashrc`, or to a `~/.bash_functions` sourced by
+##+ `~/.bashrc`, of you can call them from a filter with functions just like any
+##+ other file with functions in the shell. For `bash`, that would mean
+##+   $ source whatever_you_call_this_file
+##+ Then use whichever function you would like.
+##
+##  I think that putting it in `~/.bashrc` is the easiest and best way to use
+##+ If you want to use it right after copy/pasting it to your `~/.bashrc` and
+##+ saving it, use
+##+  $ source ~/.bashrc
+##
+
+#  To learn a little about the use and see some examples, run the following from
+#+ the terminal prompt
+#
+# $ gethex4char --help
+#
+# $ getbinary4char --help
+#
+# $ getunicode4char --help
+#
+# $ getbytes4unicode --help
+#
+
+#####################################
+# Encoding stuff
+#####################################
+##DWB: get the hex value for a character's bytes
+##@author: David Wallace BLACK
+gethex4char()
+{
+  if [ "$@" = "-h" -o "$@" = "--help" ]; then
+    echo "Help for gethex4char:"
+    echo
+    echo "Get the hex value for the bytes representing the"
+    echo "character given as input."
+    echo
+    echo "Usage:"
+    echo "% gethex4char <string-with-one-character>"
+    echo
+    echo "Examples:"
+    echo "% gethex4char <string-with-one-character>"
+    echo
+    echo "Note that you might have to copy/paste the glyph of the"
+    echo "character into some type of programmer's notebook with"
+    echo "the encoding set as you want it (I want UTF-8)"
+    echo "Then, in the notebook, write in the"
+    echo "gethex4char part as well as the quotes around the character."
+    echo
+    echo "It will be easier (less backslash escapes) if you use single"
+    echo "quotes around the character you pass in. The only exceptions"
+    echo "(for ascii, at least), are the single quote and the percent"
+    echo "sign. I fixed the percent sign, DWB 2022-02-16."
+    echo "For the single quotes, use:"
+    echo "% gethex4char \"'\""
+    echo
+    echo "If you really want to use double quotes, watch out for the"
+    echo "following, which will not allow the program to continue -"
+    echo "i.e. they will break the program."
+    echo "--BAD)% gethex4char \"\\\""
+    echo " instead, use single quotes or"
+    echo " GOOD)% gethex4char \"\\\\\""
+    echo "--BAD)% gethex4char \"\`\""
+    echo " instead, use single quotes or"
+    echo " GOOD)% gethex4char \"\\\`\""
+    echo "--BAD)% gethex4char \"\"\""
+    echo " instead, use single quotes or"
+    echo " GOOD)% gethex4char \"\\\"\""
+    echo
+    echo "A few examples with the full input and output"
+    
+  elif [ "$@" = "'" ]; then
+    echo "0x22"
+  elif [ "$@" = "\"" ]; then
+    echo "0x28"
+  elif [ "$@" = "\\" ]; then
+    echo "0x5c"
+  elif [ "$@" = "%" ]; then
+    echo "0x25"
+  else
+    printf $@ | hexdump -C | head -n 1 | \
+     awk '{$1=""; $NF=""; print $0}' | \
+     sed 's#^[ ]\(.*\)[ ]\+$#0x\1#g; s#[ ]# 0x#g;'
+  fi
+  return 0
+} ##endof:  gethex4char()
+
+
+##DWB: get the binary value for a character's bytes
+getbinary4char()
+{
+  hex_str="00"
+  if [ "$@" = "-h" -o "$@" = "--help" ]; then
+    echo "Help for getbinary4char:"
+    echo
+    echo "Get the binary value for the bytes representing the"
+    echo "character given as input."
+    echo
+    echo "Usage:"
+    echo "% getbinary4char <string-with-one-character>"
+    echo
+    echo "Examples:"
+    echo "% getbinary4char <string-with-one-character>"
+    echo
+    echo "Note that you might have to copy/paste the glyph of the"
+    echo "character into some type of programmer's notebook with"
+    echo "the encoding set as you want it (I want UTF-8)"
+    echo "Then, in the notebook, write in the"
+    echo "gethex4char part as well as the quotes around the character."
+    echo
+    echo "It will be easier (less backslash escapes) if you use single"
+    echo "quotes around the character you pass in. The only exception"
+    echo "(for ascii, at least), is the single quote. For that, use:"
+    echo "% getbinary4char \"'\""
+    echo
+    echo "If you really want to use double quotes, watch out for the"
+    echo "following, which will not allow the program to continue -"
+    echo "i.e. they will break the program."
+    echo "--BAD)% getbinary4char \"\\\""
+    echo " instead, use single quotes or"
+    echo " GOOD)% getbinary4char \"\\\\\""
+    echo "--BAD)% getbinary4char \"\`\""
+    echo " instead, use single quotes or"
+    echo " GOOD)% getbinary4char \"\\\`\""
+    echo "--BAD)% getbinary4char \"\"\""
+    echo " instead, use single quotes or"
+    echo " GOOD)% getbinary4char \"\\\"\""
+  elif [ "$@" = "'" ]; then
+    hex_str="22"
+  elif [ "$@" = "\"" ]; then
+    hex_str="28"
+  elif [ "$@" = "\\" ]; then
+    hex_str="5c"
+  else
+    hex_str=$(printf $@ | hexdump -C | head -n 1 | \
+     awk '{$1=""; $NF=""; print $0}' | \
+     sed 's#^[ ]\+$##g;' | tr 'a-f' 'A-F')
+  fi
+  while [ $(echo "${#hex_str} % 4" | bc) -ne 0 ]; do
+    hex_str="0${hex_str}"
+  done
+  bin_str=$(echo "obase=2; ibase=16; ${hex_str}" | bc)
+  while [ $(echo "${#bin_str} % 8" | bc) -ne 0 ]; do
+    bin_str="0${bin_str}"
+  done
+  echo "0b${bin_str}"
+  return 0
+} ##endof:  getbinary4char()
+
+
+##DWB: get the Unicode codepoint (as hex) for a character
+getunicode4char()
+{
+  if [ "$@" = "-h" -o "$@" = "--help" ] 2>/dev/null; then
+    echo "Help for getunicode4char:"
+    echo
+    echo "Get the binary value for the bytes representing the"
+    echo "character given as input."
+    echo
+    echo "Requires: python3 for now, till I get the hexdump -C stuff finished"
+    echo "It was originally built with Python 3 in mind, but it works"
+    echo "without that, thanks to hexdump -C"
+    echo "You'll still need to watch out for the problem strings"
+    echo "methioned below."
+    echo
+    echo "Usage:"
+    echo "% getunicode4char <string-with-one-character>"
+    echo
+    echo "Examples:"
+    echo "% getunicode4char <string-with-one-character>"
+    echo
+    echo "Note that you might have to copy/paste the glyph of the"
+    echo "character into some type of programmer's notebook with"
+    echo "the encoding set as you want it (I want UTF-8)"
+    echo "Then, in the notebook, write in the"
+    echo "getunicode4char part as well as the quotes around the character."
+    echo
+    echo "It will be easier (less backslash escapes) if you use single"
+    echo "quotes around the character you pass in. The only exception"
+    echo "(for ascii, at least), is the single quote. For that, use:"
+    echo "% getunicode4char \"'\""
+    echo
+    echo "If you really want to use double quotes, watch out for the"
+    echo "following, which will not allow the program to continue -"
+    echo "i.e. they will break the program."
+    echo "--BAD)% getunicode4char \"\\\""
+    echo " instead, use single quotes or"
+    echo " GOOD)% getunicode4char \"\\\\\""
+    echo "--BAD)% getunicode4char \"\`\""
+    echo " instead, use single quotes or"
+    echo " GOOD)% getunicode4char \"\\\`\""
+    echo "--BAD)% getunicode4char \"\"\""
+    echo " instead, use single quotes or"
+    echo " GOOD)% getunicode4char \"\\\"\""
+  elif [ "$@" = "'" ]; then
+    echo "U+0022"
+  elif [ "$@" = "\"" ]; then
+    echo "U+0028"
+  elif [ "$@" = "\\" ]; then
+    echo "U+005C"
+  else
+    python3_is_installed=0
+    command -v python3 >/dev/null 2>&1 && python3_is_installed=1
+    if [ $python3_is_installed -eq 1 ]; then
+      zeroX_str=$(python3 -c 'print(hex(ord('"'$@'"')))')
+      hex_only_str=$(echo "${zeroX_str}" | sed 's#0x##g')
+      while [ ${#hex_only_str} -lt 4 ]; do
+        hex_only_str="0${hex_only_str}"
+      done ##endof:  while [ ${#hex_only_str} -lt 4 ]
+      echo "U+${hex_only_str}"
+      # Only returns unicode codepoints
+    else
+      echo "won't work for now. need python3"
+      return -1
+      #printf $@ | hexdump -C | head -n 1 | \
+      # awk '{$1=""; $NF=""; print $0}' | \
+      # sed 's#^[ ]\(.*\)[ ]\+$#0x\1#g; s#[ ]# 0x#g;'
+    fi
+  fi
+  return 0
+} ##endof:  getunicode4char()
+
+
+## DWB
+getbytes4unicode()
+{
+  if [ "$@" = "-h" -o "$@" = "--help" ]; then
+    echo "Help for getbytes4unicode:"
+    echo
+    echo "Get the binary value for the bytes representing the"
+    echo "character given as a unicode codepoint input."
+    echo
+    echo "Usage:"
+    echo "% getbytes4unicode <string-with-only-hex-from-unicode-codepoint>"
+    echo
+    echo "Examples:"
+    echo "% getbytes4unicode <string-with-only-hex-from-unicode-codepoint>"
+    #@TODO: Put in some examples
+    echo
+    echo "Make sure you only include the hex digits of the Unicode codepoint"
+    echo "--BAD)% getbytes4unicode \"U+4d\""
+    echo "--BAD)% getbytes4unicode \"U+004d\""
+    echo "--BAD)% getbytes4unicode \"#004d\""
+    echo "--BAD)% getbytes4unicode \"\\u4d\""
+    echo "--BAD)% getbytes4unicode \"\\u004d\""
+    echo "--BAD)% getbytes4unicode \"\\U004d\""
+    echo "--BAD)% getbytes4unicode \"\\U0000004d\""
+    echo " Leave off that leading stuff. Also note"
+    echo " GOOD)% getbytes4unicode \"4d\""
+    echo "Also note that you don't need to worry about the case in the hex"
+    echo "as I hope the examples below will illustrate.
+
+
+    echo "You can include leading zeros or not, but make sure that you don't"
+    echo "end up using more than eight hex digits."
+    
+
+  else
+    codepoint_str="$@"
+    to_print_str="\\U${codepoint_str}"
+    while [ $(echo "${#cpdepoint_str} % 4" | bc) -ne 0 ]; do
+      codepoint_str="0${codepoint_str}"
+    done ##endof:  while [ $(echo "${#codepoint_str} % 4" | bc) -ne 0 ]
+    if [ ${#codepoint_str} -eq 4 ]; then
+      to_print_str="\\u${codepoint_str}"
+    elif [ ${#codepoint_str} -eq 8 ]; then
+      to_print_str="\\U${codepoint_str}"
+    else
+      echo "A maximum of 8 hex digits is allowed."
+    fi
+    printf "${to_print_str}" | hexdump -C | head -n 1 | \
+            awk '{$1=""; $NF=""; print $0}' | \
+            sed 's#^[ ]\(.*\)[ ]\+$#0x\1#g; s#[ ]# 0x#g;'
+  fi
+  return 0
+} ##endof:  getbytes4unicode()
