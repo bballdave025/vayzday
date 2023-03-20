@@ -312,7 +312,7 @@ getbytes4unicode()
   if [ "$@" = "-h" -o "$@" = "--help" ]; then
     echo "Help for getbytes4unicode:"
     echo
-    echo "Get the binary value for the bytes representing the"
+    echo "Get the hex value for the bytes representing the"
     echo "character given as a unicode codepoint input."
     echo
     echo "Usage:"
@@ -334,17 +334,22 @@ getbytes4unicode()
     echo " GOOD)% getbytes4unicode \"4d\""
     echo "Also note that you don't need to worry about the case in the hex"
     echo "as I hope the examples below will illustrate.
-
-
+    echo " GOOD)% getbytes4unicode \"4D\""
+    echo " GOOD)% getbytes4unicode \"4d\""
+    echo " GOOD)% getbytes4unicode \"2A2b\""
     echo "You can include leading zeros or not, but make sure that you don't"
     echo "end up using more than eight hex digits."
-    
-    
+    echo " GOOD)% getbytes4unicode \"04D\""
+    echo " GOOD)% getbytes4unicode \"04D\""
+    echo " GOOD)% getbytes4unicode \"0000004D\""
+    echo "--BAD)% getbytes4unicode \"000000004D\""
+    echo " GOOD)% getbytes4unicode \"01D10B\""
+    echo "--BAD)% getbytes4unicode \"1B8A4D1F3\""
     echo
     echo "A few examples with the full input and output"
-    echo "% getbytes4unicode "
-    echo "% getbytes4unicode "
-    echo "% getbytes4unicode "
+    echo "% getbytes4unicode '4D'"
+    echo "% getbytes4unicode 4d"
+    echo "% getbytes4unicode '0001D10B'"
     echo "% getbytes4unicode "
     echo "% getbytes4unicode "
     echo "% getbytes4unicode "
