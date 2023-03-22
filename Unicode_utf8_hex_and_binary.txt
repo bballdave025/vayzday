@@ -304,59 +304,59 @@ getunicode4char()
     echo " GOOD)% getunicode4char \"\\\"\""
     echo
     echo "A few examples with the full input and output"
-    echo "% getunicode4char 'v'
-    echo "U+0076
-    echo "% getunicode4char v
-    echo "U+0076
-    echo "% getunicode4char 'π'
-    echo "U+03c0
-    echo "% getunicode4char 'ł'
-    echo "U+0142
-    echo "% getunicode4char 'Ж'
-    echo "U+0416
-    echo "% getunicode4char 'ѣ'
-    echo "U+0463
-    echo "% getunicode4char 'ꙮ'
-    echo "U+a66e
-    echo "% getunicode4char 'Ѧ'
-    echo "U+0466
-    echo "% getunicode4char '₪'
-    echo "U+20aa
-    echo "% getunicode4char 'ش'
-    echo "U+0634
-    echo "% getunicode4char '๛'
-    echo "U+0e5b
-    echo "% getunicode4char 'ฏ'
-    echo "U+0e0f
-    echo "% getunicode4char '안'
-    echo "U+c548
-    echo "% getunicode4char '家'
-    echo "U+5bb6
-    echo "% getunicode4char '譜'
-    echo "U+8b5c
-    echo "% getunicode4char 家
-    echo "U+5bb6
-    echo "% getunicode4char 譜
-    echo "U+8b5c
-    echo "% getunicode4char 𐙃
-    echo "U+10643
-    echo "% getunicode4char \U16403
-    echo "Traceback (most recent call last):
-    echo "  File "<string>", line 1, in <module>
-    echo "TypeError: ord() expected a character, but string of length 6 found
-    echo "U+0000
-    echo "% getunicode4char \U1FA6C
-    echo "Traceback (most recent call last):
-    echo "  File "<string>", line 1, in <module>
-    echo "TypeError: ord() expected a character, but string of length 6 found
-    echo "U+0000
-    echo "% getunicode4char \u2328
-    echo "Traceback (most recent call last):
-    echo "  File "<string>", line 1, in <module>
-    echo "TypeError: ord() expected a character, but string of length 5 found
-    echo "U+0000
-    echo "% getunicode4char 4
-    echo "U+0034
+    echo "% getunicode4char 'v'"
+    echo "U+0076"
+    echo "% getunicode4char v"
+    echo "U+0076"
+    echo "% getunicode4char 'π'"
+    echo "U+03c0"
+    echo "% getunicode4char 'ł'"
+    echo "U+0142"
+    echo "% getunicode4char 'Ж'"
+    echo "U+0416"
+    echo "% getunicode4char 'ѣ'"
+    echo "U+0463"
+    echo "% getunicode4char 'ꙮ'"
+    echo "U+a66e"
+    echo "% getunicode4char 'Ѧ'"
+    echo "U+0466"
+    echo "% getunicode4char '₪'"
+    echo "U+20aa"
+    echo "% getunicode4char 'ش'"
+    echo "U+0634"
+    echo "% getunicode4char '๛'"
+    echo "U+0e5b"
+    echo "% getunicode4char 'ฏ'"
+    echo "U+0e0f"
+    echo "% getunicode4char '안'"
+    echo "U+c548"
+    echo "% getunicode4char '家'"
+    echo "U+5bb6"
+    echo "% getunicode4char '譜'"
+    echo "U+8b5c"
+    echo "% getunicode4char 家"
+    echo "U+5bb6"
+    echo "% getunicode4char 譜"
+    echo "U+8b5c"
+    echo "% getunicode4char 𐙃"
+    echo "U+10643"
+    echo "% getunicode4char \U16403"
+    echo "Traceback (most recent call last):"
+    echo "  File "<string>", line 1, in <module>"
+    echo "TypeError: ord() expected a character, but string of length 6 found"
+    echo "U+0000"
+    echo "% getunicode4char \U1FA6C"
+    echo "Traceback (most recent call last):"
+    echo "  File "<string>", line 1, in <module>"
+    echo "TypeError: ord() expected a character, but string of length 6 found"
+    echo "U+0000"
+    echo "% getunicode4char \u2328"
+    echo "Traceback (most recent call last):"
+    echo "  File "<string>", line 1, in <module>"
+    echo "TypeError: ord() expected a character, but string of length 5 found"
+    echo "U+0000"
+    echo "% getunicode4char 4"
+    echo "U+0034"
   elif [ "$@" = "'" ]; then
     echo "U+0022"
   elif [ "$@" = "\"" ]; then
@@ -429,34 +429,59 @@ getbytes4unicode()
     echo "--BAD)% getbytes4unicode \"1B8A4D1F3\""
     echo
     echo "A few examples with the full input and output"
-    echo "% getbytes4unicode '4D'"
+    echo "% getbytes4unicode 4D"
+    echo "0x4d"
     echo "% getbytes4unicode 4d"
-    echo "% getbytes4unicode '0001D10B'"
-    echo "% getbytes4unicode "
-    echo "% getbytes4unicode "
-    echo "% getbytes4unicode "
-    echo "% getbytes4unicode "
-    echo "% getbytes4unicode "
-    echo "% getbytes4unicode "
-    echo "% getbytes4unicode "
-    echo "% getbytes4unicode "
-    echo "% getbytes4unicode "
-    echo "% getbytes4unicode "
-    echo "% getbytes4unicode "
-    echo "% getbytes4unicode "
-    echo "% getbytes4unicode "
-    echo "% getbytes4unicode "
-    echo "% getbytes4unicode "
-    echo "% getbytes4unicode "
-    echo "% getbytes4unicode "
-    echo "% getbytes4unicode "
-    echo "% getbytes4unicode "
-    echo "% getbytes4unicode "
-    echo "% getbytes4unicode "
+    echo "0x4d"
+    echo "% getbytes4unicode 0001D10B"
+    echo "0xf0 0x9d 0x84 0x8b"
+    echo "% getbytes4unicode 0076"
+    echo "0x76"
+    echo "% getbytes4unicode 03c0"
+    echo "0xcf 0x80"
+    echo "% getbytes4unicode 0142"
+    echo "0xc5 0x82"
+    echo "% getbytes4unicode 0416"
+    echo "0xd0 0x96"
+    echo "% getbytes4unicode 0463"
+    echo "0xd1 0xa3"
+    echo "% getbytes4unicode A66e"
+    echo "0xea 0x99 0xae"
+    echo "% getbytes4unicode 0466"
+    echo "0xd1 0xa6"
+    echo "% getbytes4unicode 20AA"
+    echo "0xe2 0x82 0xaa"
+    echo "% getbytes4unicode 0634"
+    echo "0xd8 0xb4"
+    echo "% getbytes4unicode 0e5b"
+    echo "0xe0 0xb9 0x9b"
+    echo "% getbytes4unicode 0e0f"
+    echo "0xe0 0xb8 0x8f"
+    echo "% getbytes4unicode C548"
+    echo "0xec 0x95 0x88"
+    echo "% getbytes4unicode 5bb6"
+    echo "0xe5 0xae 0xb6"
+    echo "% getbytes4unicode 8b5c"
+    echo "0xe8 0xad 0x9c"
+    echo "% getbytes4unicode 5bb6"
+    echo "0xe5 0xae 0xb6"
+    echo "% getbytes4unicode 8b5c"
+    echo "0xe8 0xad 0x9c"
+    echo "% getbytes4unicode 10643"
+    echo "0xf0 0x90 0x99 0x83"
+    echo "% getbytes4unicode 16403"
+    echo "0x55 0x31 0x36 0x34 0x30 0x33"
+    echo "% getbytes4unicode 1FA6C"
+    echo "0x55 0x31 0x46 0x41 0x36 0x43"
+    echo "% getbytes4unicode 2328"
+    echo "0x75 0x32 0x33 0x32 0x38"
+    echo "% getbytes4unicode 0034"
+    echo "0x34"
   else
     codepoint_str="$@"
-    to_print_str="\\U${codepoint_str}"
-    while [ $(echo "${#cpdepoint_str} % 4" | bc) -ne 0 ]; do
+    mid_str=$(echo "${codepoint_str}" | tr -d "'" | tr -d '"')
+    to_print_str="\\U${mid_str}"
+    while [ $(echo "${#codepoint_str} % 4" | bc) -ne 0 ]; do
       codepoint_str="0${codepoint_str}"
     done ##endof:  while [ $(echo "${#codepoint_str} % 4" | bc) -ne 0 ]
     if [ ${#codepoint_str} -eq 4 ]; then
