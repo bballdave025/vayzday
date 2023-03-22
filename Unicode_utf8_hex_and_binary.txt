@@ -33,6 +33,11 @@
 #
 # $ getbinary4char --help
 #
+##  I was just reminded that `getunicode4char` only works for 2-byte Unicode
+##+ codepoints, e.g. `getunicode4char "\u3398"` works but
+##+ `getunicode4char "\U1fa6c"` does not work. I highly doubt you'll
+##+ need more than 2-byte Unicode codepoints tomorrow. If so, try the
+##+ [Ctrl]+[Shift]+[u] trick. -DWB 2023-03-21
 # $ getunicode4char --help
 #
 # $ getbytes4unicode --help
@@ -85,27 +90,49 @@ gethex4char()
     echo
     echo "A few examples with the full input and output"
     echo "% gethex4char 'v'"
+    echo "0x76"
     echo "% gethex4char v"
+    echo "0x76"
     echo "% gethex4char 'π'"
+    echo "0xcf 0x80"
     echo "% gethex4char 'ł'"
+    echo "0xc5 0x82"
     echo "% gethex4char 'Ж'"
+    echo "0xd0 0x96"
     echo "% gethex4char 'ѣ'"
+    echo "0xd1 0xa3"
     echo "% gethex4char 'ꙮ'"
+    echo "0xea 0x99 0xae"
     echo "% gethex4char 'Ѧ'"
+    echo "0xd1 0xa6"
     echo "% gethex4char '₪'"
+    echo "0xe2 0x82 0xaa"
     echo "% gethex4char 'ش'"
+    echo "0xd8 0xb4"
     echo "% gethex4char '๛'"
+    echo "0xe0 0xb9 0x9b"
     echo "% gethex4char 'ฏ'"
+    echo "0xe0 0xb8 0x8f"
     echo "% gethex4char '안'"
+    echo "0xec 0x95 0x88"
     echo "% gethex4char '家'"
+    echo "0xe5 0xae 0xb6"
     echo "% gethex4char '譜'"
+    echo "0xe8 0xad 0x9c"
     echo "% gethex4char 家"
+    echo "0xe5 0xae 0xb6"
     echo "% gethex4char 譜"
+    echo "0xe8 0xad 0x9c"
     echo "% gethex4char 𐙃"
+    echo "0xf0 0x90 0x99 0x83"
     echo "% gethex4char \\U16403"
+    echo "0x55 0x31 0x36 0x34 0x30 0x33"
     echo "% gethex4char \\U1FA6C"
+    echo "0x55 0x31 0x46 0x41 0x36 0x43"
     echo "% gethex4char \\u2328"
+    echo "0x75 0x32 0x33 0x32 0x38"
     echo "% gethex4char 4"
+    echo "0x34"d
   elif [ "$@" = "'" ]; then
     echo "0x22"
   elif [ "$@" = "\"" ]; then
@@ -165,27 +192,49 @@ getbinary4char()
     echo
     echo "A few examples with the full input and output"
     echo "% getbinary4char 'v'"
+    echo "01110110"
     echo "% getbinary4char v"
+    echo "01110110"
     echo "% getbinary4char 'π'"
+    echo "1100111110000000"
     echo "% getbinary4char 'ł'"
+    echo "1100010110000010"
     echo "% getbinary4char 'Ж'"
+    echo "1101000010010110"
     echo "% getbinary4char 'ѣ'"
+    echo "1101000110100011"
     echo "% getbinary4char 'ꙮ'"
+    echo "111010101001100110101110"
     echo "% getbinary4char 'Ѧ'"
+    echo "1101000110100110"
     echo "% getbinary4char '₪'"
+    echo "111000101000001010101010"
     echo "% getbinary4char 'ش'"
+    echo "1101100010110100"
     echo "% getbinary4char '๛'"
+    echo "111000001011100110011011"
     echo "% getbinary4char 'ฏ'"
+    echo "111000001011100010001111"
     echo "% getbinary4char '안'"
+    echo "111011001001010110001000"
     echo "% getbinary4char '家'"
+    echo "111001011010111010110110"
     echo "% getbinary4char '譜'"
+    echo "111010001010110110011100"
     echo "% getbinary4char 家"
+    echo "111001011010111010110110"
     echo "% getbinary4char 譜"
+    echo "111010001010110110011100"
     echo "% getbinary4char 𐙃"
+    echo "11110000100100001001100110000011"
     echo "% getbinary4char \\U16403"
+    echo "010101010011000100110110001101000011000000110011"
     echo "% getbinary4char \\U1FA6C"
+    echo "010101010011000101000110010000010011011001000011"
     echo "% getbinary4char \\u2328"
+    echo "0111010100110010001100110011001000111000"
     echo "% getbinary4char 4"
+    echo "00110100"
   elif [ "$@" = "'" ]; then
     hex_str="22"
   elif [ "$@" = "\"" ]; then
@@ -255,28 +304,59 @@ getunicode4char()
     echo " GOOD)% getunicode4char \"\\\"\""
     echo
     echo "A few examples with the full input and output"
-    echo "% getunicode4char 'v'"
-    echo "% getunicode4char v"
-    echo "% getunicode4char 'π'"
-    echo "% getunicode4char 'ł'"
-    echo "% getunicode4char 'Ж'"
-    echo "% getunicode4char 'ѣ'"
-    echo "% getunicode4char 'ꙮ'"
-    echo "% getunicode4char 'Ѧ'"
-    echo "% getunicode4char '₪'"
-    echo "% getunicode4char 'ش'"
-    echo "% getunicode4char '๛'"
-    echo "% getunicode4char 'ฏ'"
-    echo "% getunicode4char '안'"
-    echo "% getunicode4char '家'"
-    echo "% getunicode4char '譜'"
-    echo "% getunicode4char 家"
-    echo "% getunicode4char 譜"
-    echo "% getunicode4char 𐙃"
-    echo "% getunicode4char \\U16403"
-    echo "% getunicode4char \\U1FA6C"
-    echo "% getunicode4char \\u2328"
-    echo "% getunicode4char 4"
+    echo "% getunicode4char 'v'
+    echo "U+0076
+    echo "% getunicode4char v
+    echo "U+0076
+    echo "% getunicode4char 'π'
+    echo "U+03c0
+    echo "% getunicode4char 'ł'
+    echo "U+0142
+    echo "% getunicode4char 'Ж'
+    echo "U+0416
+    echo "% getunicode4char 'ѣ'
+    echo "U+0463
+    echo "% getunicode4char 'ꙮ'
+    echo "U+a66e
+    echo "% getunicode4char 'Ѧ'
+    echo "U+0466
+    echo "% getunicode4char '₪'
+    echo "U+20aa
+    echo "% getunicode4char 'ش'
+    echo "U+0634
+    echo "% getunicode4char '๛'
+    echo "U+0e5b
+    echo "% getunicode4char 'ฏ'
+    echo "U+0e0f
+    echo "% getunicode4char '안'
+    echo "U+c548
+    echo "% getunicode4char '家'
+    echo "U+5bb6
+    echo "% getunicode4char '譜'
+    echo "U+8b5c
+    echo "% getunicode4char 家
+    echo "U+5bb6
+    echo "% getunicode4char 譜
+    echo "U+8b5c
+    echo "% getunicode4char 𐙃
+    echo "U+10643
+    echo "% getunicode4char \U16403
+    echo "Traceback (most recent call last):
+    echo "  File "<string>", line 1, in <module>
+    echo "TypeError: ord() expected a character, but string of length 6 found
+    echo "U+0000
+    echo "% getunicode4char \U1FA6C
+    echo "Traceback (most recent call last):
+    echo "  File "<string>", line 1, in <module>
+    echo "TypeError: ord() expected a character, but string of length 6 found
+    echo "U+0000
+    echo "% getunicode4char \u2328
+    echo "Traceback (most recent call last):
+    echo "  File "<string>", line 1, in <module>
+    echo "TypeError: ord() expected a character, but string of length 5 found
+    echo "U+0000
+    echo "% getunicode4char 4
+    echo "U+0034
   elif [ "$@" = "'" ]; then
     echo "U+0022"
   elif [ "$@" = "\"" ]; then
@@ -326,6 +406,8 @@ getbytes4unicode()
     echo "--BAD)% getbytes4unicode \"U+4d\""
     echo "--BAD)% getbytes4unicode \"U+004d\""
     echo "--BAD)% getbytes4unicode \"#004d\""
+    echo "--BAD)% getbytes4unicode \"\\x4d\""
+    echo "#-----QUITE_BAD) Not Unicode Codepoint"
     echo "--BAD)% getbytes4unicode \"\\u4d\""
     echo "--BAD)% getbytes4unicode \"\\u004d\""
     echo "--BAD)% getbytes4unicode \"\\U004d\""
