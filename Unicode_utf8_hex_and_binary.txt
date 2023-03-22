@@ -333,7 +333,7 @@ getbytes4unicode()
     echo " Leave off that leading stuff. Also note"
     echo " GOOD)% getbytes4unicode \"4d\""
     echo "Also note that you don't need to worry about the case in the hex"
-    echo "as I hope the examples below will illustrate.
+    echo "as I hope the examples below will illustrate."
     echo " GOOD)% getbytes4unicode \"4D\""
     echo " GOOD)% getbytes4unicode \"4d\""
     echo " GOOD)% getbytes4unicode \"2A2b\""
