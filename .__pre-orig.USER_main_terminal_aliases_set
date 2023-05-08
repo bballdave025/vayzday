@@ -15,6 +15,6 @@ set_color_command_aliases
 echo "Aliasing \`xterm' to \`uxterm'"
 type uxterm
 alias xterm='uxterm' && echo "Done" || \
-  echo -e "Not done\n Try \`alias grep='grepc'' to see the error. \
+  echo -e "Not done\n Try \`alias xterm='uxterm'' to see the error. \
 \n The attempt to alias was from ${BASH_SOURCE[0]}"
 echo
