@@ -1,0 +1,50 @@
+#!/bin/bash
+#
+##############################################################################
+# @brief  : backup important dotfiles
+# @file   : .create_backups_home.sh
+# @author : David BLACK   gh @bballdave025
+# @since  : 2023-07-06
+#
+#
+#
+#######################################################################
+
+# @TODO use flags
+
+extra_info_str=''
+
+if [ $# -gt 0 ]; then
+  extra_info_str="$1."
+fi ##endof:  if [ $# -gt 1 ]
+
+saved_to_dir="$HOME/.important_backups/"
+
+if [ ! -d "${saved_to_dir}" ]; then 
+  mkdir "${saved_to_dir}"
+fi ##endof:  if [ ! -d "${saved_to_dir}" ]
+
+this_bak_ts="$(date +'%s_%Y%m%dT%H%M%S%z')"
+
+for p_name in profile bash_profile bashrc bash_login bash_logout \
+	      zshenv zprofile zshrc zlogin zlogout \
+              inputrc mkshrc vimrc xinitrc viminfo wget-hsts
+do
+  echo; 
+  this_p_name="$HOME/.${p_name}"
+  if [ -f "${this_p_name}" ]; then
+    this_bak_name="${saved_to_dir}.${p_name}.${extra_info_str}"\
+"${this_bak_ts}.bak"
+    echo " Attempting to copy";
+    echo "${this_p_name}"
+    echo "  TO"
+    echo "${this_bak_name}"
+    cp "${this_p_name}" "${this_bak_name}" && \
+      echo "      ... success" || \
+      echo "      ... FAILURE" 
+  else 
+    echo " Could not access the file:" >&2
+    echo "${this_p_name}" >&2
+    echo "The program will continue."
+  fi ##endof:  if [ -f "${this_p_name}" ] 
+done ##endof: for p_name in <lots of stuff>
