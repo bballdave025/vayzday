@@ -1,0 +1,307 @@
+:: @short This is the batch file for a cygwin fix inside
+:: a text file. It is meant for review and reference.
+:: It has many good CMD commands/etc. for stuff like ACLs,
+:: setting variables, working with the registry, etc.
+::
+:: The original *.bat file itself had as its first line,
+:: `goto start`
+:: It comes from a previous-but-not-now-best fork of
+:: apt-cyg by @ilatypov of github, more specifically
+:: @ref = "https://gist.github.com/ilatypov/" + \
+::        "5956ae36da8ff0aa2212eb2004def8c4"
+::
+:: The user, @ilyatov, himself has assented to the main
+:: apt-cyg repository being used in the community (though
+:: there seem to be issues with github legal stuff in taking
+:: the place of the transcode-open code, which has been long
+:: neglected, cf. vayZday's quick_useful_installs.txt as 
+:: well as
+:: @ref = "https://githubmemory.com/repo/transcode-open/apt-cyg/issues/128"
+:: 
+:: 
+:: @original_file fixcygwin.bat.txt
+
+goto start
+
+@rem Usage:
+@rem
+@rem   Optionally:
+@rem     set ALL_PROXY=HOST:PORT
+@rem     set CYGWIN_SETUP_MIRROR=https://ARTIFACTORY/REPO/cygwin-setup
+@rem     set CYGWIN_MIRROR=https://ARTIFACTORY/REPO/cygwin
+@rem
+@rem   call fixcygwin.bat [/f]
+@rem
+@rem where /f forces the download and setup/upgrade regardless of the presence of curl.
+
+:start
+(set force=false)
+if "%~1" == "/f" (
+    (set force=true)
+    shift
+)
+if "%CYGBINSLASH%" == "" (
+    (set CYGBINSLASH=c:\cygwin64\bin\)
+)
+(set croot=%CYGBINSLASH:~0,-5%)
+
+set caparch=x86_64
+if [%PROCESSOR_ARCHITECTURE%]==[x86] (
+    if not defined PROCESSOR_ARCHITEW6432 (
+        set caparch="x86"
+    )
+)
+echo caparch is %caparch%
+set cygarch=%caparch%
+for /F "tokens=* USEBACKQ" %%f in (`%CYGBINSLASH%uname -m`) do (set cygarch=%%f)
+echo cygarch is %cygarch%
+
+set curlok=true
+
+if not exist %croot%\etc\pki\ca-trust\extracted\pem\tls-ca-bundle.pem (set curlok=false)
+
+@rem Avoid stopping the script by a dialog box "Entry Point Not Found" or
+@rem "System Error" ("...dll is missing from your computer")
+reg add HKLM\SYSTEM\CurrentControlSet\Control\Windows /v ErrorMode /t REG_DWORD /f /d 2
+%CYGBINSLASH%curl -V || (set curlok=false)
+
+if [%curlok%.%force%]==[true.false] goto end_of_update
+@rem The if then branch shows its commands in a batch, making it difficult to
+@rem track the progress.  Besides, the branch will unescape round brackets.
+@rem Using "goto" instead of the then branch works this around.
+
+@rem How to execute a cUrl equivalent in Powershell (Invoke-WebRequest) using cacert file?
+@rem Answer by Mathias R. Jessen, April 20, 2016
+@rem https://stackoverflow.com/a/36747775/80772
+(
+@echo.-----BEGIN CERTIFICATE-----
+@echo.MIIE0zCCA7ugAwIBAgIJANu+mC2Jt3uTMA0GCSqGSIb3DQEBCwUAMIGhMQswCQYDVQQGEwJVUzET
+@echo.MBEGA1UECBMKQ2FsaWZvcm5pYTERMA8GA1UEBxMIU2FuIEpvc2UxFTATBgNVBAoTDFpzY2FsZXIg
+@echo.SW5jLjEVMBMGA1UECxMMWnNjYWxlciBJbmMuMRgwFgYDVQQDEw9ac2NhbGVyIFJvb3QgQ0ExIjAg
+@echo.BgkqhkiG9w0BCQEWE3N1cHBvcnRAenNjYWxlci5jb20wHhcNMTQxMjE5MDAyNzU1WhcNNDIwNTA2
+@echo.MDAyNzU1WjCBoTELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExETAPBgNVBAcTCFNh
+@echo.biBKb3NlMRUwEwYDVQQKEwxac2NhbGVyIEluYy4xFTATBgNVBAsTDFpzY2FsZXIgSW5jLjEYMBYG
+@echo.A1UEAxMPWnNjYWxlciBSb290IENBMSIwIAYJKoZIhvcNAQkBFhNzdXBwb3J0QHpzY2FsZXIuY29t
+@echo.MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqT7STSxZRTgEFFf6doHajSc1vk5jmzmM
+@echo.6BWuOo044EsaTc9eVEV/HjH/1DWzZtcrfTj+ni205apMTlKBW3UYR+lyLHQ9FoZiDXYXK8poKSV5
+@echo.+Tm0Vls/5Kb8mkhVVqv7LgYEmvEY7HPY+i1nEGZCa46ZXCOohJ0mBEtB9JVlpDIO+nN0hUMAYYdZ
+@echo.1KZWCMNf5J/aTZiShsorN2A38iSOhdd+mcRM4iNL3gsLu99XhKnRqKoHeH83lVdfu1XBeoQzz5V6
+@echo.gA3kbRvhDwoIlTBeMa5l4yRdJAfdpkbFzqiwSgNdhbxTHnYYorDzKfr2rEFMdsMU0DHdeAZf711+
+@echo.1CunuQIDAQABo4IBCjCCAQYwHQYDVR0OBBYEFLm33UrNww4Mhp1d3+wcBGnFTpjfMIHWBgNVHSME
+@echo.gc4wgcuAFLm33UrNww4Mhp1d3+wcBGnFTpjfoYGnpIGkMIGhMQswCQYDVQQGEwJVUzETMBEGA1UE
+@echo.CBMKQ2FsaWZvcm5pYTERMA8GA1UEBxMIU2FuIEpvc2UxFTATBgNVBAoTDFpzY2FsZXIgSW5jLjEV
+@echo.MBMGA1UECxMMWnNjYWxlciBJbmMuMRgwFgYDVQQDEw9ac2NhbGVyIFJvb3QgQ0ExIjAgBgkqhkiG
+@echo.9w0BCQEWE3N1cHBvcnRAenNjYWxlci5jb22CCQDbvpgtibd7kzAMBgNVHRMEBTADAQH/MA0GCSqG
+@echo.SIb3DQEBCwUAA4IBAQAw0NdJh8w3NsJu4KHuVZUrmZgIohnTm0j+RTmYQ9IKA/pvxAcA6K1i/LO+
+@echo.Bt+tCX+C0yxqB8qzuo+4vAzoY5JEBhyhBhf1uK+P/WVWFZN/+hTgpSbZgzUEnWQG2gOVd24msex+
+@echo.0Sr7hyr9vn6OueH+jj+vCMiAm5+ukd7lLvJsBu3AO3jGWVLyPkS3i6Gf+rwAp1OsRrv3WnbkYcFf
+@echo.9xjuaf4z0hRCrLN2xFNjavxrHmsH8jPHVvgc1VD0Opja0l/BRVauTrUaoW6tE+wFG5rEcPGS80jj
+@echo.HK4SpB5iDj2mUZH1T8lzYtuZy0ZPirxmtsk3135+CKNa2OCAhhFjE0xd
+@echo.-----END CERTIFICATE-----
+) > zscaler-ca.pem
+
+if "%CYGWIN_SETUP_MIRROR%" == "" (
+    (set CYGWIN_SETUP_MIRROR=https://cygwin.com)
+)
+powershell -NoLogo -NoProfile -Command ^
+ $ErrorActionPreference = 'Stop'; ^
+ $callback = { ^
+    param( ^
+        $sender, ^
+        [Security.Cryptography.X509Certificates.X509Certificate]$certificate, ^
+        [Security.Cryptography.X509Certificates.X509Chain]$chain, ^
+        [Net.Security.SslPolicyErrors]$sslPolicyErrors ^
+    ); ^
+    ; ^
+    ^<# No need to retype this long type name #^>; ^
+    $CertificateType = [Security.Cryptography.X509Certificates.X509Certificate2]; ^
+    ; ^
+    ^<# Read the CA cert from file #^>; ^
+    $CACert = $CertificateType::CreateFromCertFile('zscaler-ca.pem') -as $CertificateType; ^
+    ; ^
+    ^<# Add the CA cert from the file to the ExtraStore on the Chain object #^>; ^
+    $null = $chain.ChainPolicy.ExtraStore.Add($CACert); ^
+    ; ^
+    ^<# return the result of chain validation #^>; ^
+    return $chain.Build($certificate); ^
+ }; ^
+ ; ^
+ [Net.ServicePointManager]::ServerCertificateValidationCallback = $callback; ^
+ [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12; ^
+ if (-not ([string]::IsNullOrEmpty($Env:ALL_PROXY))) { ^
+     write-host('Using a proxy {0}...' -f $Env:ALL_PROXY); ^
+     [Net.WebRequest]::DefaultWebProxy = new-object Net.WebProxy($Env:ALL_PROXY); ^
+ } ^
+ ; ^
+ $file = 'setup-%cygarch%.exe'; ^
+ $url = '%CYGWIN_SETUP_MIRROR%/{0}' -f $file; ^
+ $Request = [Net.WebRequest]::Create($url); ^
+ $Request.AllowAutoRedirect = $false; ^
+ ^<# The per-request certificate validation property did not exist somewhere before .Net 4.5 #^>; ^
+ ^<# but its assignment works around a bug in a later Powershell creating an empty response object on receiving 403 Forbidden later in $Req2 #^>; ^
+ ^<# despite assigning it to $Request not $Req2.  The influence of that assignment on the bug seems a consequence of another bug in Powershell. #^>; ^
+ try { $Request.ServerCertificateValidationCallback = $callback; } catch { }; ^
+ write-host('Downloading {0}' -f $url); ^
+ $Resp = $Request.GetResponse(); ^
+ write-host('Response status {0}' -f $Resp.StatusCode); ^
+ if ($Resp.StatusCode -eq 'TemporaryRedirect') { ^
+   ^<# https://gateway.zscloud.net:443/_sm_ccik?_sm_rid=ssvRr0VS5M2sn62s7j0rHQM1NMDwWsr0rfQ2H15^&_orig_url=https://cygwin.com/setup-x86_64.exe #^>; ^
+   $loc = $Resp.Headers['Location']; ^
+   write-host('Location: {0}' -f $loc); ^
+   $Req2 = [Net.WebRequest]::Create($loc); ^
+   $Resp2 = try { ^
+     $Req2.GetResponse() ^
+   } catch [Net.WebException] { ^
+     $_.Exception.Response ^
+   }; ^
+   write-host('Response status {0}' -f $Resp2.StatusCode); ^
+   $sr = new-object System.IO.StreamReader($Resp2.GetResponseStream()); ^
+   $splash = $sr.ReadToEnd(); ^
+   $action = $splash ^| select-string -pattern '\^<form .*action=\^"([^^\^"]+)\^"'; ^
+   $action = $action.Matches[0].Groups[1].Value; ^
+   $sm_url = $splash ^| select-string -pattern '\^<input .*name=\^"_sm_url\^" value=\^"([^^\^"]+)\^"'; ^
+   $sm_url = $sm_url.Matches[0].Groups[1].Value; ^
+   $sm_rid = $splash ^| select-string -pattern '\^<input .*name=\^"_sm_rid\^" value=\^"([^^\^"]+)\^"'; ^
+   $sm_rid = $sm_rid.Matches[0].Groups[1].Value; ^
+   $sm_cat = $splash ^| select-string -pattern '\^<input .*name=\^"_sm_cat\^" value=\^"([^^\^"]+)\^"'; ^
+   $sm_cat = $sm_cat.Matches[0].Groups[1].Value; ^
+   $continue_loc = '{0}?_sm_url={1}^&_sm_rid={2}^&_sm_cat={3}' -f $action, $sm_url, $sm_rid, $sm_cat; ^
+   write-host('Zscaler continue location: {0}' -f $continue_loc); ^
+   $Req3 = [Net.WebRequest]::Create($continue_loc); ^
+   $Req3.AllowAutoRedirect = $false; ^
+   $Resp3 = $Req3.GetResponse(); ^
+   write-host('Status {0}' -f $Resp3.StatusCode); ^
+   $cookie = $Resp3.Headers['Set-Cookie']; ^
+   write-host('Set-Cookie: {0}' -f $cookie); ^
+   $zdownload_loc = $Resp3.Headers['Location']; ^
+   write-host('Location: {0}' -f $zdownload_loc); ^
+   $Req4 = [Net.WebRequest]::Create($zdownload_loc); ^
+   $Req4.Headers.add('Cookie', $cookie); ^
+   $Resp = $Req4.GetResponse(); ^
+   write-host('Response status {0}' -f $Resp.StatusCode); ^
+ }; ^
+ $f = [IO.File]::Create($file); ^
+ $buf = new-object Byte[] 1048576; ^
+ $rs = $Resp.GetResponseStream(); ^
+ do { $numbytes = $rs.Read($buf, 0, $buf.Length); $f.Write($buf, 0, $numbytes); } while ($numbytes -gt 0); ^
+ $rs.Close(); $rs.Dispose(); ^
+ $f.Flush(); $f.Close(); $f.Dispose(); ^
+ $fi = new-object IO.FileInfo($file); ^
+ $alg = 'SHA1'; ^
+ $hasher = [Security.Cryptography.HashAlgorithm]::Create($alg); ^
+ $inp = $fi.OpenRead(); ^
+ $hash = [BitConverter]::ToString($hasher.ComputeHash($inp)); ^
+ $inp.Close(); ^
+ write-host('{0}: {1} byte(s), {2} {3}' -f $file, $fi.Length, $alg, $hash.Replace('-', '')); ^
+ $lastmod = $Resp.Headers['Last-Modified']; ^
+ write-host('Last-Modified: {0}' -f $lastmod); ^
+ $format = 'ddd, dd MMM yyyy HH:mm:ss zzz'; ^
+ $ts = [DateTime]::ParseExact($lastmod.Replace(' GMT', ' -00:00'), $format, [Globalization.CultureInfo]::InvariantCulture); ^
+ $fitem = Get-Item $file; ^
+ $fitem.LastWriteTime = $ts; ^
+ write-host($ts.ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ss+0000'))
+
+@rem The line above this comment needs preservation to complete the preceding CMD wrapped line.
+
+@rem Check if we downloaded a non-empty file
+dir "setup-%cygarch%.exe" || exit /b 1
+for %%f in ("setup-%cygarch%.exe") do if %%~zf lss 1 exit /b 1
+
+net stop sshd
+net stop cygrunsrv
+
+if not exist "%croot%" goto setup
+@rem The if then branch shows its commands in a batch, making it difficult to
+@rem track the progress.  Besides, the branch will unescape round brackets.
+@rem Using "goto" instead of the then branch works this around.
+
+wmic process where (executablepath like '%cygbinslash:\=\\%%%') get ProcessId,CommandLine /value > cygpids.txt
+type cygpids.txt
+for /f "tokens=2 delims==" %%g in ('type cygpids.txt ^| findstr /l "ProcessId="') do (
+    @rem The for loop shows its commands in a batch just as if/then, but every
+    @rem iteration takes fewer commands.  Iterations show step by step.
+    wmic process where ^(ProcessId=%%g^) call Terminate
+)
+icacls %CYGBINSLASH%sh.exe
+icacls %CYGBINSLASH%
+icacls %croot%
+
+@rem https://rakhesh.com/windows/beware-of-takeown-and-recursively-operating/
+takeown /F %croot%
+icacls \\?\%croot% /reset /T /C /L /Q
+icacls \\?\%croot% /remove:g everyone none /t /c /l /q
+icacls \\?\%croot% /grant:r users:(OI)(CI)(F) /c /l /q
+icacls \\?\%croot% /inheritance:e /t /c /l /q
+
+%CYGBINSLASH%getfacl /bin/setfacl
+%CYGBINSLASH%getfacl /bin/find
+@rem The following setfacl -bk command aims at removing non-inherited
+@rem permissions and avoiding failures in changing permission of some
+@rem directories resulting in errors such as in setup,
+@rem    chmod: changing permissions of '/var/cache/rebase/rebase_pkg': Permission denied
+@rem or in changing permissions of a file in the home directory,
+@rem    chmod: changing permissions of '/home/USER/.ssh/config': Permission denied
+@rem
+@rem These appear to result from Cygwin always using NTFS ACLs (ignoring the
+@rem noacl flag) for the root "/" filesystem.  Cygwin seems to refuse the full
+@rem control to the domain user owning files of the entire Cygwin tree by
+@rem inheritance from c:\cygwin64.
+@rem
+@rem On the other hand, the setfacl -bk command disables access to Cygwin
+@rem directories by the local group Users service accounts such as httpd, sshd,
+@rem cyg_server.  Re-enabling access with a chmod 0644 command that replaces
+@rem Everyone:(Rc,S,RA) with Everyone:(R) works this around.
+%CYGBINSLASH%bash.exe -lc '^
+ find -P /var/cache /home -xdev -exec /bin/setfacl -bk "{}" +; ^
+ mkdir -p ~/.ssh; ^
+ ls -la ~/.ssh; ^
+ chmod 0755 ~/.ssh; ^
+ chmod 0644 ~/.ssh/*; ^
+ chmod 0600 ~/.ssh/id_*; ^
+ chmod 0644 ~/.ssh/id_*.pub; ^
+ chmod 0644 ~/.ssh/authorized_keys; ^
+ ls -la ~/.ssh; ^
+ ls -lad ~ /home; ^
+ chmod 0755 ~ /home; ^
+ ls -lad ~ /home /var/empty; ^
+ '
+
+@rem TODO: runas /user:%computername%\cyg_server "cmd /k takeown /f c:\cygwin64\var\empty",
+@rem as well as "icacls c:\cygwin64\var\empty /grant:r %computername%\cyg_server".
+
+@rem move /y %CYGBINSLASH%sh.exe %CYGBINSLASH%sh-bad.exe
+@rem del /f /q %CYGBINSLASH%sh.exe
+copy /b /y %CYGBINSLASH%bash.exe %CYGBINSLASH%sh.exe
+
+:setup
+@echo Running Cygwin's setup-%cygarch%.exe in %CD%...
+(set setup_opts=)
+if not "%ALL_PROXY%" == "" (set setup_opts=--proxy %ALL_PROXY%)
+if "%CYGWIN_MIRROR%" == "" (
+    (set setup_opts=%setup_opts% --site "http://mirrors.kernel.org/sourceware/cygwin")
+) else (
+    (set setup_opts=%setup_opts% --site "%CYGWIN_MIRROR%")
+)
+setup-%cygarch%.exe --verbose --upgrade-also --no-desktop --no-shortcuts --no-startmenu --quiet-mode --no-admin ^
+    --root "%croot%" --local-package-dir "%croot%\install" ^
+    %setup_opts%  ^
+    --upgrade-also ^
+    --packages base-cygwin,base-files,cygwin,coreutils,cygutils,dash,gzip,unzip,zip,bzip2,bash,diffutils,file,findutils,grep,gawk,hostname,run,sed,tar,tzcode,tzdata,util-linux,vim,which,curl,ca-certificates,python2,jq,git,openssh,rsync
+@echo Done with setup-%cygarch%.exe.
+@rem if exist %CYGBINSLASH%python2.7.exe goto gotpython
+@rem powershell "$r = New-Object Net.WebClient; $r.DownloadFile('https://raw.githubusercontent.com/ilatypov/apt-cyg/master/apt-cyg', 'apt-cyg')"
+@rem %CYGBINSLASH%ash.exe apt-cyg update
+@rem %CYGBINSLASH%ash.exe apt-cyg remove python2
+@rem %CYGBINSLASH%ash.exe apt-cyg install python2
+
+:gotpython
+dir %CYGBINSLASH%python*
+set curlok=true
+%CYGBINSLASH%curl -V || (set curlok=false)
+:end_of_update
+
+if not [%curlok%]==[true] @(
+    echo Curl install failed
+    exit /b 1
+)
+exit /b 0
