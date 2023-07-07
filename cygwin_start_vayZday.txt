@@ -1,0 +1,156 @@
+#starting_cygwin.txt
+#
+# After your install
+#  (I do it as per
+#   @ref="https://stackoverflow.com/a/21233990/6505499"
+#   @archived_ref = "" + \
+#                   ""
+#   from StackOverflow's @Warren_Young)
+# you should see the Cygwin terminal window come up with the following
+#
+ _____________________________________________________________________________
+|                                                                             |
+| [Cygwin logo]   ~                                               -    #    X |
+|_____________________________________________________________________________|
+|Copying skeleton files.                                                      |
+|These files are for the users to personalise their cygwin experience.        |
+|                                                                             |
+|They will never be overwritten nor automatically updated.                    |
+|                                                                             |
+|'./.bashrc' -> '/home/<your-username>//.bashrc'                              |
+|'./.bash_profile' -> '/home/<your-username>//.bash_profile'                  |
+|'./.inputrc' -> '/home/<your-username>//.inputrc'                            |
+|'./.mkshrc' -> '/home/<your-username>//.mkshrc'                              |
+|'./.profile' -> '/home/<your-username>//.profile'                            |
+|                                                                             |
+|<your-username>@<your-machine-name> ~                                        |
+|$                                                                            |
+|                                                                             |
+|                                                                             |
+|                                                                             |
+|                                                                             |
+|                                                                             |
+|                                                                             |
+|                                                                             |
+|                                                                             |
+|                                                                             |
+|                                                                             |
+|_____________________________________________________________________________|
+
+# For the rest of this, I'll use 'bballdave025' in place of '<your-username>'
+# and 'MYMACHINE' in place of 'your-machine-name', so, e.g. the inital screen
+# will look like
+ _____________________________________________________________________________
+|                                                                             |
+| [Cygwin logo]   ~                                               -    #    X |
+|_____________________________________________________________________________|
+|Copying skeleton files.                                                      |
+|These files are for the users to personalise their cygwin experience.        |
+|                                                                             |
+|They will never be overwritten nor automatically updated.                    |
+|                                                                             |
+|'./.bashrc' -> '/home/bballdave025//.bashrc'                                 |
+|'./.bash_profile' -> '/home/bballdave025//.bash_profile'                     |
+|'./.inputrc' -> '/home/bballdave025//.inputrc'                               |
+|'./.mkshrc' -> '/home/bballdave025//.mkshrc'                                 |
+|'./.profile' -> '/home/bballdave025//.profile'                               |
+|                                                                             |
+|bballdave025@MYMACHINE ~                                                     |
+|$                                                                            |
+|                                                                             |
+|                                                                             |
+|                                                                             |
+|                                                                             |
+|                                                                             |
+|                                                                             |
+|                                                                             |
+|                                                                             |
+|                                                                             |
+|                                                                             |
+|_____________________________________________________________________________|
+
+# Start by backing up the files named above, as well as some other files,
+# variables, settings, etc. Note that I end up putting this list into my
+# `~/.bashrc`, so I can refer to them later. Do not include the dollar
+# signs
+
+$ cd
+$ cp .bashrc .bashrc.original.$(date +'%s').bak
+$ printf "$PATH" > .PATH.original.$(date +'%s').bak
+$ printf "$IFS" > .IFS.original.$(date +'%s').bak
+$ cp /etc/man_db.conf .etc.man_db.conf.original.$(date +'%s').bak
+$ cp .bash_profile .bash_profile.original.$(date +'%s').bak
+$ cp .inputrc .inputrc.original.$(date +'%s').bak
+$ cp .profile .profile.original.$(date +'%s').bak
+
+# These next three lines (not including these explanatory
+# comments) are two variants, one or both of which can be used. 
+# ONLY the next three lines show such a choice!
+$ env > .ENV.original.$(date +'%s').bak
+## _AND_/OR
+$ printenv > .ENV.original.printenv.$(date +'%s').bak
+
+# Before getting to the rest of the possible files in `$HOME`
+# (or at least the ones that I have used), I will back up
+# some original configurations that are in `/etc/`. Since
+# I'm not totally sure which are not configuration stuff,
+# so I'm doing a process which will eventually run a script
+# to back up all of these files.
+$ cd
+$ mkdir -p .orig_backups_from_etc
+
+
+
+
+
+## HERE IS EVERYTHING, WITHOUT DOLLAR SIGNS, SO YOU CAN COPY/PASTE
+
+# Definitely important from `$HOME`
+cd
+cp .bashrc .bashrc.original.$(date +'%s').bak
+printf "$PATH" > .PATH.original.$(date +'%s').bak
+printf "$IFS" > .IFS.original.$(date +'%s').bak
+cp /etc/man_db.conf .etc.man_db.conf.original.$(date +'%s').bak
+cp .bash_profile .bash_profile.original.$(date +'%s').bak
+cp .inputrc .inputrc.original.$(date +'%s').bak
+cp .profile .profile.original.$(date +'%s').bak
+env > .ENV.original.$(date +'%s').bak
+printenv > .ENV.original.printenv.$(date +'%s').bak
+
+# Process for backups from `/etc/`
+mkdir -p .orig_backups_from_etc
+
+
+## I didn't get that process down, DWB 2023-07-07
+#+ I did `find` commands through /etc/, looking for
+#+ strings like "conf", "rc", etc. I might have looked
+#+ manually for other configuration-like stuff.
+##
+There is another start here in the vayZday repo, with
+.create_backups_home.sh
+Though I should add the environment, path, ifs and man_db
+
+####
+
+
+ 
+### IMPORTANT: if the terminal icon doesn't come up,
+##+ right-click on the Desktop, select "New" then
+##+ "Shortcut". Fill in the boxes as follows (at
+##+ least the ones that will let you.)
+##
+##+ ["Shortcut" tab]
+##+ Target type: Application
+##+ Target location: bin
+##+ Target: C:\cygwin64\bin\mintty.exe -i /Cygwin-Terminal.ico -
+##+ Start in: C:\cygwin64\bin
+##+ Shortcut key: None
+##+ Run: Normal window
+##+ Comment: <none>
+##
+##  "Change Icon" button (in the "Shortcut" tab)
+##+ use:
+##+ C:\cygwin64\Cygwin-Terminal.ico
+##
+##  Nothing else was changed
+###
