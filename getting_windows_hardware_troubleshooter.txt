@@ -1,0 +1,15 @@
+To run the Hardware and Devices troubleshooter, you can follow these steps:
+1.	Press Windows + R to open Windows Run dialog.
+2.	Type msdt.exe -id DeviceDiagnostic in Run dialog and press Enter to open Hardware and Devices troubleshooter.
+3.	Click Next to run Hardware and Devices troubleshooter.
+4.	It will automatically detect problems with your computer hardware and devices.
+5.	Once the scan is completed, it will present you with a report.
+
+
+
+Code 43 error bluetooth - Microsoft Community
+
+Fix: Windows has stopped this device (Code 43) - Appuals.com
+
+https://support.microsoft.com/en-us/windows/fix-bluetooth-problems-in-windows-723e092f-03fa-858b-5c80-131ec3fba75c
+  Not helpful
