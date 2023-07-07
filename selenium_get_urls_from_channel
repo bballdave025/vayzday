@@ -1,0 +1,228 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+##############################################################################
+'''
+@file: selenium_get_urls_from_channel.py
+@author : David Wallace Black
+         uname: bballdave025; server: yahoo -d-o-t- com
+       OR
+         uname: thedavidwblack; server: gmail -d-o-t- com
+@since :  2020-11-12
+@ref : "https://stackoverflow.com/questions/60292533/"
+       
+       "https://web.archive.org/web/20201112143457/" + \
+       "https://stackoverflow.com/questions/60292533/"
+'''
+##############################################################################
+
+import sys
+
+import time
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
+
+
+def main(channel_url):
+  '''
+  
+  '''
+  
+  run(channel_url)
+  
+##endof:  main(channel_url)
+
+
+def run(channel_url):
+  '''
+  
+  '''
+  
+  browser = None
+  
+  try:
+    get_all_urls(channel_url)
+  except Exception as e1:
+    print()
+    print("something got messed up. Here are the details.\n")
+    raise
+  finally:
+    if not is_browser_terminated(browser):
+      browser.close()
+      browser.quit()
+    ##endof:  if not is_browser_terminated
+  ##endof:  try/catch/finally
+  
+##endof:  run(channel_url)
+
+
+def get_all_urls(channel_url,
+                 browser=None):
+  '''
+  
+  '''
+  
+  browser = launch_browser(browser)
+  
+  browser.get(channel_url + "/videos")
+  
+  scroll_down(browser)
+  
+  links = browser.find_elements_by_xpath('//*[@id="video-title"]')
+  for link in links:
+    print(link.get_attribute("href"))
+  
+##endof:  get_all_urls(channel_url)
+
+
+def scroll_down(browser):
+  '''
+  
+  '''
+  
+  ht = browser.execute_script(
+                    "return document.documentElement.scrollHeight;")
+  
+  while True:
+    prev_ht = browser.execute_script(
+                     "return document.documentElement.scrollHeight;")
+    browser.execute_script(
+                "window.scrollTo(0, document.documentElement.scrollHeight);")
+    time.sleep(2)
+    ht = browser.execute_script(
+                      "return document.documentElement.scrollHeight;")
+    
+    if prev_ht == ht:
+      break
+  
+##endof:  scroll_down(browser)
+
+
+def launch_browser(browser):
+  '''
+  Returns a launched webdriver (Firefox browser), driveable by geckodriver
+  
+  Use will almost always be:
+    ## First line often in the call of the function.
+    browser = None
+    browser = launch_browser(browser)
+  
+  Requires the Firefox executable and the geckodriver executable,
+  as described in the main documentation (at the top of the file).
+  
+  @param  browser  :
+  
+  @returns  a webdriver object (Firefox browser) that has been launched
+  
+  '''
+  
+  binary_path = get_ff_binary_path()
+  gecko_path = get_gecko_path()
+  
+  binary = \
+    FirefoxBinary(binary_path)
+  
+  # Launch the browser that we will be driving and the "gecko" driver
+  browser = webdriver.Firefox(firefox_binary=binary,
+                              executable_path=gecko_path)
+  
+  return browser
+  
+##endof:  launch_browser(browser)
+
+
+def is_browser_terminated(browser):
+  '''
+  Returns a boolean telling whether the browser is terminated
+  
+  @param  browser  :  a webdriver object (or a holder variable as None)
+  
+  @returns  A boolean
+  
+  '''
+  
+  if browser is None:
+    return True
+  ##endof:  if browser is None
+  
+  try:
+    browser.execute(Command.STATUS)
+    return False
+  except http.client.CannotSendRequest:
+    return True
+  except socket.error:
+    return True
+  ##endof:  try/except
+    
+##endof:  is_browser_terminated(browser)
+
+
+def get_ff_binary_path():
+  '''
+  Return the path to the installed Firefox executable
+  <s>Get the path the the package's internal (Portable) Firefox.</s>
+  
+  This is manually put in after download.
+  <s>This will be determined based on the OS.</s>
+  '''
+  
+  # ## until things are all written, at least for the grey lappy:
+  
+  # return "C:/Program Files/Mozilla Firefox/firefox.exe"
+  # # The executables needed
+  # # binary = FirefoxBinary(
+               # # small Christmas lappy
+               # # "C:/Users/bball/AppData/Local/Mozilla Firefox/firefox.exe"
+               # # parents'
+               # # "C:/Program Files (x86)/Mozilla Firefox/firefox.exe"
+               # # grey lappy
+               # # "C:/Program Files/Mozilla Firefox/firefox.exe"
+               # # UCR Lappy
+               # # "C:/Program Files (x86)/Mozilla Firefox/firefox.exe"
+               
+  ## building the code for when it's ready for testing.
+  
+  firefox_path = "C:/Program Files/Mozilla Firefox/firefox.exe"
+  
+  return firefox_path
+  
+##endof:  get_ff_binary_path()
+
+
+def get_gecko_path():
+  '''
+  Return the path to the installed geckodriver.exe
+  <s>Get the path the the package's internal (Portable) Firefox.</s>
+  
+  This is manually put in after download.
+  <s>This will be determined based on the OS.
+  
+  '''
+  
+  # gecko_path = os.path.join(lgl_obsv.ROOT_PATH, 'executables_libs',
+                            # 'leip_on_windows', 'win_64', 'geckodriver.exe')
+  
+  # return gecko_path
+  # # The executables needed
+  # # parents' "C:/Users/OWNER/Desktop/David/programs/geckodriver.exe"
+  # # laptops "C:/David/programs/geckodriver.exe"
+  # # UCR Laptop "C:/David/Programs/geckodriver.exe"
+  
+  gecko_path = "C:/David/programs/geckodriver32/geckodriver.exe"
+  
+  return gecko_path
+  
+##endof:  get_gecko_path()
+
+
+if __name__ == "__main__":
+  '''
+  Gets run if the script is called from the command line
+  '''
+  
+  this_url = sys.argv[1]
+  
+  main(this_url)
+  
+##endof:  if __name == "__main__"
