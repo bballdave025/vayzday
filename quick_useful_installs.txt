@@ -1,0 +1,167 @@
+## You'll need to put `sudo` in front of these commands for
+## many linux distros
+
+###################
+##### apt-cyg #####
+#@ref : "https://stackoverflow.com/a/16869816/6505499"
+#@ref : "https://stackoverflow.com/questions/9260014/"\
+#"how-do-i-install-cygwin-components-from-the-"\
+#"command-line#comment31119482_16869816"
+#-----CYGWIN-----
+#old# DON'T USE ANYMORE #
+#old## First command might not be needed, others will be
+#old#/setup-x86_64.exe -q -P wget #,tar,qawk,bzip2,subversion,vim
+#old#wget \
+#old# https://raw.githubusercontent.com/transcode-open/apt-cyg/master/apt-cyg
+#old#chmod +x apt-cyg
+#old#mv apt-cyg /usr/local/bin
+#  First command might not be needed if such packages were installed
+#+ initially. Change 2023-07-07 DWB (I know that I improved this part
+#+ before, but I haven't found the other version of this file.)
+#+ Wait (about an hour later on 2023-07-07), the other version is here
+#+ in the same Notepad++ instance. Interesting. The stuff from the 
+#+ "other version" is down at the note with #@ stuff @#
+#+ A reference that should be archived - so I'm doing it now - from
+#+ that "other version" is
+#+ imprtnt_ref="https://web.archive.org/web/20230707204355/"\
+#+"https://githubmemory.com/repo/transcode-open/apt-cyg/issues/128"
+#+ Transcode-open was originally on Google Code,
+#+ base="https://code.google.com/archive/p/apt-cyg/"
+#+ wayback_base="https://web.archive.org/web/20230605082034/"\
+#+"https://code.google.com/archive/p/apt-cyg/"
+##  For what I think is the nicest (active 2023-07-07) fork,
+/setup-x86_64.exe -q -P wget,tar,gawk,gpg
+wget https://raw.githubusercontent.com/kou1okada/apt-cyg/master/apt-cyg
+chmod +x apt-cyg
+mv apt-cyg /usr/local/bin
+##+ If there be a problem, try `wget --no-check-certificate` instead
+##+ of simply `wget`
+##  Transcode-open is no longer maintained. kou1okada is maintained,
+##+ and, furthermore, the author talks about all the apt-cyg issues,
+##+ e.g. https://github.com/kou1okada/apt-cyg/blob/master/other_forks.md
+##+ archived="https://web.archive.org/web/20230707203800/"\
+##+"https://github.com/kou1okada/apt-cyg/blob/master/other_forks.md"
+##+ Some good discussion is at
+##+ ref1="https://stackoverflow.com/questions/9260014/"\
+##+"how-do-i-install-cygwin-components-from-the-"\
+##+"command-line#comment78507001_9347227"
+##+ ref2="https://stackoverflow.com/a/23143997/6505499"
+##+ archived_ref="https://web.archive.org/web/20230508163931/"\
+##+"https://stackoverflow.com/questions/9260014/"\
+##+"how-do-i-install-cygwin-components-from-the-command-line"
+##+ Both previous refs are from the same StackOverflow Question.
+##
+##  Other references:
+##+ ref3="https://web.archive.org/web/20230707202354/"\
+##+"https://serverfault.com/questions/83456/cygwin-package-management"
+#-----UBUNTU-----
+NOT APPLICALBLE
+#-----FEDORA-----
+NOT APPLICABLE
+#@--------------@#
+#@     NOTE      @#
+#@                @#
+#@                 @#
+#@ ... written on... @#
+#@ 2021-10-27_14:52:14 -0600 @#
+#@ UNIX Epoch: 1635367934    @#
+#@                             @#
+#@ Oldest (I think)
+#@  https://code.google.com/archive/p/apt-cyg/source/default/source
+#@  Last commit: Feb 19, 2014
+#@ Mid-one (still works great, but I prefer the other)
+#@  https://github.com/transcode-open/apt-cyg
+#@  Last commit: Jan 28, 2017 (as far as I can tell)
+#@               Most things say "6 years ago", some "5 years ago"
+#@ Later-mid (Still being developed - quote as of 2 years ago - though
+#@             @ilatypov , who was developing this later-mid, agreed
+#@             that the @kou1okada branch becoming the "default" was fine
+#@             with him(/her?).
+#@  https://github.com/ilatypov/apt-cyg
+#@  Last commit: Oct 31, 2017
+#@ Latest and I-think-best
+#@  https://github.com/kou1okada/apt-cyg.git
+#@  Last commit: May 5, 2021 (about 6 months ago - pretty consistent)
+#@Previousto today(2021-10-27),seeon my home desktopcompy,the command had been
+#@ % /setup-x86_64.exe -q -P wget #,tar,qawk,bzip2,subversion,vim
+#@ % wget \
+#@    https://raw.githubusercontent.com/transcode-open/apt-cyg/master/apt-cyg
+#@ % chmod +x apt-cyg
+#@ % mv apt-cyg /usr/local/bin
+
+
+
+#@ a reference that is good for all these notes:
+#@
+#@ @ref="https://githubmemory.com/repo/transcode-open/apt-cyg/issues/128"
+#@
+#@
+
+
+
+
+
+
+######################
+##### youtube-dl #####
+## THIS HAS CHANGED. @TODO : NEW INSTRUCTIONS
+## You need Python for this.
+#@ref: "https://github.com/ytdl-org/youtube-dl/blob/"\
+#"master/README.md#installation
+#-----CYGWIN-----
+# Once again, you might not need the first command
+/setup-x86_64.exe -q -P wget
+wget https://yt-dl.org/downloads/latest/youtube-dl \
+-O /usr/local/bin/youtube-dl
+chmod a+rx /usr/local/bin/youtube-dl
+#-OR-
+## with Python and Pip installed, which they should be anyway,
+## if you want to use this program
+python3 -m pip install --upgrade youtube-dl
+## To update
+youtube-dl -U
+
+#-----UBUNTU-----
+sudo wget https://yt-dl.org/downloads/latest/youtube-dl \
+-O /usr/local/bin/youtube-dl
+sudo chmod a+rx /usr/local/bin/youtube-dl
+#-OR-
+## with Python and Pip installed, which they should be anyway,
+## if you want to use this program
+sudo -H pip install --upgrade youtube-dl
+
+#-----FEDORA-----
+sudo wget https://yt-dl.org/downloads/latest/youtube-dl \
+-O /usr/local/bin/youtube-dl
+sudo chmod a+rx /usr/local/bin/youtube-dl
+#-OR-
+## with Python and Pip installed, which they should be anyway,
+## if you want to use this program
+sudo -H pip install --upgrade youtube-dl
+
+
+###################
+##### getopts #####
+Physics & Astronomy@PC-7 /cygdrive/c/Users/Physics & Astronomy/Desktop/vids/for_trace/timed/frame_finder/CD6fyGySKfRak_byFR
+$ getopts
+getopts: usage: getopts optstring name [arg]
+
+Physics & Astronomy@PC-7 /cygdrive/c/Users/Physics & Astronomy/Desktop/vids/for_trace/timed/frame_finder/CD6fyGySKfRak_byFR
+$ # already here.
+
+Physics & Astronomy@PC-7 /cygdrive/c/Users/Physics & Astronomy/Desktop/vids/for_trace/timed/frame_finder/CD6fyGySKfRak_byFR
+$
+
+
+
+
+
+
+
+##########################
+Useful sites
+
+https://fvue.nl/wiki/Bash_and_Windows
+https://sookocheff.com/post/bash/parsing-bash-script-arguments-with-shopts/
+https://wiki.bash-hackers.org/howto/getopts_tutorial
+
