@@ -1,0 +1,214 @@
+## Good starting commands
+
+find . -type f | grep -i "\(download\|untitled\|giphy\|tenor\|source\|browse\|images\|unnamed\|original\|file\}200w\)"
+
+find . -type f | grep -i "^[.][/]\(download\|untitled\|giphy\|tenor\|source\|browse\|images\|unnamed\|original\|file\}200w\)"
+
+find . -type f | grep -i "^[.][/]mp4.*[.]mp4$"
+
+find . -type f | grep -i "^[.][/]gif.*[.]gif$"
+
+find . -type f | grep -i "^[.][/][0-9]\{1,3\}[^0-9]\+.*[.][^.]\+$"
+
+find . -type f | grep -i "^[.][/][0-9]\{1,3\}[.][^.]\+$"
+
+find . -type f | grep "[)(]"
+
+find . -type f | grep "[ ]"
+
+
+####### YOU CAN SKIP THIS EXAMPLE ############################################
+### works for nums and blank at end ### probable_dup="unnamed"; prestr="nounnameddups"; poststr="numalreadydiffrnttng"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#'"${probable_dup}"'#'"${prestr}${probable_dup}"'#g;'"'"'); echo "new_fname: ${new_fname}"; echo "mv \"${orig}\" \"${new_fname}\""; echo " ..." && echo "    ... success" || echo "    ... FAILURE";' | head -n 20 # > rename_${probable_dup}_$(date +'%s').out #unnamed; testing pre-look -- works
+
+
+### works on dups whether numbered or not; works on all ### probable_dup="unnamed"; prestr="nounnameddups"; poststr="numalreadydiffrnttng"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#'"${probable_dup}"'#'"${prestr}${probable_dup}"'#g;'"'"'); echo "new_fname: ${new_fname}"; mv "${orig}" "${new_fname}" && echo "    ... success" || echo "    ... FAILURE";' > rename_${probable_dup}_$(date +'%s').out #unnamed; rename WORKS
+########## ENDOF:  THE EXAMPLE YOU CAN SKIP ##################################
+
+
+############################################
+## sequence of renaming tests and renaming
+##
+
+
+# 'download'
+
+probable_dup="download"; #prestr="##DO_THIS##"; #poststr="##DO_THIS_TOO##"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#'"${probable_dup}"'#'"${prestr}${probable_dup}"'#g;'"'"'); echo "new_fname: ${new_fname}"; echo " ..."; echo "mv \"${orig}\" \"${new_fname}\"" && echo "    ... success" || echo "    ... FAILURE";' | head -n 20 # > rename_${probable_dup}_$(date +'%s').out ## pre-look WORKS for all standard dups
+
+probable_dup="download"; #prestr="##DO_THIS##"; #poststr="##DO_THIS_TOO##"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#'"${probable_dup}"'#'"${prestr}${probable_dup}"'#g;'"'"'); echo "new_fname: ${new_fname}"; mv "${orig}" "${new_fname}" && echo "    ... success" || echo "    ... FAILURE";' > rename_${probable_dup}_$(date +'%s').out ## rename WORKS for all standard dups
+
+
+# 'untitled'
+
+probable_dup="untitled"; #prestr="##DO_THIS##"; #poststr="##DO_THIS_TOO##"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#'"${probable_dup}"'#'"${prestr}${probable_dup}"'#g;'"'"'); echo "new_fname: ${new_fname}"; echo " ..."; echo "mv \"${orig}\" \"${new_fname}\"" && echo "    ... success" || echo "    ... FAILURE";' | head -n 20 # > rename_${probable_dup}_$(date +'%s').out ## pre-look WORKS for all standard dups
+
+probable_dup="untitled"; #prestr="##DO_THIS##"; #poststr="##DO_THIS_TOO##"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#'"${probable_dup}"'#'"${prestr}${probable_dup}"'#g;'"'"'); echo "new_fname: ${new_fname}"; mv "${orig}" "${new_fname}" && echo "    ... success" || echo "    ... FAILURE";' > rename_${probable_dup}_$(date +'%s').out ## rename WORKS for all standard dups
+
+
+# 'giphy'
+
+probable_dup="giphy"; #prestr="##DO_THIS##"; #poststr="##DO_THIS_TOO##"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#'"${probable_dup}"'#'"${prestr}${probable_dup}"'#g;'"'"'); echo "new_fname: ${new_fname}"; echo " ..."; echo "mv \"${orig}\" \"${new_fname}\"" && echo "    ... success" || echo "    ... FAILURE";' | head -n 20 # > rename_${probable_dup}_$(date +'%s').out ## pre-look WORKS for all standard dups
+
+probable_dup="giphy"; #prestr="##DO_THIS##"; #poststr="##DO_THIS_TOO##"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#'"${probable_dup}"'#'"${prestr}${probable_dup}"'#g;'"'"'); echo "new_fname: ${new_fname}"; mv "${orig}" "${new_fname}" && echo "    ... success" || echo "    ... FAILURE";' > rename_${probable_dup}_$(date +'%s').out ## rename WORKS for all standard dups
+
+
+# 'tenor'
+
+probable_dup="tenor"; #prestr="##DO_THIS##"; #poststr="##DO_THIS_TOO##"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#'"${probable_dup}"'#'"${prestr}${probable_dup}"'#g;'"'"'); echo "new_fname: ${new_fname}"; echo " ..."; echo "mv \"${orig}\" \"${new_fname}\"" && echo "    ... success" || echo "    ... FAILURE";' | head -n 20 # > rename_${probable_dup}_$(date +'%s').out ## pre-look WORKS for all standard dups
+
+probable_dup="tenor"; #prestr="##DO_THIS##"; #poststr="##DO_THIS_TOO##"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#'"${probable_dup}"'#'"${prestr}${probable_dup}"'#g;'"'"'); echo "new_fname: ${new_fname}"; mv "${orig}" "${new_fname}" && echo "    ... success" || echo "    ... FAILURE";' > rename_${probable_dup}_$(date +'%s').out ## rename WORKS for all standard dups
+
+
+# 'source'
+
+probable_dup="source"; #prestr="##DO_THIS##"; #poststr="##DO_THIS_TOO##"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#'"${probable_dup}"'#'"${prestr}${probable_dup}"'#g;'"'"'); echo "new_fname: ${new_fname}"; echo " ..."; echo "mv \"${orig}\" \"${new_fname}\"" && echo "    ... success" || echo "    ... FAILURE";' | head -n 20 # > rename_${probable_dup}_$(date +'%s').out ## pre-look WORKS for all standard dups
+
+probable_dup="source"; #prestr="##DO_THIS##"; #poststr="##DO_THIS_TOO##"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#'"${probable_dup}"'#'"${prestr}${probable_dup}"'#g;'"'"'); echo "new_fname: ${new_fname}"; mv "${orig}" "${new_fname}" && echo "    ... success" || echo "    ... FAILURE";' > rename_${probable_dup}_$(date +'%s').out ## rename WORKS for all standard dups
+
+
+# 'browse'
+
+probable_dup="browse"; #prestr="##DO_THIS##"; #poststr="##DO_THIS_TOO##"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#'"${probable_dup}"'#'"${prestr}${probable_dup}"'#g;'"'"'); echo "new_fname: ${new_fname}"; echo " ..."; echo "mv \"${orig}\" \"${new_fname}\"" && echo "    ... success" || echo "    ... FAILURE";' | head -n 20 # > rename_${probable_dup}_$(date +'%s').out ## pre-look WORKS for all standard dups
+
+probable_dup="browse"; #prestr="##DO_THIS##"; #poststr="##DO_THIS_TOO##"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#'"${probable_dup}"'#'"${prestr}${probable_dup}"'#g;'"'"'); echo "new_fname: ${new_fname}"; mv "${orig}" "${new_fname}" && echo "    ... success" || echo "    ... FAILURE";' > rename_${probable_dup}_$(date +'%s').out ## rename WORKS for all standard dups
+
+
+# 'images'
+
+probable_dup="images"; #prestr="##DO_THIS##"; #poststr="##DO_THIS_TOO##"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#'"${probable_dup}"'#'"${prestr}${probable_dup}"'#g;'"'"'); echo "new_fname: ${new_fname}"; echo " ..."; echo "mv \"${orig}\" \"${new_fname}\"" && echo "    ... success" || echo "    ... FAILURE";' | head -n 20 # > rename_${probable_dup}_$(date +'%s').out ## pre-look WORKS for all standard dups
+
+probable_dup="images"; #prestr="##DO_THIS##"; #poststr="##DO_THIS_TOO##"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#'"${probable_dup}"'#'"${prestr}${probable_dup}"'#g;'"'"'); echo "new_fname: ${new_fname}"; mv "${orig}" "${new_fname}" && echo "    ... success" || echo "    ... FAILURE";' > rename_${probable_dup}_$(date +'%s').out ## rename WORKS for all standard dups
+
+
+# 'unnamed'
+
+probable_dup="unnamed"; #prestr="##DO_THIS##"; #poststr="##DO_THIS_TOO##"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#'"${probable_dup}"'#'"${prestr}${probable_dup}"'#g;'"'"'); echo "new_fname: ${new_fname}"; echo " ..."; echo "mv \"${orig}\" \"${new_fname}\"" && echo "    ... success" || echo "    ... FAILURE";' | head -n 20 # > rename_${probable_dup}_$(date +'%s').out ## pre-look WORKS for all standard dups
+
+probable_dup="unnamed"; #prestr="##DO_THIS##"; #poststr="##DO_THIS_TOO##"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#'"${probable_dup}"'#'"${prestr}${probable_dup}"'#g;'"'"'); echo "new_fname: ${new_fname}"; mv "${orig}" "${new_fname}" && echo "    ... success" || echo "    ... FAILURE";' > rename_${probable_dup}_$(date +'%s').out ## rename WORKS for all standard dups
+
+
+# 'original'
+
+probable_dup="original"; #prestr="##DO_THIS##"; #poststr="##DO_THIS_TOO##"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#'"${probable_dup}"'#'"${prestr}${probable_dup}"'#g;'"'"'); echo "new_fname: ${new_fname}"; echo " ..."; echo "mv \"${orig}\" \"${new_fname}\"" && echo "    ... success" || echo "    ... FAILURE";' | head -n 20 # > rename_${probable_dup}_$(date +'%s').out ## pre-look WORKS for all standard dups
+
+probable_dup="original"; #prestr="##DO_THIS##"; #poststr="##DO_THIS_TOO##"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#'"${probable_dup}"'#'"${prestr}${probable_dup}"'#g;'"'"'); echo "new_fname: ${new_fname}"; mv "${orig}" "${new_fname}" && echo "    ... success" || echo "    ... FAILURE";' > rename_${probable_dup}_$(date +'%s').out ## rename WORKS for all standard dups
+
+
+# 'file'
+
+#probable_dup="file"; #prestr="##DO_THIS##"; #poststr="##DO_THIS_TOO##"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#'"${probable_dup}"'#'"${prestr}${probable_dup}"'#g;'"'"'); echo "new_fname: ${new_fname}"; echo " ..."; echo "mv \"${orig}\" \"${new_fname}\"" && echo "    ... success" || echo "    ... FAILURE";' | head -n 20 # > rename_${probable_dup}_$(date +'%s').out ## pre-look WORKS for all standard dups
+
+#probable_dup="file"; #prestr="##DO_THIS##"; #poststr="##DO_THIS_TOO##"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#'"${probable_dup}"'#'"${prestr}${probable_dup}"'#g;'"'"'); echo "new_fname: ${new_fname}"; mv "${orig}" "${new_fname}" && echo "    ... success" || echo "    ... FAILURE";' > rename_${probable_dup}_$(date +'%s').out ## rename WORKS for all standard dups
+
+
+# '#WHATEVER_YOU_NEED#'
+
+#probable_dup="#TYPE_IN_WHATEVER_YOU_NEED#"; #prestr="##DO_THIS##"; #poststr="##DO_THIS_TOO##"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#'"${probable_dup}"'#'"${prestr}${probable_dup}"'#g;'"'"'); echo "new_fname: ${new_fname}"; echo " ..."; echo "mv \"${orig}\" \"${new_fname}\"" && echo "    ... success" || echo "    ... FAILURE";' | head -n 20 # > rename_${probable_dup}_$(date +'%s').out ## pre-look WORKS for all standard dups
+
+#probable_dup="##TYPE_IN_WHATEVER_YOU_NEED##"; #prestr="##DO_THIS##"; #poststr="##DO_THIS_TOO##"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#'"${probable_dup}"'#'"${prestr}${probable_dup}"'#g;'"'"'); echo "new_fname: ${new_fname}"; mv "${orig}" "${new_fname}" && echo "    ... success" || echo "    ... FAILURE";' > rename_${probable_dup}_$(date +'%s').out ## rename WORKS for all standard dups
+
+
+#-----------------------------------------------
+
+#############################################
+# Here, we have the filename the same as the
+# extension
+#
+
+# 'gif'
+
+probable_dup="gif"; #prestr="##DO_THIS##"; #poststr="##DO_THIS_TOO##"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#^\([.]/\)'"${probable_dup}"'\([^.]*[.].*\)$#\1'"${prestr}${probable_dup}"'\2#g;'"'"'); echo "new_fname: ${new_fname}"; echo " ..."; echo "mv \"${orig}\" \"${new_fname}\"" && echo "    ... success" || echo "    ... FAILURE";' | head -n 20 # > rename_${probable_dup}_$(date +'%s').out ## pre-look WORKS for  rename WORKS for filenames such as {'gif.gif', 'gif (2).gif'} and {'mp4 (1).mp4', 'mp4 (20).mp4'}
+
+probable_dup="gif"; prestr="##DO_THIS##"; poststr="##DO_THIS_TOO##"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#^\([.]/\)'"${probable_dup}"'\([^.]*[.].*\)$#\1'"${prestr}${probable_dup}"'\2#g;'"'"'); echo "new_fname: ${new_fname}"; mv "${orig}" "${new_fname}" && echo "    ... success" || echo "    ... FAILURE";' > rename_${probable_dup}_$(date +'%s').out ## rename WORKS for filenames such as {'gif.gif', 'gif (2).gif'} and {'mp4 (1).mp4', 'mp4 (20).mp4'}
+
+
+# 'mp4'
+# In addition, here, we have a number at the end of the filename
+
+probable_dup="mp4"; #prestr="##DO_THIS##"; #poststr="##DO_THIS_TOO##"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#^\([.]/\)'"${probable_dup}"'\([^.]*[.].*\)$#\1'"${prestr}${probable_dup}"'\2#g;'"'"'); echo "new_fname: ${new_fname}"; echo " ..."; echo "mv \"${orig}\" \"${new_fname}\"" && echo "    ... success" || echo "    ... FAILURE";' | head -n 20 # > rename_${probable_dup}_$(date +'%s').out ## pre-look WORKS for  for filenames such as {'gif.gif', 'gif (2).gif'} and {'mp4 (1).mp4', 'mp4 (20).mp4'}
+
+probable_dup="mp4"; #prestr="##DO_THIS##"; #poststr="##DO_THIS_TOO##"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#^\([.]/\)'"${probable_dup}"'\([^.]*[.].*\)$#\1'"${prestr}${probable_dup}"'\2#g;'"'"'); echo "new_fname: ${new_fname}"; mv "${orig}" "${new_fname}" && echo "    ... success" || echo "    ... FAILURE";' > rename_${probable_dup}_$(date +'%s').out ## rename WORKS for filenames such as {'gif.gif', 'gif (2).gif'} and {'mp4 (1).mp4', 'mp4 (20).mp4'}
+
+
+#----------------------------------------------------------
+
+#####################################################
+# These are filenames that start with numbers - 
+#  first, those that get repeated;
+#  second, those that have less than four digits,
+#   which seem to be sequential filenames 
+#   (originally)
+# After, I'll work on the many 4-character names ...
+#  maybe ... they seem to have been okay for now.
+
+
+# '200w'
+
+probable_dup="200w"; #prestr="##DO_THIS##"; #poststr="##DO_THIS_TOO##"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#^\([.]/\)'"${probable_dup}"'\([^.]*[.].*\)$#\1'"${prestr}${probable_dup}"'\2#g;'"'"'); echo "new_fname: ${new_fname}"; echo " ..."; echo "mv \"${orig}\" \"${new_fname}\"" && echo "    ... success" || echo "    ... FAILURE";' | head -n 20 # > rename_${probable_dup}_$(date +'%s').out ## pre-look WORKS for
+
+probable_dup="200w"; #prestr="##DO_THIS##"; #poststr="##DO_THIS_TOO##"; find . -type f -iname "${probable_dup}*.*" -print0 | xargs -I'{}' -0 bash -c 'orig="{}"; echo; echo "orig: ${orig}"; echo " Renaming to:"; new_fname=$(echo "${orig}" | sed '"'"'s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g; s#^\([.]/\)'"${probable_dup}"'\([^.]*[.].*\)$#\1'"${prestr}${probable_dup}"'\2#g;'"'"'); echo "new_fname: ${new_fname}"; mv "${orig}" "${new_fname}" && echo "    ... success" || echo "    ... FAILURE";' > rename_${probable_dup}_$(date +'%s').out ## rename WORKS for 
+
+
+
+###################################
+# Less than four digits
+#
+#######################
+# TEMPLATE:
+
+# start
+#prestr="##DO_THIS##"; #poststr="##DO_THIS_TOO##"; few_digits_arr=(); while IFS=  read -r -d $'\n'; do few_digits_arr+=("$REPLY"); done < <(find . -maxdepth 1 -type f -print0 | xargs -I'{}' -0 echo "{}" | grep "^[.][/][0-9]\{1,3\}\([ _-]*[(][0-9]\+[)]\|[ _-]\+[0-9]\+\)\?[.][^.]\+$")
+
+# check array of small digit files
+printf '[ '; printf '%s, ' "${few_digits_arr[@]}"; printf '\b\b ]\n'
+# or use `declare -p few_digits_arr`, though I prefer the `printf` solution
+
+# pre-look
+for i in "${few_digits_arr[@]}"; do orig_fname="${i}"; echo; echo "orig_fname:${orig_fname}"; echo " Renaming to:"; new_fname=$(echo "${orig_fname}" | sed 's#^\([.][/]\)\([0-9]\{1,3\}\)\(\([ _-]*[(][0-9]\+[)]\|[ _-]\+[0-9]\+\)\?\)\([.][^.]\+\)$#\1'"${prestr}"'_\2\3\5#g; s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g;'); echo "new_fname: ${new_fname}"; echo " ..."; echo "mv \"${orig_fname}\" \"${new_fname}\"" && echo "    ... success" || echo "    ... FAILURE"; done | head -n 24 # > rename_small_digits_$(date +'%s').out ## pre-look WORKS for small-digit filenames and dups
+
+# actual rename
+
+
+
+
+### EXAMPLE ###
+#example
+13852@DESKTOP-J1FHHPA /cygdrive/c/David/fbak/special_pics/NeweRfolder
+$ prestr="thefnamenumis"; poststr="isthedupnum"; few_digits_arr=(); while IFS=  read -r -d $'\n'; do few_digits_arr+=("$REPLY"); done < <(find . -maxdepth 1 -type f -print0 | xargs -I'{}' -0 echo "{}" | grep "^[.][/][0-9]\{1,3\}\([ _-]*[(][0-9]\+[)]\|[ _-]\+[0-9]\+\)\?[.][^.]\+$")
+
+13852@DESKTOP-J1FHHPA /cygdrive/c/David/fbak/special_pics/NeweRfolder
+$ printf '[ '; printf '%s, ' "${few_digits_arr[@]}"; printf '\b\b ]\n'
+[ ./01 (0).gif, ./02 (0).gif, ./03 (0).gif, ./03 (1).gif, ./04 (0).gif, ./05 (0).gif, ./06 (0).gif, ./08 (0).gif, ./1 (0).gif, ./1 (1).gif, ./1 (3).gif, ./2 (0).gif, ./2 (1).gif, ./2 (3).gif, ./2 (4).gif, ./2 (5).gif, ./3 (0).gif, ./3 (1).gif, ./3 (3).gif, ./4 (0).gif, ./4 (1).gif, ./4 (2).gif, ./4 (3).gif, ./4 (4).gif, ./5 (0).gif, ./6 (1).gif, ./7 (1).gif, ./981.gif ]
+
+13852@DESKTOP-J1FHHPA /cygdrive/c/David/fbak/special_pics/NeweRfolder
+$ for i in "${few_digits_arr[@]}"; do orig_fname="${i}"; echo; echo "orig_fname:${orig_fname}"; echo " Renaming to:"; new_fname=$(echo "${orig_fname}" | sed 's#^\([.][/]\)\([0-9]\{1,3\}\)\(\([ _-]*[(][0-9]\+[)]\|[ _-]\+[0-9]\+\)\?\)\([.][^.]\+\)$#\1'"${prestr}"'_\2\3\5#g; s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g;'); echo "new_fname: ${new_fname}"; echo " ..."; echo "mv \"${orig_fname}\" \"${new_fname}\"" && echo "    ... success" || echo "    ... FAILURE"; done | head -n 24 # > rename_small_digits_$(date +'%s').out ## pre-look WORKS for small-digit filenames and dups
+
+orig_fname:./01 (0).gif
+ Renaming to:
+new_fname: ./thefnamenumis_01_0_isthedupnum.gif
+ ...
+mv "./01 (0).gif" "./thefnamenumis_01_0_isthedupnum.gif"
+    ... success
+
+orig_fname:./02 (0).gif
+ Renaming to:
+new_fname: ./thefnamenumis_02_0_isthedupnum.gif
+ ...
+mv "./02 (0).gif" "./thefnamenumis_02_0_isthedupnum.gif"
+    ... success
+
+orig_fname:./03 (0).gif
+ Renaming to:
+new_fname: ./thefnamenumis_03_0_isthedupnum.gif
+ ...
+mv "./03 (0).gif" "./thefnamenumis_03_0_isthedupnum.gif"
+    ... success
+
+orig_fname:./03 (1).gif
+ Renaming to:
+
+13852@DESKTOP-J1FHHPA /cygdrive/c/David/fbak/special_pics/NeweRfolder
+$ for i in "${few_digits_arr[@]}"; do orig_fname="${i}"; echo; echo "orig_fname:${orig_fname}"; echo " Renaming to:"; new_fname=$(echo "${orig_fname}" | sed 's#^\([.][/]\)\([0-9]\{1,3\}\)\(\([ _-]*[(][0-9]\+[)]\|[ _-]\+[0-9]\+\)\?\)\([.][^.]\+\)$#\1'"${prestr}"'_\2\3\5#g; s#[ ]#_#g; s#[)(]##g; s#\([^0-9]\)\([.][^.]\+\)$#\1_nope_'"${poststr}"'\2#g; s#\([0-9]\+\)\([.][^.]\+\)$#\1_'"${poststr}"'\2#g;'); echo "new_fname: ${new_fname}"; echo " ..."; mv "${orig_fname}" "${new_fname}" && echo "    ... success" || echo "    ... FAILURE"; done > rename_small_digits_$(date +'%s').out ## rename WORKS for small-digit filenames and dups
+
+13852@DESKTOP-J1FHHPA /cygdrive/c/David/fbak/special_pics/NeweRfolder
+$
+
