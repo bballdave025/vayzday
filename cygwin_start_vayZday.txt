@@ -3,8 +3,10 @@
 # After your install
 #  (I do it as per
 #   @ref="https://stackoverflow.com/a/21233990/6505499"
-#   @archived_ref = "" + \
-#                   ""
+#   @archived_ref = "https://web.archive.org/web/20240926034657/" + \
+#                   "https://stackoverflow.com/questions/21230657/" + \
+#                   "what-is-the-current-full-install-size-of-cygwin/" + \
+#                   "21233990#21233990"
 #   from StackOverflow's @Warren_Young)
 # you should see the Cygwin terminal window come up with the following
 #
