@@ -1,0 +1,604 @@
+# @file : unicode.txt
+# @retrieved : 1751808580_2025-07-06T072940-0600
+# @source : https://antofthy.gitlab.io/info/data/unicode.txt
+# Command : wget https://antofthy.gitlab.io/info/data/unicode.txt
+
+
+-------------------------------------------------------------------------------
+Hints and Tips for handling Unicode (UTF-8).
+
+This is a text format that expands on normal ASCII files (a sub-set of the
+format) and additional charcaters that include practially all languages,
+anchiet and modern, mathematical symbols, and emoji.
+
+To understand how it works see the last section in this file.
+
+Remember, normal ASCII files without any low level control codes is also
+perfectly valid UTF-8.  That is why the format is so useful.
+
+Also see "locale.hints" in this same directory about alternative language
+representations (dates, money, numerical notations, etc.)
+
+NOTE: the clib and glib  printf() does not understand UTF-8 for field
+calculations, which is performed in bytes, not characters for POSIX
+requirements.
+    https://antofthy.gitlab.io/apps/printf.txt
+    https://unix.stackexchange.com/questions/350240/
+
+-------------------------------------------------------------------------------
+Testing for Unicode (or Text)
+
+Unicode will never include hexidecimal byte codes: C0, C1, F5 - FF
+Any of these bytes means it is illegal unicode or binary.
+You can check for this using the problems shown below.
+
+If a file contains any of these then some applications (like "gedit") will
+not read the file!
+
+---
+Find files with invalid UTF8
+
+  find merged/ -type f -print0 | xargs -0r isutf8 -l
+
+Report the actual Line and Column of the problem...
+
+  find merged/ -type f -print0 | xargs -0r isutf8
+
+You can test your unicode strings by running it through the "iconv"
+program.  For example...
+
+  iconv -f UTF-8 -t UTF-16  unicode_file > /dev/null &&  echo "Valid UTF-8"
+
+NOTE: "recode" can be used instead of "iconv"
+    recode utf8..utf16
+The 'info' pages of recode is better than the man pages.
+recode can also require lines to be CR-LF style, so "unix2dos" make be needed.
+
+These 'stop with a character offset' on error. Which is not typically useful in
+finding and fixing a UTF-8 problem.
+
+---
+Binary file (non-ASCII) testing...
+
+Note that NUL (00) or most other other control codes that are rarely used are
+legal Unicode.  But if present it means the file is more likely to be binary
+data rather text.
+
+So non-text-unicode will not contain bytes with these codes...
+  00 - 06   NUL (^@) to ACK (^F), and includes ^D end of transmission
+  0E - 1A   between CR and ESC
+  1C - 1F   data base separator characters
+    7F      Delete
+  C0, C1    High bits with zero content - invalid utf8
+  F5 - FF   Too many high bits to represent Unicode - invalid utf8?
+
+Controls that are typically present in text files...
+  08 Backspace,  09 Tab, 0A Newline,  0D Return,
+Uncommonly these may be present...
+  07 Bell,  1B Escape,  0C Formfeed,   0B Vertical Tab
+
+A file containing any other non-typical control, or illegal unicode characters
+will be binary.  This ignores '\r'.  Grep ignores 'NUL'! :-(
+
+  grep -RP '[^\x09\x0A\x0D\x20-\x7E]' .
+
+In VIM (handles 'NUL')
+  /[^\x09\x0A\x0D\x20-\x7E]
+
+FYI: Find files with carriage returns!
+  grep -lRP '\r' .
+
+-------------------------------------------------------------------------------
+Conversions...
+
+Space substitutions...
+  Perl works
+    perl -CSDA -plE 's/\s/ /g'
+
+  VIM can use...
+     :%s/[[:space:]]/ /ge
+
+  Sed  *** does not work for ALL unicode space ***
+    sed 's/[[:space:]]/ /g'
+
+  Spaces TO no-break spaces
+    sed 'y/ /'$'\u00A0'/
+
+NOTE: "tr" is NOT unicode complient (multibyte mis-handling)
+    echo "A—Z" | tr '—' '-'
+    A---Z
+
+Convert UTF-16  to UTF-8
+    utf-16_source | perl -CS -ne 'print pack("U*",unpack("n*", $_)), "\n"'
+
+Convert UTF-8  to UTF-16
+    utf-8_source | iconv -f UTF-8 -t UTF-16 - | od -t x1
+
+
+Uppercase
+    echo "Ciência" | sed 's/[[:lower:]]/\U&/g'
+    CIÊNCIA
+
+    echo "Ciência" | gawk '{print toupper($0);}'
+    CIÊNCIA
+
+Remove accents
+
+    echo $'\u00C5\u212BA\u030a'  # last uses combining characters
+    ÅÅÅ
+
+    # only the dicritical marks
+    echo $'\u00C5\u212BA\u030a' | uconv -x nfd -c -t us
+    AAA
+    echo $'\u00C5\u212BA\u030a' | uconv -x "::nfd;[:Nonspacing Mark:]>;"
+    AAA
+
+To just ASCII characters
+
+    # general
+    echo $'\u00C5\u212BA\u030a' | iconv -t ASCII//TRANSLIT
+    AAA
+    echo $'£¼½¾«­©' | iconv -t ASCII//TRANSLIT
+    GBP 1/4  1/2  3/4 <<-(C)
+
+    echo $'\u00C5\u212BA\u030a' | uconv -x Latin-ASCII
+    AAA
+    echo $'£¼½¾«­©' | uconv -x Latin-ASCII
+    £ 1/4 1/2 3/4<<-(C)
+
+Just Delete the Unicode
+    LANG=C sed "s/[\x80-\xFF]//g"
+
+-------------------------------------------------------------------------------
+Looking at Unicode in various ways...
+
+For how unicode codes are stored in UTF-8 format see "UTF-8 Encoding"
+at the bottom of this page.
+
+Is there unicode in some text
+
+  Quickest way is look with cat -v for meta-character sequences...
+
+    echo $'\u202F' | cat -v | grep 'M-'
+    M-bM-^@M-/
+
+  Highlighting and testing...
+
+    # This uses Perl-RE testing, looking for any non-ascii character code
+    # enable gnu-grep highlight with background color (for spaces)
+    export GREP_COLORS='ne:mt=01;31;44'
+    export GREP_OPTS='--color'
+    alias grep command grep '$GREP_OPTS'
+
+    echo $'a \u00A0 \u00C5 b' | \
+      grep -qP '[^\x0A\x0D\x20-\x7E]' - && echo found unicode
+    echo found unicode
+
+  Show the whole file with unicode highlighted using "less"
+
+    echo $'abc\na \u00A0 \u00C5 b\nxyz' | \
+      grep --color=always -P '[^\x0A\x0D\x20-\x7E]|$' - | less -R
+
+  NOTE: While the highlighting works for unicode-spaces,
+  it does not highlight Diacritical Marked characters!
+
+  For example...
+    echo $'\u00C5 \u212B A\u030a' |
+      grep --color=always -P '[^\x0A\x0D\x20-\x7E]|$'
+
+  The grep will highlight the first 2 but not the third "Aring" character
+  created using a Diacritical Mark.
+
+
+Unicode Names...
+
+    # This shows three different unicode representations of "\&Aring;"
+    echo $'\u00C5 \u212B A\u030a'    # last one has a Diacritical Mark
+    Å Å Å
+
+    echo -n $'\u00C5\u212BA\u030a' | uconv -x any-name | sed 's/}/}\n/g'
+    \N{LATIN CAPITAL LETTER A WITH RING ABOVE}
+    \N{ANGSTROM SIGN}
+    \N{LATIN CAPITAL LETTER A}
+    \N{COMBINING RING ABOVE}
+
+  It is very verbose, expecially for normal Latin ACSII
+
+    echo -n a | uconv -x any-name | sed 's/}/}\n/g'
+    \N{LATIN SMALL LETTER A}
+
+
+UTF-8 meta-characters used to encode a unicode character...
+(useful in older non-unicode programs, such as BASH 3 - see below)
+
+    echo -n '∞' | od -An -tx1 - | sed 's/ /\\x/g'
+    \xe2\x88\x9e
+
+UTF-16 codes (note: \uFEFF is UTF-16 file magic - ignore it)
+
+    echo -n '∞' | iconv -f utf8 -t utf16 - | od -An -tx2
+     feff 221e
+
+    # clean up output....
+    echo -n '∞' | iconv -f utf8 -t utf16 - | od -An -tx2 |
+      sed 's/.*/\U&/; s/^ FEFF//; s/ /\\u/g'
+    \u221E
+
+  Perl for a single character
+    char='∞'
+    printf '\\u%04X\n' "'$char'"
+    \u201E
+
+
+Graphical Display
+
+  # "xfd" is good for general exploration of unicode tables
+  #
+  xfd -fn "-misc-fixed-medium-r-*-*-15-*-75-75-c-90-iso10646-1" &
+
+  #"Pango" is a GTK unicode renderer engine
+  # WARNING: It does emoji substitutions
+  #
+  # "graphics_utf" is a shell script to output unicode character tables
+  # https://antofthy.gitlab.io/software/#graphics
+  #
+  graphics_utf dingbats | pango-view --font="Terminus 10" <(cat -) &
+  graphics_utf 2400 | pango-view --font="Terminus 10" <(cat -) &
+  graphics_utf 2000 2300 | pango-view --font="Terminus 10" <(cat -) &
+
+  echo '(°͡ʖ͜°͡)' | pango-view <(cat -) &    # raw unicode (does not work)
+
+  echo '( ͡°ʖ ͡°)' | pango-view <(cat -) &
+  echo '( ͡°ʖ ͡°)' | pango-view --font="monospace 10" <(cat -) &
+
+  # The above shows different results you get from different fonts
+  # or even from different OS's.  It is highly variable.
+
+  # Is it any wonder font rendering tests is used 'behind the scenes' by
+  # Google's re-Captcha as part of its 'I'm not a Robot' test.
+
+  echo $'\u00b6 \u2020 \u2021 a\u00b3 \u2192 \u221e \u275d \u263a \u275e' |
+    pango-view <(cat -) &
+
+  echo $'\u00b6 \u2020 \u2021 a\u00b3 \u2192 \u221e \u275d \u263a \u275e' |
+    pango-view --font=Courier <(cat -) &
+
+  echo $'\u00b6 \u2020 \u2021 a\u00b3 \u2192 \u221e \u275d \u263a \u275e' |
+    pango-view --font=Courier-10 <(cat -) &
+
+  echo $'\u00b6 \u2020 \u2021 a\u00b3 \u2192 \u221e \u275d \u263a \u275e' |
+    pango-view --font=Fixed <(cat -) &
+
+  echo $'\u00b6 \u2020 \u2021 a\u00b3 \u2192 \u221e \u275d \u263a \u275e' |
+    pango-view --font=Terminal <(cat -) &
+
+-------------------------------------------------------------------------------
+Xterms...
+
+Almost all terminals can display Unicode characters at this time
+But few seem to have ways to input Unicode, other than via copy-n-paste.
+
+Gnome Terminal you need the setting
+  Terminal -> Set Character Encoding -> Unicode (UTF-8)
+
+XTerm display Unicode if a Unicode locale is set before it is started,
+and you have a Unicdoe font set.
+
+  export XTERM_LOCALE=en_GB.UTF-8
+  FONT="-misc-fixed-medium-r-*-*-15-*-75-75-c-90-iso10646-1"
+  BFONT="-misc-fixed-bold-r-*-*-15-*-75-75-c-90-iso10646-1"
+  ( echo "XTerm*font:         $FONT"
+    echo "XTerm*boldFont:     $BFONT"
+    echo "Xless*standardFont: $FONT"
+    echo "Xless*textFont:     $FONT"
+    echo "Xless*buttonFont:   $BFONT"
+    echo "XtDefaultFont:      $BFONT"
+  ) xrdb -merge
+  xterm -g 80x25 &
+
+Or with a TrueType font you can use something like...
+  xterm -u8 -fa "DejaVu Sans Mono-12"
+  xterm -xrm 'XTerm*faceName: DejaVu Sans Mono-12'
+
+For a discussion and problems of these two (and other) fonts, see
+  https://antofthy.gitlab.io/info/data/unicode_fonts.txt
+
+Generally from using Xterms, with VIM, with the file
+  https://antofthy.gitlab.io/info/data/utf8_demo.txt
+
+-------------------------------------------------------------------------------
+GTK Applications (Gedit)...
+
+You can input Unicodes directly in GTK applications (EG gnome)
+using the sequence...
+
+    shift-ctrl-U  hex-code  enter
+
+Hex-code can be anywhere from 2 to 8 hex digits (typically 4)
+
+Some applications show a underlined 'U' while in this mode, "Gedit" does not.
+
+-------------------------------------------------------------------------------
+Bash and Unicode
+
+For BASH version 4.2 and greater...
+
+    echo $'\u00b6 \u2020 \u2021 a\u00b3 \u2192 \u221e \u275d \u263a \u275e'
+    ¶ † ‡ a³ → ∞ ❝ ☺ ❞
+
+    printf '\u221e\n'
+    ∞
+
+    printf '%b\n' '\u2605'
+    ★
+
+    # character to utf-16
+    char='∞'
+    printf '\\u%04X\n' "'$char'"
+    \u221E
+
+
+You can also use individual char codes for BASH v3 ..
+
+    printf '\u2022' | od -An -tx1 | sed 's/ /\\x/g'
+    \xe2\x80\xa2
+
+    echo $'\xe2\x80\xa2'
+    •
+
+    echo -e '\xe2\x80\xa2'
+    •
+
+Storing Unicode in a associative array by name gives greater readability
+
+    unset u; typeset -A u    # you must declare an associative array
+    u=( [trademark]=$'\u2122'
+        [script_E]=$'\u2130'
+        [Rx]=$'\u211E'
+    )
+
+    echo "${u[trademark]}  ${u[script_E]}  ${u[Rx]}"
+    ™  ℰ  ℞
+
+
+-------
+NOTE: BASH 4.1 and before (RHELv6) does not let you use UTF-16 codes but does
+let you use UTF-8 byte codes.  If backward compatibility is an issue!
+
+    echo $'\u2022'       # Fail for bash 4.1
+    \u2022
+
+    printf '\u2022\n'    # Fail for bash 4.1
+    \u2022
+
+    # The GNU-printf (in RHELv6) works fine!
+    /usr/bin/printf '\u2022' | od -An -tx1 | sed 's/ /\\/g'
+    \e2\80\a2
+
+    echo $'\xe2\x80\xa2'
+    •
+
+Using Octal UTF-8 encoding still works fine...
+
+    /usr/bin/printf '\u2022' | od -An -to1 | sed 's/ /\\/g'
+    \342\200\242
+
+    printf '\342\200\242\n'    # BASH built-in "printf"
+    •
+
+-------------------------------------------------------------------------------
+VIM Vim vim and Unicode
+
+To see the actual character encoding in the file use..
+  ga   for the byte character  (and what to type to get that character)
+  g8   for the hexadecimal of the UTF-8 encoding (not the UTF-16 code)
+
+If you are using a UTF-8 font you can force the file to be saved as a UTF-8 on
+the file using
+  :set encoding=utf-8 fileencoding=
+
+You can type a Unicode character in insert mode
+       <c-v>{decimal}
+    or <c-v>u{hex code}
+
+For example  <c-v>160  or  <c-v>u00A0  types a non-break space ' '
+
+You can search for them in regular expressions...
+  :%s/%u00A0/ /g
+or using character ranges...
+  :%s/[\u00A0]/ /g
+
+Find any next non-plain (control or Unicode) character
+  /[^\x0A\x0D\x20-\x7E]
+
+NOTE There are two no-break spaces (which can be seen in 'NonText' mode), and
+many other 'space-like' characters, but NONE are matched by the '\s' regex.
+
+Space characters
+  v-- the character (normally invisible)
+ ' '       0xA0      no break space or 160 decimal, or characters   c2 a0
+ ' '       U+202F    narrow no-break space or the characters     e2 80 af
+ ' '       U+2005    four-per-em space
+ ' '       U+2007    thin space (breakable)
+ '​'       U+200B    zero-width space (word separator no space, not in vim)
+ Actually any unicode character from U+2000 to U+200D
+ ' '       U+205f    math formula space
+ '⁠'       U+2060    word joiner
+ '﻿'  U+FEFF    zero width no break space (vim does not understand)
+ '　'      U+3000    Chinese Ideographic Space (double width)
+
+You can also set the current locale to allow \s to match more space chars.
+But would you want to?
+
+-------------------------------------------------------------------------------
+Interactive Character finder (plain unicode, not emoji)
+
+  gucharmap          # Gnome Character Map
+
+But remember if a specific font does not have a character it could
+display the character from a different font!
+
+-------------------------------------------------------------------------------
+Perl and Unicode
+
+You may need a -C option OR  binmode(STDOUT, ":utf8")
+to prevent a warning about "Wide character in print".
+EG: -CSDA  for UTF8 in both input and output on all streams, and in arguments.
+
+Using chr:
+  perl -e 'binmode(STDOUT, ":utf8"); print chr(0x23ce), "\n";'
+  ⏎
+
+Using UTF-16 codes
+  perl -CS -e 'print "\x{00b6}\x{2020}\x{2021} a\x{00b3}\n";'
+  ¶†‡ a³
+
+UTF-16 with pack() may be better
+  perl -CS -e 'print pack("U*", 0x275d, 0x263a, 0x275e,), "\n";'
+  ❝☺❞
+
+using unicode names
+  perl -CS -e 'print "\N{WHITE SMILING FACE}\n"'
+  ☺
+
+If you are doing unicode in regex you will also need the 'utf8' module.
+
+  # Heartbeat/Spinner demonstrator
+  perl -CS -Mutf8 -e '$|=1; $c="▘▀▝▐▗▄▖▌";
+    while(1){ for $i ($c=~/(.)/g) {
+        print "  $i\r"; select(undef,undef,undef,.2); } };'
+
+Convert UTF-16 to UTF-8
+    utf-16_source | perl -CS -ne 'print pack("U*",unpack("n*", $_)), "\n"'
+
+Char Conversion in perl...
+    use Encode;
+    $text = 'Текст кириллица';
+    $text = encode("utf8", decode("cp1251", $text));
+    print "$text\n";
+
+-------------------------------------------------------------------------------
+X Window Input and Unicode (not great)
+
+If you ever get a message about
+  Warning: Missing charsets in String to FontSet conversion
+  Warning: Unable to load any usable fontset
+That application is uses Xaw widgets which that does not handle unicode fonts
+The solution is to set the env  "LANG=C" before running.
+Example applications with this problem include  "xmessage"
+
+---
+ISO 14755 defines a hexadecimal input method:
+  Hold down both the Ctrl and Shift key while typing the hexadecimal Unicode
+  number. After releasing Ctrl and Shift, you have entered the corresponding
+  Unicode character.  This is currently implemented in GTK+ 2, and works in
+  applications such as GNOME Terminal, Mozilla and Firefox.
+
+---
+To Add unicode keys to your Xwindow keyboard
+Add the following to a xmodmap file like  ".Xmodmap"
+
+! Unicode modifications
+! The first line sets the key Alt-Right as the 3rd & 4th 'ModeSwitch' control
+! See  http://www.cl.cam.ac.uk/~mgk25/unicode.html#input
+!
+! NOTES: Right-Alt or AltGr  and these keys produce...
+!   []     ‘’ typographic single quotes
+!   {}     “” typographic double quotes
+!   23     ² ³ superscript 2 and 3
+!   4      euro symbol
+!   d      ° degree symbol
+!   -nm    − hyphen, – n-dash, — m-dash
+!   M      µ micro symbol
+!   /      ÷ divide
+!   *      × multiply
+!  space   no-break or shifted space
+!
+keycode 113 = Mode_switch Mode_switch
+keysym    d     =    d      NoSymbol    degree         NoSymbol
+keysym    m     =    m      NoSymbol    emdash         mu
+keysym    n     =    n      NoSymbol    endash         NoSymbol
+keysym    2     =    2      quotedbl    twosuperior    NoSymbol
+keysym    3     =    3      numbersign  threesuperior  NoSymbol
+keysym    4     =    4      dollar      EuroSign       NoSymbol
+keysym  space   =  space    NoSymbol    nobreakspace   NoSymbol
+keysym  minus   =  minus    underscore  U2212          NoSymbol
+keysym  slash   =  slash    NoSymbol    division       NoSymbol
+keysym asterisk = asterisk  NoSymbol    multiply       NoSymbol
+keycode  34  = bracketleft  braceleft  leftsinglequotemark  leftdoublequotemark
+keycode  35  = bracketright braceright rightsinglequotemark rightdoublequotemark
+
+===============================================================================
+UTF-8 Encoding...
+
+For a summery of how UTF-8 came to be (which made unicode practical in modern
+systems), see
+  http://www.cl.cam.ac.uk/~mgk25/ucs/utf-8-history.txt
+
+It was invented by Ken Thompson and Rob Pike, September 1992
+and immediatally put to use in Plan-9 and IBM X/Open
+
+It also gives the actual original proposal, and the original UTF-8 to UTF-16
+translation subroutines, though it is very slightly different, to make
+determination of where you are in the sequence slightly easier to determine.
+It also can be extended a little more, though there is not much need for it.
+(Until emoji were added that is!)
+
+See RFC3629
+
+For a more detailed summery of valid character codes see...
+  http://www.phrack.org/archives/issues/62/9.txt
+(This is actually for the use by crackers, but is a good introduction)
+
+ * Character without high bit is the same in ASCII and UTF-8
+   EG:   5A -> 5A     (uppercase Z)
+
+ * All multi-character (non-ASCII characters) sequences have high bit set
+   over ALL characters involved.
+
+ * Start of any multi character sequences have the two highest bits set
+   While all others in multi character sequences has 10 as their high bits
+   When there is no high bit, or another double high bit is seen, you
+   are at the start of the next character (unicode or plain ascii).
+
+ * Number of bytes making up a character is the number of high bits in
+   the first byte, or 1 if no high bit
+   (EG   C5 9B  gives  C or 2 high bits thus two bytes for the character
+
+ * Character codes  C0,  C1,  F5 - FF  will never appear in UTF-8
+   ASIDE: C0 and C1 would be equivelent to encoding a multi-character with lots
+   of leading zeros.  It is just unneeded duplication of character codes.
+
+ * Number of characters in a string is number of bytes with a bytes with
+   2 or more high bits (UNICODE) plus bytes without any high bits (ASCII)
+
+ * Searching in UTF-8 works as normal (unless you want all e's to match)
+
+   As such...
+
+     Unicode Character   valid bits    UTF String
+         00 -     7F           7       0xxxxxxx
+       0080 -   07FF          11       110xxxxx 10xxxxxx
+       0800 -   FFFF          16       1110xxxx 10xxxxxx 10xxxxxx
+     010000 - 10FFFF          21       11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+
+
+Example encoding and decoding
+
+  Encode UTF-16 to UTF-8
+    "Latin Small Letter s with Acute"  Unicode name of character
+    015B  ->  0000 0001 0101 1011     convert to binary
+          ->  xxx0 0101 xx01 1011     re-organise bits (shifts)
+          ->  1100 0101 1001 1011     add top level bits
+          -> C5 9B                    final UTF-8 encoded
+
+  Reverse UTF-8 to UTF-16
+     E2 80 9C -> 1110 0010 1000 0000 1001 1100   convert to binary
+              ->      0010   0000  0010   1100   remove high bits
+              -> 0010 0000  0010 1100            shift bits
+              -> 202C                            UTF-16 character code
+              -> "Left Double Quotation Mark"    UFT naming
+              or "Double Turned Comma Quotation Mark"
+    In other words an Opening Double Quote
+
+===============================================================================
