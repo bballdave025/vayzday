@@ -163,7 +163,7 @@ for i in {0..127}; do
   echo "${the_char} ${hex_str} ${oct_str} "\
 "${kbd_str} ${dec_str} ${char_uconv} ${char_name}"
 done
-
+echo "CHARACTER  HEXA OCTA KBD-ESC DEC uconv_-x_any-name  ASCII_RFC20_Name"
 # echo
 # echo
 # echo
