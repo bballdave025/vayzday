@@ -104,6 +104,8 @@ NOT APPLICABLE
 
 ######################
 ##### youtube-dl #####
+## THIS HAS CHANGED AGAIN (2025-07-07) Ignore this part
+## and go down to yt-dlp
 ## THIS HAS CHANGED. @TODO : NEW INSTRUCTIONS
 ## You need Python for this.
 #@ref: "https://github.com/ytdl-org/youtube-dl/blob/"\
@@ -138,6 +140,13 @@ sudo chmod a+rx /usr/local/bin/youtube-dl
 ## with Python and Pip installed, which they should be anyway,
 ## if you want to use this program
 sudo -H pip install --upgrade youtube-dl
+
+###################################
+##### yt-dlp (was youtube-dl) #####
+CYGWIN
+wget https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp \
+  -O /usr/local/bin/yt-dlp
+chmod a+rx /usr/local/bin/yt-dlp
 
 
 ###################
