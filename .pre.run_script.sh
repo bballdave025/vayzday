@@ -31,43 +31,43 @@ fname_base="${saved_in_dir}${filename_prefix}${current_date_time}"
 filename="${fname_base}.log"
 
 #would require extra dependencies (wred)#
-#wred#
-scrubbed_filename="${fname_base}_scr2log-1.log"
+#wred#scrubbed_filename="${fname_base}_scr2log-1.log"
+scrubbed_filename="${fname_base}_clean.log"
 
 script "${filename}"
 
 #would require extra dependencies (wred)#
-#wred#
-#$HOME/dwb_bash_util/misc_programs/misc-scripts-20200515/\
-#wred#
+#wred##$HOME/dwb_bash_util/misc_programs/misc-scripts-20200515/\
+#wred#script2log_location="$HOME/"  #  might move into a  util  directory,
+#wred#                              #+ but not yet. DWB 2025-07-21
+#wred#"${script2log_location}"script2log "${filename}" > \
+#wred#"${scrubbed_filename}"
+
+#wred#echo
+#wred#echo " The scrubbed file (i.e. the more-readable logfile without all"
+#wred#echo " the extra control characters) is"
+#wred#echo "${scrubbed_filename}"
+#wred#echo
+
 script2log_location="$HOME/"  #  might move into a  util  directory,
-                              #+ but not yet. DWB 2025-08-21
-"${script2log_location}"script2log "${filename}" > "${scrubbed_filename}"
+scrscr_location="${HOME}/"    #+ but not yet. DWB 2025-07-21
 
-#wred#
 echo
-#wred#
-echo " The scrubbed file (i.e. the more-readable logfile without all"
-#wred#
-echo " the extra control characters) is"
-#wred#
-echo "${scrubbed_filename}"
-#wred#
+echo " The raw file spat out by typescript is at"
+echo "${filename}"
 echo
+echo " Suggested next steps for cleaning are:"
 
-scrscr_location="${HOME}/"
-
-
-echo " Next steps for cleaning are:"
-sec_step_fname=$(echo "${scrubbed_filename}" | \
-                   sed 's#^\(.*\)\([.][^.]\{1,6\}\)$#\1_scrscr-2\2#g')
-echo "$HOME/script_scrubber.sh ${scrubbed_filename} ${sec_step_fname}"
+thr_step_fname="${fname_base}_scrscr-3"
+echo "$HOME/script_scrubber.sh ${scrubbed_filename} ${thr_step_fname}"
 fin_step_fname=$(echo "${sec_step_fname}" | \
-                   sed 's#^\(.*\)\([.][^.]\{1,6\}\)$#\1_fin-3\2#g')
-#instead of '_fin-3', used to call it#         _outcaretH-3
+                   sed 's#^\(.*\)\([.][^.]\{1,6\}\)$#\1_fin-4\2#g')
+#instead of '_fin-4', used to call it#         _outcaretH-3
 echo " then"
 echo " (where you get '^H' by using |_Ctrl_|+|_v_| then |_Ctrl_|+|_h_|)"
-echo "sed 's#[^H]\+##g' ${sec_step_fname} > ${fin_step_fname}"
-echo ""
+echo "sed 's#[^H]\+##g' ${thr_step_fname} > ${fin_step_fname}"
+echo " and finally"
+
+echo "cp ${fin_step_fname} ${scrubbed_filename}"
 
 cd "${working_dir}"

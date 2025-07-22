@@ -1,6 +1,8 @@
 # @file : unicode.txt
 # @retrieved : 1751808580_2025-07-06T072940-0600
 # @source : https://antofthy.gitlab.io/info/data/unicode.txt
+# @archived : ref = "https://web.archive.org/web/20250707205338/" + \
+#                   "https://antofthy.gitlab.io/info/data/unicode.txt"
 # Command : wget https://antofthy.gitlab.io/info/data/unicode.txt
 
 

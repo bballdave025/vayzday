@@ -1,0 +1,1052 @@
+# .USER_bash_functions
+#
+##DWB 2022-02-26 renaming from .bash_functions_4_dwb
+#+ and sourcing it from .bash_functions
+
+
+# Some of the first functions used - coming from Cygwin, or even from
+# before at BNL. Well, the title stuff that started this is now in
+# ~/important_backups/.bash_title_reference
+
+
+
+
+#########################################
+# Terminal prompt the way I want it.
+#########################################
+#
+##DWB, START 2026-06-08, safety before I try it with Cygwin (after RHEL)
+DO_WANT_TO_CHANGE_CYGWIN=0
+if [ $DO_WANT_TO_CHANGE_CYGWIN -eq 1 ]; then
+  # Where $(git_branch) would come from, if ~/.git-prompt.sh were working
+  source ~/.git-prompt.sh
+fi
+##DWB, END 2025-06-08
+
+
+#  Some checks with Cygwin before and after the ~/.bballdave025_bash_functions
+#+ loaded at about 2025-06-08T080000-0600
+#
+# Anast@DESKTOP-O7KM5A5 /cygdrive/c/David/FHTW-2025-All_-_move_2024_get_new
+# $ echo $PROMPT_COMMAND
+# 
+# 
+# Anast@DESKTOP-O7KM5A5 /cygdrive/c/David/FHTW-2025-All_-_move_2024_get_new
+# $ echo $PS1
+# \[\e]0;\w\a\]\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]\n\$
+# 
+# Anast@DESKTOP-O7KM5A5 /cygdrive/c/David/FHTW-2025-All_-_move_2024_get_new
+# $ # Before ~/.bash_functions is above
+# 
+# Anast@DESKTOP-O7KM5A5 /cygdrive/c/David/FHTW-2025-All_-_move_2024_get_new
+# $ #
+# 
+# Anast@DESKTOP-O7KM5A5 /cygdrive/c/David/FHTW-2025-All_-_move_2024_get_new
+# $ # After ~/.bash_functions is below
+# 
+# Anast@DESKTOP-O7KM5A5 /cygdrive/c/David/FHTW-2025-All_-_move_2024_get_new
+# $ echo >/dev/null << EOF
+# > Anast@DESKTOP-O7KM5A5:~
+# $ echo $PROMPT_COMMAND
+# echo -ne "\033]0;${USER}@${HOSTNAME}: ${PWD/$HOME/~}\007"
+# Anast@DESKTOP-O7KM5A5:~
+# $ ECHO $PS1
+# \[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\W\[\e[00m\]\[\e[1;36m\]$(git_branch)\[\e[00m\]\n$
+# Anast@DESKTOP-O7KM5A5:~
+# $
+# > EOF
+# 
+# Anast@DESKTOP-O7KM5A5 /cygdrive/c/David/FHTW-2025-All_-_move_2024_get_new
+# $
+
+
+
+
+
+#
+##DWB, 2022-02-07
+# Found this before messing with it.
+# DWB 2025-06-08, changing ORIG_PROMPT_COMMAND to
+#                          ORIG_RHEL_PROMPT_COMMAND
+# DWB, 2025-06-08 START01
+# Replaced what's below
+#export ORIG_PROMPT_COMMAND=\
+#'printf "\033]0;%s@%s:%s\007" "${USER}" "${HOSTNAME%%.*}" "${PWD/#$HOME/\~}"'
+# Put in
+export ORIG_RHEL_PROMPT_COMMAND=\
+'printf "\033]0;%s@%s:%s\007" "${USER}" "${HOSTNAME%%.*}" "${PWD/#$HOME/\~}"'
+export ORIG_CYGWIN_PROMPT_COMMAND=
+
+export ORIG_PROMPT_COMMAND="${ORIG_CYGWIN_PROMPT_COMMAND}"
+##DWB, 2025-06-08 END01
+
+
+ON_START_PROMPT_COMMAND=
+if [ ! -z "$PROMPT_COMMAND"  ]; then
+  #echo -n "$PROMPT_COMMAND" > \
+  #             "$HOME/.env.PROMPT_COMMAND.$(date +'%Y%m%d_%H%M%S%z_%s').bak"
+  ON_START_PROMPT_COMMAND="$PROMPT_COMMAND"
+fi
+
+# Getting rid of it.
+PROMPT_COMMAND=
+
+##DWB, 2025-06-08 START02
+# Replaced what's below
+## #Keeping default
+## DEFAULT_PROMPT_COMMAND=\
+## 'echo -ne "\033]0;${USER}@${HOSTNAME}: ${PWD/$HOME/~}\007"'
+## DEFAULT_PROMPT_COMMAND_TITLE=\
+## "${USER}@${HOSTNAME}: ${PWD/$HOME/~}"
+# Put in
+
+### For scope
+DEFAULT_PROMPT_COMMAND=
+DEFAULT_PROMPT_COMMAND_TITLE=
+
+DEFAULT_DWB_RHEL_PROMPT_COMMAND=\
+'echo -ne "\033]0;${USER}@${HOSTNAME}: ${PWD/$HOME/~}\007"'
+if [ $DO_WANT_TO_CHANGE_CYGWIN -eq 1 ]; then
+  DEFAULT_PROMPT_COMMAND="${DEFAULT_DWB_RHEL_PROMPT_COMMAND}"
+else
+  DEFAULT_PROMPT_COMMAND="${ORIG_PROMPT_COMMAND}"
+fi
+
+DEFAULT_DWB_RHEL_PROMPT_COMMAND_TITLE=\
+"${USER}@${HOSTNAME}: ${PWD/$HOME/~}"
+DEFAULT_CYGWIN_PROMPT_COMMAND_TITLE=\
+"${PWD/$HOME/~}"
+
+if [ $DO_WANT_TO_CHANGE_CYGWIN -eq 1 ]; then
+  DEFAULT_PROMPT_COMMAND_TITLE="${DEFAULT_DWB_RHEL_PROMPT_COMMAND_TITLE}"
+else
+  DEFAULT_PROMPT_COMMAND_TITLE="${DEFAULT_CYGWIN_PROMPT_COMMAND_TITLE}"
+fi
+##DWB, 2025-06-08 END02
+
+##DWB, 2022-02-09
+##DWB, checking for existence / git_branch stuff 2025-06-06
+
+git_branch_legit_now_0=0
+  # guilty until proven innocent
+
+command -v git_bash >/dev/null 2>&1 && git_branch_legit_now_0=1
+
+if [ $git_branch_legit_now_0 -eq 1 ]; then
+  export BEN_ORIG_PS1='${debian_chroot:+($debian_chroot)}'\
+'\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\W'\
+'\[\e[00m\]\[\e[1;36m\]$(git_branch)\[\e[00m\]$ '
+fi
+
+##DWB, 2022-02-07, (note 2025-06-08) I think this came from /env/ somewhere
+##                                   on RHEL
+REAL_LINUX_DEFAULT_PS1="\\s-\\v\\\$ "
+
+REAL_LINUX_DEFAULT_PROMPT_COMMAND=\
+'echo "$0-$(awk -F'"'"'.'"'"' '"'"'{print $1 "." $2}'"'"' '\
+'<<<$BASH_VERSION)"'
+REAL_LINUX_DEFAULT_PROMPT_COMMAND_TITLE=\
+'$($0-$(awk -F'"'"'.'"'"' '"'"'{print $1 "." $2}'"'"' <<<$BASH_VERSION)'
+
+##DWB, 2022-02-02
+###DWB 2022-02-07 We actually have more than Ben's original, because I'm
+###+ taking out the title stuff from $PROMPT_COMMAND and putting it here.
+#octal would be equivalent. I won't use it, but it's good to know.
+#export REAL_ORIG_PS1="\033]0;\u@\h:\W\007[\u@\h \W]\\$"
+##DWB, 2025-06-08 START03
+# Replaced what's below
+##export REAL_ORIG_PS1="[\u@\h \W]\\$ "
+# Put in
+export REAL_ORIG_RHEL_PS1="[\u@\h \W]\\$ "
+export REAL_ORIG_CYGWIN_PS1=\
+"\[\e]0;\w\a\]\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]\n\$ "
+export REAL_ORIG_PS1="${REAL_ORIG_CYGWIN_PS1}"
+##DWB, 2025-06-08 END03
+#export REAL_ORIG_PS1_PROMPT_COMMAND_TITLE='${USER}@${hostname}'
+
+##DWB 2022-02-07
+## Nope, still can't figure out how to get this working
+#from_prompt_command="$($ON_START_PROMPT_COMMAND)"
+#export REAL_ORIG_PS1="${from_prompt_command}[\u@\h \W]\\$"
+
+
+##DWB 2022-02-07 Commentary from Ben (or from whomever wrote this part,
+##+ which is used by Ben.)
+# PS1 string will be set here. Special is only the $(git_branch).
+# If we are in a repo it will return a colorized string with the branch
+# otherwise it will have no affect [sic] # From Ben's stuff
+##DWB, put in the next test and if on 2025-06-08
+if [ $DO_WANT_TO_CHANGE_CYGWIN -eq 1 ]; then
+  # This source had been there before 2025-06-06
+  source ~/.git-prompt.sh
+fi
+###DWB 2022-02-07 We actually have more than Ben's original, because I'm
+###+ taking out the title stuff from $PROMPT_COMMAND and putting it here.
+### scratch that, I've changed this quite a bit. I'll call it
+###+ NOW_ORIG_PS1 (maybe change for clarity to CONDA_GIT_ORIG_PS1)
+###+ I can put back in the `debian_chroot' stuff if I decide to use `chroot'.
+###++ ref1=""
+###++ ref2=""
+###+ P.S. to see that `debian_chroot' stuff, enter `echo $BEN_ORIG_PS1'
+###+ from the command prompt.
+##DWB, put in the next scope declaration, check git_branch, 
+##+    and if/else on 2025-06-08, START04
+# for scope and Cygwin default
+NOW_ORIG_PS1="${REAL_ORIG_CYGWIN_PS1}"
+git_branch_legit_now_1=0
+  # guilty until proven innocent
+command -v git_bash >/dev/null 2>&1 && git_branch_legit_now_1=1
+if [ $DO_WANT_TO_CHANGE_CYGWIN -eq 1 -a $git_branch_legit_now_1 -eq 1 ]; then
+  # Next line here before 2025-06-08, but beginning with
+  #export
+  NOW_ORIG_PS1=\
+'\[\033[01;32m\]\u@\h\[\033[00m\]:'\
+'\[\033[01;34m\]\W\[\e[00m\]\[\e[1;36m\]$(git_branch)\[\e[00m\]\n$ '
+else
+  NOW_ORIG_PS1="${REAL_ORIG_CYGWIN_PS1}"
+fi
+export NOW_ORIG_PS1
+##DWB, 2025-06-08 END04
+
+
+
+##DWB 2022-02-07 Choosing the default PS1
+PROMPT_COMMAND="$DEFAULT_PROMPT_COMMAND"
+##DWB, 2025-06-08 putting in 'export', hopefully works, START05
+# Replaced
+##PS1="$NOW_ORIG_PS1"
+# Put in
+PS1="$NOW_ORIG_PS1"
+export PS1
+##DWB 2022-06-08, END05
+export DEFAULT_PS1="$PS1"
+ESCAPED_BOTH_TITLE=
+  # SCOPE
+
+##DWB 2022-02-07
+## For reference about this all-too-messy title business,
+##+ you can look at `~/.bash_title_reference`.
+##+ My problem was:
+##+ The environment variable, $PROMPT_COMMAND, was setting both the title
+##+ and the icon title, while PS1 was setting neither. Neither the RHEL
+##+ default nor Ben's PS1 with git stuff had anything about the title, and
+##+ the answers all assumed that PS1 was changing the titles. I should get
+##+ back and add another answer.
+#
+#
+## DWB, 2022-02-07
+# One that I'm going to try and use however it goes, for the moment.
+#+ Put together by @Gabriel_Staples (a user on unix.stackexchange.com
+#+ cf. https://unix.stackexchange.com/a/566383/291375
+#+ who modified programs including that written by @Weston_Ganger
+#+ cf. https://unix.stackexchange.com/a/186167/291375
+# This version has modifications made by David BLACK
+#+ (Stack Exchange user @bballdave025)
+#+ Actually, there was a whole bunch of stuff I added to take care
+#+ of my title being set by $PROMPT_COMMAND, which is called before
+#+ PS1. cf. https://stackoverflow.com/a/3058366/6505499
+settitlestring()
+{
+  CMD_MOST_USED="settitle"
+  CMD="\`settitlestring'\n"\
+"   [ Or you can use any of its aliases, which are:\n"\
+"      \`set_title' ; \`set_title_string' ; \`set-title' ; \n"\
+"      \`gs_set_title' AND \`settitle'\n"\
+"     That last one is the one I use most often, so the\n"\
+"     help will be given using the command, \`settitle']\n"\
+"\n"\
+"   Note: you should also look at the RETURNING TO ORIGINAL\n"\
+"         section for the case in which you want to go back\n"\
+"         to what the title was when you started the terminal."
+  # Help menu
+  if [ "$1" == "-h" ] || [ "$1" == "-?" ] || [ "$1" == "--help" ]; then
+    echo
+    echo "HELP for:"
+    echo -e "$CMD"
+    echo
+    echo "SYNOPSIS"
+    echo "Set the title of your currently-opened terminal tab."
+    echo
+    echo "USAGE:   "
+    echo " $CMD_MOST_USED any title you want"
+    echo "   OR:"
+    echo " $CMD_MOST_USED \"any title you want\""
+    echo
+    echo "          OR (to make a dynamic title which"
+    echo "              relies on variables or functions):"
+    echo
+    echo " $CMD_MOST_USED '\$(some_cmd)'"
+    echo "   OR:"
+    echo " $CMD_MOST_USED '\${SOME_VARIABLE}'"
+    echo
+    echo "EXAMPLES:"
+    echo "    1. static title"
+    echo "      $CMD_MOST_USED my new title"
+    echo "    2. dynamic title"
+    echo "      $CMD_MOST_USED 'Current Directory is \"\$PWD\"'"
+    echo "         OR"
+    echo "      $CMD_MOST_USED 'Date and time of last "\
+"cmd is \"\$(date)\"'"
+    echo "    (Note the single quotes for the dynamic titles)"
+    echo
+    echo "EXAMPLES USING SPECIAL FORMATS OF TITLE:"
+    echo "1. For the RHEL 8 default title, use"
+    echo "    $CMD_MOST_USED '\$REAL_ORIG_PS1'"
+    echo "  For you, that would give (without formatting)"
+    printf "[%s@%s %s]\$\n" "${USER}" "${HOSTNAME%%.*}" "${PWD/#$HOME/\~}"
+    echo
+    echo "RETURNING TO ORIGINAL/DEFAULT:"
+    echo "There are several aliases for returning to the title as it"
+    echo " appeared when you entered the terminal. These include"
+    echo "  \`settitledefault' ; \`settitlepath' ; \`settitleorig' ; "
+    echo "  \`undosettitle' AND \`reverttitle'"
+    echo " The hope is that these will cover what people think should"
+    echo " be the command to return to the original."
+    #echo "However, they CANNOT BE USED BEFORE \`settitle' has been used."
+    echo
+    return $EXIT_SUCCESS
+  fi
+  ##DWB, 2025-06-08, adding if, START08
+  if [ $DO_WANT_TO_CHANGE_CYGWIN -eq 1 ]; then
+    source "${HOME}/.git-prompt.sh"
+  fi
+  ##DWB, 2025-06-08, END08
+
+  # finding out if it has been used - probably unnecessary
+  if [ -z "$PS1_BAK" ]; then
+    export PS1_BAK="$PS1"
+  fi
+
+  TITLE="$*"
+  # Set the PS1 title escape sequence;
+  #+ see "Customizing the terminal window title" here:
+  #+ source="https://wiki.archlinux.org/index.php/"\
+  #"Bash/Prompt_customization#Customizing_the_terminal_window_title
+  ###DWB 2022-02-07, take care of icon title, maybe both.
+  #ESCAPED_TITLE="\e]2;${TITLE}\a"
+  #ESCAPED_ICON_TITLE="\e]1;${TITLE}\a"
+
+  #ESCAPED_BOTH_TITLE="\e]0;${TITLE}\a"
+  ESCAPED_BOTH_TITLE="\033]0;${TITLE}\007"
+
+  #echo "## ${ESCAPED_BOTH_TITLE} ##"
+
+  # Delete any existing title strings,
+  #+ if any, in the current PS1 variable. See my Q here:
+  #+ my_q="https://askubuntu.com/questions/1310665/"\
+  #"how-to-replace-terminal-title-using-sed-in-ps1-prompt-string"
+  ###DWB 2022-02-07 instead of just title, do all of
+  ###+ {title, icon title, both title and icon title}.
+  ###+ also strip out the strings setting title, icon title, or
+  ###+ both from $PROMPT_COMMAND (actually, scrap $PROMPT_COMMAND
+  #PS1_NO_TITLE="$(echo "$PS1" | sed 's|\\\[\\e\]2;.*\\a\\\]||g')"
+  ##DWB 2022-02-07 Incrementally strip stuff out.
+  ps1_stripped_incr="$PS1"
+  ps1_stripped_incr=\
+    sed 's|\(\\\[\)\?\\e\]2;.*\\a\(\\\]\)\?||g' <<<"${ps1_stripped_incr}" \
+      >/dev/null 2>&1
+  ps1_stripped_incr=\
+    sed 's|\(\\\[\)\?\\e\]1;.*\\a\(\\\]\)\?||g' <<<"${ps1_stripped_incr}" \
+      >/dev/null 2>&1
+  ps1_stripped_incr=\
+    sed 's|\(\\\[\)\?\\e\]0;.*\\a\(\\\]\)\?||g' <<<"${ps1_stripped_incr}" \
+      >/dev/null 2>&1
+  PS1_STRIPPED="${ps1_stripped_incr}"
+
+  #PS1="${PS1_NO_TITLE}${ESCAPED_TITLE}"
+
+  #PS1="${PS1_STRIPPED}${ESCAPED_BOTH_TITLE}"
+  #PROMPT_COMMAND="echo -ne \"${ESCAPED_BOTH_TITLE}\""
+  PROMPT_COMMAND='echo -ne "${ESCAPED_BOTH_TITLE}"'
+  
+  ##DWB, adding check 2025-06-08, START06
+  do_allow_checking=1
+  if [ $do_allow_checking -eq 1 ]; then
+    export PS1_STRIPPED
+    export PROMPT_COMMAND
+    export ESCAPED_BOTH_TITLE
+    export PS1
+  fi
+  ##DWB, 2025-06-08, END06
+  #echo "## ${PROMPT_COMMAND} ##"
+} ##endof:  settitlestring
+#
+alias set_title='settitlestring'
+alias set_title_string='settitlestring'
+alias set-title='settitlestring'
+alias gs_set_title='settitlestring'
+#
+alias settitle='settitlestring'
+#
+alias settitledefault='settitle "$DEFAULT_PROMPT_COMMAND_TITLE"'
+#
+alias settitlepath='settitledefault'
+alias reverttitle='settitledefault'
+alias settitleorig='settitledefault'
+alias undosettitle='settitledefault'
+
+
+#
+## This next one is actually from way back.
+#
+# b) function cd_func
+# This function defines a 'cd' replacement function capable of keeping,
+# displaying and accessing history of visited directories, up to 10 entries.
+# To use it, uncomment it, source this file and try 'cd --'.
+# acd_func 1.0.5, 10-nov-2004
+# Petar Marinov, http:/geocities.com/h2428, this is public domain
+cd_func ()
+{
+  local x2 the_new_dir adir index
+  local -i cnt
+
+  if [[ $1 ==  "--" ]]; then
+    dirs -v
+    return 0
+  fi
+
+  the_new_dir=$1
+  [[ -z $1 ]] && the_new_dir=$HOME
+
+  if [[ ${the_new_dir:0:1} == '-' ]]; then
+    #
+    # Extract dir N from dirs
+    index=${the_new_dir:1}
+    [[ -z $index ]] && index=1
+    adir=$(dirs +$index)
+    [[ -z $adir ]] && return 1
+    the_new_dir=$adir
+  fi
+
+  #
+  # '~' has to be substituted by ${HOME}
+  [[ ${the_new_dir:0:1} == '~' ]] && the_new_dir="${HOME}${the_new_dir:1}"
+
+  #
+  # Now change to the new dir and add to the top of the stack
+  pushd "${the_new_dir}" > /dev/null
+  [[ $? -ne 0 ]] && return 1
+  the_new_dir=$(pwd)
+
+  #
+  # Trim down everything beyond 11th entry
+  popd -n +11 2>/dev/null 1>/dev/null
+
+  #
+  # Remove any other occurence of this dir, skipping the top of the stack
+  for ((cnt=1; cnt <= 10; cnt++)); do
+    x2=$(dirs +${cnt} 2>/dev/null)
+    [[ $? -ne 0 ]] && return 0
+    [[ ${x2:0:1} == '~' ]] && x2="${HOME}${x2:1}"
+    if [[ "${x2}" == "${the_new_dir}" ]]; then
+      popd -n +$cnt 2>/dev/null 1>/dev/null
+      cnt=cnt-1
+    fi
+  done
+
+  return 0
+}
+
+alias cd=cd_func
+
+
+
+###########################
+## MORE RECENT FUNCTIONS ##
+###########################
+
+
+#####################################
+# Encoding stuff
+#####################################
+##DWB: get the binary value for a character's bytes
+##@author: David Wallace BLACK
+gethex4char()
+{
+  if [ "$@" = "-h" -o "$@" = "--help" ]; then
+    echo "Help for gethex4char:"
+    echo
+    echo "Get the hex value for the bytes representing the"
+    echo "character given as input."
+    echo
+    echo "Usage:"
+    echo "% gethex4char <string-with-one-character>"
+    echo
+    echo "Examples:"
+    echo "% gethex4char <string-with-one-character>"
+    echo
+    echo "Note that you might have to copy/paste the glyph of the"
+    echo "character into some type of programmer's notebook with"
+    echo "the encoding set as you want it (I want UTF-8)"
+    echo "Then, in the notebook, write in the"
+    echo "gethex4char part as well as the quotes around the character."
+    echo
+    echo "It will be easier (less backslash escapes) if you use single"
+    echo "quotes around the character you pass in. The only exceptions"
+    echo "(for ascii, at least), are the single quote and the percent"
+    echo "sign. I fixed the percent sign, DWB 2022-02-16."
+    echo "For the single quotes, use:"
+    echo "% gethex4char \"'\""
+    echo
+    echo "If you really want to use double quotes, watch out for the"
+    echo "following, which will not allow the program to continue -"
+    echo "i.e. they will break the program."
+    echo "--BAD)% gethex4char \"\\\""
+    echo " instead, use single quotes or"
+    echo " GOOD)% gethex4char \"\\\\\""
+    echo "--BAD)% gethex4char \"\`\""
+    echo " instead, use single quotes or"
+    echo " GOOD)% gethex4char \"\\\`\""
+    echo "--BAD)% gethex4char \"\"\""
+    echo " instead, use single quotes or"
+    echo " GOOD)% gethex4char \"\\\"\""
+  elif [ "$@" = "'" ]; then
+    echo "0x22"
+  elif [ "$@" = "\"" ]; then
+    echo "0x28"
+  elif [ "$@" = "\\" ]; then
+    echo "0x5c"
+  elif [ "$@" = "%" ]; then
+    echo "0x25"
+  else
+    printf $@ | hexdump -C | head -n 1 | \
+     awk '{$1=""; $NF=""; print $0}' | \
+     sed 's#^[ ]\(.*\)[ ]\+$#0x\1#g; s#[ ]# 0x#g;'
+  fi
+  return 0
+}
+
+
+##DWB: get the binary value for a character's bytes
+getbinary4char()
+{
+  hex_str="00"
+  if [ "$@" = "-h" -o "$@" = "--help" ]; then
+    echo "Help for getbinary4char:"
+    echo
+    echo "Get the binary value for the bytes representing the"
+    echo "character given as input."
+    echo
+    echo "Usage:"
+    echo "% getbinary4char <string-with-one-character>"
+    echo
+    echo "Examples:"
+    echo "% getbinary4char <string-with-one-character>"
+    echo
+    echo "Note that you might have to copy/paste the glyph of the"
+    echo "character into some type of programmer's notebook with"
+    echo "the encoding set as you want it (I want UTF-8)"
+    echo "Then, in the notebook, write in the"
+    echo "gethex4char part as well as the quotes around the character."
+    echo
+    echo "It will be easier (less backslash escapes) if you use single"
+    echo "quotes around the character you pass in. The only exception"
+    echo "(for ascii, at least), is the single quote. For that, use:"
+    echo "% getbinary4char \"'\""
+    echo
+    echo "If you really want to use double quotes, watch out for the"
+    echo "following, which will not allow the program to continue -"
+    echo "i.e. they will break the program."
+    echo "--BAD)% getbinary4char \"\\\""
+    echo " instead, use single quotes or"
+    echo " GOOD)% getbinary4char \"\\\\\""
+    echo "--BAD)% getbinary4char \"\`\""
+    echo " instead, use single quotes or"
+    echo " GOOD)% getbinary4char \"\\\`\""
+    echo "--BAD)% getbinary4char \"\"\""
+    echo " instead, use single quotes or"
+    echo " GOOD)% getbinary4char \"\\\"\""
+  elif [ "$@" = "'" ]; then
+    hex_str="22"
+  elif [ "$@" = "\"" ]; then
+    hex_str="28"
+  elif [ "$@" = "\\" ]; then
+    hex_str="5c"
+  else
+    hex_str=$(printf $@ | hexdump -C | head -n 1 | \
+     awk '{$1=""; $NF=""; print $0}' | \
+     sed 's#^[ ]\+$##g;' | tr 'a-f' 'A-F')
+  fi
+  while [ $(echo "${#hex_str} % 4" | bc) -ne 0 ]; do
+    hex_str="0${hex_str}"
+  done
+  bin_str=$(echo "obase=2; ibase=16; ${hex_str}" | bc)
+  while [ $(echo "${#bin_str} % 8" | bc) -ne 0 ]; do
+    bin_str="0${bin_str}"
+  done
+  echo "0b${bin_str}"
+  return 0
+} ##endof:  getbinary4char()
+
+
+##DWB: get the Unicode codepoint (as hex) for a character
+getunicode4char()
+{
+  if [ "$@" = "-h" -o "$@" = "--help" ] 2>/dev/null; then
+    echo "Help for getunicode4char:"
+    echo
+    echo "Get the binary value for the bytes representing the"
+    echo "character given as input."
+    echo
+    echo "Requires: python3 for now, till I get the hexdump -C stuff finished"
+    echo "It was originally built with Python 3 in mind, but it works"
+    echo "without that, thanks to hexdump -C"
+    echo "You'll still need to watch out for the problem strings"
+    echo "methioned below."
+    echo
+    echo "Usage:"
+    echo "% getunicode4char <string-with-one-character>"
+    echo
+    echo "Examples:"
+    echo "% getunicode4char <string-with-one-character>"
+    echo
+    echo "Note that you might have to copy/paste the glyph of the"
+    echo "character into some type of programmer's notebook with"
+    echo "the encoding set as you want it (I want UTF-8)"
+    echo "Then, in the notebook, write in the"
+    echo "getunicode4char part as well as the quotes around the character."
+    echo
+    echo "It will be easier (less backslash escapes) if you use single"
+    echo "quotes around the character you pass in. The only exception"
+    echo "(for ascii, at least), is the single quote. For that, use:"
+    echo "% getunicode4char \"'\""
+    echo
+    echo "If you really want to use double quotes, watch out for the"
+    echo "following, which will not allow the program to continue -"
+    echo "i.e. they will break the program."
+    echo "--BAD)% getunicode4char \"\\\""
+    echo " instead, use single quotes or"
+    echo " GOOD)% getunicode4char \"\\\\\""
+    echo "--BAD)% getunicode4char \"\`\""
+    echo " instead, use single quotes or"
+    echo " GOOD)% getunicode4char \"\\\`\""
+    echo "--BAD)% getunicode4char \"\"\""
+    echo " instead, use single quotes or"
+    echo " GOOD)% getunicode4char \"\\\"\""
+  elif [ "$@" = "'" ]; then
+    echo "U+0022"
+  elif [ "$@" = "\"" ]; then
+    echo "U+0028"
+  elif [ "$@" = "\\" ]; then
+    echo "U+005C"
+  else
+    python3_is_installed=0
+    command -v python3 >/dev/null 2>&1 && python3_is_installed=1
+    if [ $python3_is_installed -eq 1 ]; then
+      zeroX_str=$(python3 -c 'print(hex(ord('"'$@'"')))')
+      hex_only_str=$(echo "${zeroX_str}" | sed 's#0x##g')
+      while [ ${#hex_only_str} -lt 4 ]; do
+        hex_only_str="0${hex_only_str}"
+      done ##endof:  while [ ${#hex_only_str} -lt 4 ]
+      echo "U+${hex_only_str}"
+      # Only returns unicode codepoints
+    else
+      echo "won't work for now. need python3"
+      return -1
+      #printf $@ | hexdump -C | head -n 1 | \
+      # awk '{$1=""; $NF=""; print $0}' | \
+      # sed 's#^[ ]\(.*\)[ ]\+$#0x\1#g; s#[ ]# 0x#g;'
+    fi
+  fi
+  return 0
+} ##endof:  getunicode4char()
+
+
+## DWB
+getbytes4unicode()
+{
+  if [ "$@" = "-h" -o "$@" = "--help" ]; then
+    echo "Help for getbytes4unicode:"
+    echo
+    echo "Get the binary value for the bytes representing the"
+    echo "character given as a unicode codepoint input."
+    echo
+    echo "Usage:"
+    echo "% getbytes4unicode <string-with-only-hex-from-unicode-codepoint>"
+    echo
+    echo "Examples:"
+    echo "% getbytes4unicode <string-with-only-hex-from-unicode-codepoint>"
+  else
+    codepoint_str="$@"
+    to_print_str="\\U${codepoint_str}"
+    while [ $(echo "${#cpdepoint_str} % 4" | bc) -ne 0 ]; do
+      codepoint_str="0${codepoint_str}"
+    done ##endof:  while [ $(echo "${#codepoint_str} % 4" | bc) -ne 0 ]
+    if [ ${#codepoint_str} -eq 4 ]; then
+      to_print_str="\\u${codepoint_str}"
+    elif [ ${#codepoint_str} -eq 8 ]; then
+      to_print_str="\\U${codepoint_str}"
+    else
+      echo "A maximum of 8 hex digits is allowed."
+    fi
+    printf ${to_print_str} | hexdump -C | head -n 1 | \
+            awk '{$1=""; $NF=""; print $0}' | \
+            sed 's#^[ ]\(.*\)[ ]\+$#0x\1#g; s#[ ]# 0x#g;'
+  fi
+} ##endof:  getbytes4unicode()
+
+
+####################################
+### More recent, small functions
+####################################
+
+##DWB: an easy way to add variable checking by useing another
+##     shell, allowing use in any script or command
+##@author: David Wallace BLACK
+vardebug()
+{
+  echo "echo \"$@: \${$@}\""
+  echo "   OR"
+  echo "echo -e \"$@:\n\${$@}\""
+  return 0
+}
+
+## DWB
+## Used to get lines between two numbers from a file
+htbetween_func () {
+  usage_str="\n Needs two positive integers. Ex.\n"\
+"\$ htbetween_func 4 72\n\n"\
+" Usually used from the command line with, e.g.\n"\
+" (User wants to get lines from count.txt between 4 and 72)\n"\
+"\$ seq 1 100 > count.txt\n\$ htbstr 4 72\n"\
+"head -n 72 | tail -69\n\$ cat -n count.txt | head -n 72 | tail -69\n\n"\
+" Won't work as expected if the larger number is greater than the\n"\
+" total number of lines.\n 'htbstr -h' returns this usage info\n"
+  do_continue=1
+  [ "$1" = "-h" ] && do_continue=0
+  [ $# -lt 2 ] && do_continue=0
+  if [ $do_continue -eq 1 ]; then
+    [ "$1" -eq "$1" -a $1 -gt 0 ] 2>/dev/null || do_continue=0
+  fi
+  if [ $do_continue -eq 1 ]; then
+    [ "$2" -eq "$2" -a $2 -gt 0 ] 2>/dev/null || do_continue=0
+  fi
+
+  [ $do_continue -eq 0 ] && echo -e "${usage_str}"
+  if [ $do_continue -eq 1 ]; then
+    first="$1"
+    second="$2"
+    greater=$first
+    lesser=$second
+    if [ $first -lt $second ]; then
+      greater=$second
+      lesser=$first
+    fi
+    n_for_tail=$(echo "${greater}-${lesser}+1" | bc)
+    echo "head -n ${greater} | tail -${n_for_tail}"
+  fi ##endof:  if [ $do_continue -eq 1 ]
+} ##endof:  htbetween_func ()
+
+alias htbstr=htbetween_func
+
+
+## DWB 2020-05-26, Epoch: around 1590519675
+git_trace_cmd_func() {
+  echo "These are the commands to have git do a trace/strace-type"
+  echo "thing during this terminal session (use without comments)"
+  echo
+  echo "-----------------------------------------"
+  echo "# export GIT_TRACE_PACKET=1"
+  echo "# export GIT_TRACE=1"
+  echo "# export GIT_CURL_VERBOSE=1"
+  echo "-----------------------------------------"
+  echo
+  echo "To get things back to normal during my session, I just"
+  echo "change the instances of '1' to instances of '0', but "
+  echo "some kind of 'unset' would also work."
+  echo
+} ##endof:  git_trace_cmd_func()
+
+alias gittracecmd=git_trace_cmd_func
+alias gittracecommand=git_trace_cmd_func
+
+## DWB put in 2022-01-18, taken from
+##+ https://stackoverflow.com/a/8088167/6505499
+##+ defining a variable using a heredoc.
+## Note that the alias, 'dhd', may be used
+##+ everywhere you see 'definewithheredoc'
+##+ below.
+##
+## More documentation is in the heredoc after the
+## function definition.
+#
+definewithheredoc(){ IFS=$'\n' read -r -d '' ${1} || true; }
+alias dhd='definewithheredoc'
+### DWB 2022-01-18  I am giving the help for this heredoc-based function
+##+ using the _same_ heredoc function. Metaaaaaa.
+dhd HELPDOC <<'EndOfHelpDHD' | sed 's#^[.]$##g'
+.
+
+definewithheredoc
+
+   DWB put this in here  2022-01-18, taken from
+   https://stackoverflow.com/a/8088167/6505499
+   defining a variable using a heredoc.
+
+Note that the alias, 'dhd', may be used
+everywhere you see 'definewithheredoc'
+below.
+
+
+USAGE
+
+definewithheredoc VARIABLE_NAME <<LIMIT_STRING
+<possibly several lines of text with no need for escapes>
+lines
+of
+text
+LIMIT_STRING
+
+Some common choices for LIMIT_STRING include:
+  EOF  ,  EOT  ,  EOM  ,  EndOfMessage
+
+I will give two sets of commands; all the members of each
+set are synonymous. See the example commands in the
+EXAMPLE USAGE section below for an idea of what each does.
+You can also consult
+https://tldp.org/LDP/abs/html/here-docs.html
+
+Each command (several lines of typed text with every new
+line available via [ENTER]) should be entered at the
+terminal prompt.
+
+
+<set1>
+#1.1
+definewithheredoc MYVAR <<EOM
+lines of
+text and stuff
+EOM
+
+#1.2
+dhd MYVAR <<EOM
+lines of
+text and stuff
+EOM
+
+</set1>
+
+
+<set2>
+#2.1
+dhd OTHERVAR <<'EOM'
+other 'lines' with
+"characters" in #them
+EOM
+
+#2.2
+dhd OTHERVAR <<"EOM"
+other 'lines' with
+"characters" in #them
+EOM
+
+#2.3
+definewithheredoc OTHERVAR << \EOM
+other 'lines' with
+"characters" in #them
+EOM
+
+#2.4
+definewithheredoc OTHERVAR <<"EOM"
+other 'lines' with
+"characters" in #them
+EOM
+
+#2.5
+dhd OTHERVAR <<"NEVERMORE"
+other 'lines' with
+"characters" in #them
+NEVERMORE
+
+</set2>
+
+
+EXAMPLE USAGE
+
+$ # with expansion of command
+$ definewithheredoc VAR1 <<EOF
+abc'asdf"
+$(echo "this-was-executed")
+&*@!!++=
+foo"bar"''
+EOF
+$ echo "$VAR1"
+abc'asdf"
+this-was-executed
+foo"bar"''
+$
+
+
+OR (one other example with the EOF being different, see
+....the StackOverflow reference above for more info)
+
+$ # with command not expanded
+$ definewithheredoc VAR2 <<'EOF'
+abc'asdf"
+$(dont-execute-this)
+&*@!!++=
+foo"bar"''
+EOF
+$ echo "$VAR2"
+abc'asdf"
+$(dont-execute-this)
+&*@!!++=
+foo"bar"''
+$
+
+
+NOTE: We always need the double quotes around whatever
+      was used for VARIABLE_NAME when echoing the
+      heredoc string variable. We did this with
+        `echo "$VAR1"` and `echo "$VAR2"`
+      in the examples.
+
+.
+
+EndOfHelpDHD
+
+alias help_definewithheredoc='echo "$HELPDOC"'
+alias help_dhd='help_definewithheredoc'
+
+#############################
+# Allow better tmux logging
+#+ Works with tmux 2.7, as
+#+ used 2022-02-28
+#############################
+
+### Easier with a separate function, DWB 2022-03-09
+##
+#dhd ensure_tmux_logging_on_str <<'EndOfHelpETLOn' | sed 's#^[.]i$##g'
+#.
+#
+#HELP FOR:
+# ensure_tmux_logging_on.sh
+#
+#@AUTHOR
+# David Wallace BLACK
+# contact via electronic mail
+# user: dblack          server: captioncall   tld: com
+# user: thedavidwblack  server: google        tld: com
+#
+#@SINCE
+# 2022-02-28
+#
+#@DESCRIPTION
+#  Turns on logging for a tmux pane (so any session), whether or not
+# logging had been turned on before. This is written because the
+# current tmux-logging plugin only has a toggle_logging function.
+# However, it toggles the most-recently-focused pane. I found that I
+# []\ould run the toggle function from a non-tmux shell to start/stop
+# a currently-up tmux pane and possibly one that is detached
+# (depending on the server). Since I want to start logging on any
+# tmux pane, I want a function that will do the following:
+#
+#   if <logging is on>
+#     <do not change, i.e. leave logging on>
+#     <simply alert that logging is happening>
+#   else if <logging is off>
+#     <turn logging on>
+#     <alert that logging is on>
+#   # That's all - no other options are possible.
+#
+# which function will get called from ~/.bashrc (or something it
+# sources), This is a good place to see if we're in a tmux session,
+# thanks to the `TMUX' environment variable.
+#  I looked at the source code and made these functions. That way,
+# if some update comes to the tmux stuff, I can still have my desired
+# functionality.
+#  This is a good place to say that in
+#    <root of tmux-logging>/scripts/variables.sh
+#  I changed
+#    filename_suffix=\
+#      "#{session_name}-#{window_index}-#{pane_index}-%Y%m%dT%H%M%S.log"
+# to
+#    filename_suffix="DWB_work-%s\
+#-#{session_name}-#{window_index}-#{pane_index}-%Y%m%dT%H%M%S%z.log"
+#
+# @USAGE
+#  % ensure_tmux_logging_on
+#
+#  It can be used inside a tmux session. If used elsewhere, it will
+# exit with a small message to stdout.
+#
+#  If used with   `-h'   or   `--help', this
+#
+#
+#.
+#
+#EndOfHelpETLOn
+#
+#ensure_tmux_logging_on()
+#{
+#  if [ "$1" = "-h" -o "$1" = "--help" ]; then
+#    echo "$ensure_tmux_logging_on_str"
+#
+#    return 1
+#  fi
+#
+#  if [ $# -ne 0 ]; then
+#    echo "No command-line arguments taken. See the usage, below."
+#    echo "$ensure_tmux_logging_on_str"
+#
+#    return 2
+#  fi
+#
+#}
+
+diffwithcontrol()
+{
+  dhd dwc_help_str <<'EndOfDWC' | sed 's#^[.]$##g'
+.
+HELP FOR:
+ diffwithcontrol
+
+@AUTHOR
+ David Wallace BLACK
+ contact via electronic mail
+ user: dblack          server: captioncall   tld: com
+ user: thedavidwblack  server: google        tld: com
+
+@SINCE
+ 2022-03-09
+
+@DESCRIPTION
+ This will give a diff of two files, but will include any control
+ characters that are in the files' content. It won't contain the
+ `$ at the end of a line.
+ This should be especially useful for files where `sed' commands
+ are used to take out certain control characters.
+ It's inspired by my `catwithcontrol' alias.
+
+@USAGE
+ % diffwithcontrol FILE1 FILE2
+
+ Two arguments, no less and no more, should be given.
+
+ If the `-h' or `--help' flag is used, this message will be
+ outputted.
+
+.
+EndOfDWC
+
+  if [ "$1" = "-h" -o "$2" -eq "--help" ]; then
+    echo "${dwc_help_str}"
+    return 1
+  fi
+
+  if [ $# -ne 2 ]; then
+    echo "Exactly 2 arguments should be given." >&2
+    echo "You gave %#"
+    echo "${dwc_help_str}"
+  fi
+
+  first_file="$1"
+  second_file="$2"
+
+  diff "${first_file}" "${second_file}" | cat -ETv | \
+    sed 's#[$]$##g;'
+
+  return 0
+} ##endof:  diffwithcontrol
+
+alias dwc="diff_with_control"

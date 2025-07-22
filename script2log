@@ -1,0 +1,106 @@
+#!/usr/bin/env sh
+##### ENDOF BBALLDAVE025 COMMENTS #####
+# @file : script2log
+# @source : 
+#   https://invisible-island.net/scripts/sample-scripts/script2log.html
+# source_ref_archived="https://web.archive.org/web/20250518062640/"\
+#"https://invisible-island.net/scripts/sample-scripts/script2log.html"
+#           Source for this  sh  script may be downloaded at
+# sh_src_url="https://invisible-island.net/scripts/#download"
+# with the Special-purpose tarball (misc-scripts.tar.gz)
+# archived_to_links="https://web.archive.org/web/20241201163415/"\
+#"https://invisible-island.net/scripts/#download"
+# archived_download_link="https://web.archive.org/web/20250721142952/"\
+#"https://invisible-island.net/datafiles/release/misc-scripts.tar.gz"
+# Useful (works better/faster) but not necessary (there's a bash 'else')
+# to have  script2log.sed  with this script, which AFAIK is only 
+# available via download of the tarball. 
+# See BBALLDAVE025 comments in that script, if you have his copy.
+# Use according to this alias, which is going in @bballdave025's
+# $HOME/.bashrc
+#
+# alias scrubsteps='\nBasic  script2log  usage:\n'\
+#'  script2log {filename-with-ctr-chars} > {scrubbed_filename}\n'\
+#'Standard usage is that this is called from  run_script.sh\n'\
+#'(via the alias `runlog'"'"'), resulting in a filename like\n'
+#' "Work_Record_DWB_<date-unixts-local>_scrubbed.log"\n'\
+
+#
+##### ENDOF BBALLDAVE025 COMMENTS #####
+# $Id: script2log,v 1.5 2015/02/04 23:51:01 tom Exp $
+# Filter "most" escape sequences from files such as typescript's.
+#
+# For demonstration purposes (and because it is likely to be omitted from
+# some BSD platforms), this does not use getopts.
+if test $# != 0
+then
+        output=
+        case x$1 in
+        x-o)
+                shift 1
+                if test $# = 0
+                then
+                        echo "?? expected parameter after -o" >&2
+                        exit 1
+                fi
+                output="$1"
+                shift 1
+                ;;
+        x-o*)
+                output=`echo "x$1" | sed -e 's/^...//'`
+                shift 1
+                ;;
+        esac
+        if test -n "$output"
+        then
+                exec $0 $* >$output
+        fi
+fi
+ 
+# ensure POSIX locale
+unset LANG
+unset LANGUAGE
+unset LC_ALL
+unset LC_CTYPE
+if test $# != 0
+then
+        for input in $*
+        do
+                test -f "$input" || continue
+                case "$input" in
+                *.gz)
+                        gzip -dc "$input" | $0
+                        ;;
+                *.bz2)
+                        bzip2 -dc "$input" | $0
+                        ;;
+                *)
+                        $0 <"$input"
+                        ;;
+                esac
+        done
+elif test -f $0.sed
+then
+        # The separate script is more portable than the command-line arguments,
+        # because of the loop construct.  Unix and BSDs do not support that
+        # as a single line.  Other than changing it to a series of lines, the
+        # two scripts are equivalent.
+        sed -f $0.sed
+else
+        # Trim ordinary ANSI sequences, then OSC sequences, then backspace
+        # sequences, then trailing CR's and finally overstruck sections of
+        # lines.
+        #
+        # There are still several interesting cases which cannot be handled
+        # with a script of this sort.  For example:
+        #       CSI K (clear line)
+        #       cursor movement within the line
+        sed \
+                -e 's/^[[[][<=>?]\{0,1\}[;0-9]*[@-~]//g' \
+                -e 's/^[[]][^^[]*^G//g' \
+                -e 's/^[[]][^^[]*^[\\//g' \
+                -e ':loop; s/[^^H]^H\(.\)/\1/g; t loop;' \
+                -e 's/^M^M*$//g' \
+                -e 's/^.*^M//g' \
+                -e 's/^[[^[]//g'
+fi
