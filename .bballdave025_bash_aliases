@@ -402,3 +402,19 @@ alias cmds4checkfnames=cfcf
 alias cfsquared=cfcf
 alias c4cf=cfcf
 
+
+
+
+## Used classifications for FHTW-2025, greppable (BRE)
+alias fhtw2025all3lett='echo "\(abg\|cwa\|fko\|fmr\|gni\|iac\|mbr\|mcl\|mmx\|nbr\|oic\|orc\|scg\|spr\|suh\|tbr\|ucr\)"'
+alias f25a3='fhtw2025all3lett'
+
+
+
+
+##  Classifications used by Reuse Model for FHTW 2025,
+##+ greppable (BRE)
+alias fhtw2025model3lett=\
+'echo "\(cwa\|fmr\|gni\|nbr\|orc\|scg\|spr\|tbr\|ucr\)"'
+alias f25m3='fhtw2025model3lett'
+
