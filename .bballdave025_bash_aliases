@@ -389,7 +389,27 @@ $ #  Do we have any filenames with undesired
 $ #+ ASCII characters
 $ # So, to find out if any filenames have those unwanted characters
 $ find . -type f | awk -F'/' '{print $NF}' | \
-    grep  '[~@#$%^&|/)(}{[*?>\<;:"`]\|]'"\|'" | wc -l
+    grep '[] ~!@#$%^&|\/)(}{[*?><;:"`'"'"']' | wc -l
+
+
+#  This is as good a place as any to put these next notes, which
+#+ are useful for fixing the new replay cleaning of runscript results
+#+ Note to WATCH OUT for false positives when joining lines that
+#+ got cut by the right side of the terminal. 
+#+ The right-side-of-the-terminal thing is why we have a series of
+#+ regexes having multiples of 80. If the terminal width has been
+#+ changed, the regexes will need to change in order to match the
+#+ width. The width can be found with   tput cols
+## (Cleaning still not perfect, but better now than before. I'm pretty
+#+ sure the problem is specific to Cygwin but haven't tested.)
+#
+#  The series of regexes is specifically for Notepad++ and has a few
+#+ quirks specific to that program. There shouldn't be any spaces.
+
+   Srch:   ^(.{80})\n(.+)$      Repl:   \1\2
+   Srch:   ^(.{160})\n(.+)$     Repl:   \1\2
+
+# and so forth with 240, 320, ... if needed. 
 
 #########################################################################
 EOF
@@ -406,15 +426,28 @@ alias c4cf=cfcf
 
 
 ## Used classifications for FHTW-2025, greppable (BRE)
-alias fhtw2025all3lett='echo "\(abg\|cwa\|fko\|fmr\|gni\|iac\|mbr\|mcl\|mmx\|nbr\|oic\|orc\|scg\|spr\|suh\|tbr\|ucr\)"'
+alias fhtw2025all3lett='echo "\(abg\|cwa\|fko\|fmr\|gni\|iac\|'\
+'mbr\|mcl\|mmx\|nbr\|oic\|orc\|scg\|spr\|suh\|tbr\|ucr\)";'
 alias f25a3='fhtw2025all3lett'
 
 
 
 
 ##  Classifications used by Reuse Model for FHTW 2025,
+##+ These will have a model made for a binary classifier
 ##+ greppable (BRE)
 alias fhtw2025model3lett=\
 'echo "\(cwa\|fmr\|gni\|nbr\|orc\|scg\|spr\|tbr\|ucr\)"'
 alias f25m3='fhtw2025model3lett'
+
+
+
+
+##  Classifications used by Reuse Model for FHTW 2025,
+##+ These will NOT have a model made for a binary classifier,
+##+ but are here for analysis purposes
+##+ greppable (BRE)
+alias fhtw2025nomod3lett=\
+'echo "\(abg\|fko\|iac\|mbr\|mcl\|mmx\|oic\|suh\)"'
+alias f25n3='fhtw2025nomod3lett'
 
