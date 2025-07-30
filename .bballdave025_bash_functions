@@ -585,7 +585,7 @@ getunicode4char()
   if [ "$@" = "-h" -o "$@" = "--help" ] 2>/dev/null; then
     echo "Help for getunicode4char:"
     echo
-    echo "Get the binary value for the bytes representing the"
+    echo "Get the unicode codepoint representing the"
     echo "character given as input."
     echo
     echo "Requires: python3 for now, till I get the hexdump -C stuff finished"
@@ -601,15 +601,26 @@ getunicode4char()
     echo "% getunicode4char <string-with-one-character>"
     echo
     echo "Note that you might have to copy/paste the glyph of the"
-    echo "character into some type of programmer's notebook with"
-    echo "the encoding set as you want it (I want UTF-8)"
-    echo "Then, in the notebook, write in the"
-    echo "getunicode4char part as well as the quotes around the character."
+    echo "character into some type of programmer's notebook with the"
+    echo "encoding set as you want it (I want UTF-8). Then, in the"
+    echo "notebook, write in the  getunicode4char  part as well as"
+    echo "the quotes around the character."
     echo
     echo "It will be easier (less backslash escapes) if you use single"
     echo "quotes around the character you pass in. The only exception"
-    echo "(for ascii, at least), is the single quote. For that, use:"
+    echo "(for ASCII, at least), is the single quote. For that, use:"
     echo "% getunicode4char \"'\""
+    echo "Do note, however, that to get a return for the space character,"
+    echo "You must escape it with a backslash, whether you surround it"
+    echo "with single quotes, double quotes, or just put it in by itself."
+    echo " GOOD)% getunicode4char '\ '"
+    echo ' GOOD)% getunicode4char "\ "'
+    echo "      % #  This next one needs explaining. You should push the"
+    echo "      % #+ Space Bar once after the backslash and then press the"
+    echo "      % #+ Enter key."
+    echo " GOOD)% getunicode4char \ "
+    echo "--BAD)% getunicode4char ' '"
+    echo '--BAD)% getunicode4char " "'
     echo
     echo "If you really want to use double quotes, watch out for the"
     echo "following, which will not allow the program to continue -"
@@ -628,7 +639,7 @@ getunicode4char()
   elif [ "$@" = "\"" ]; then
     echo "U+0028"
   elif [ "$@" = "\\" ]; then
-    echo "U+005C"
+    echo "U+005c"
   else
     python3_is_installed=0
     command -v python3 >/dev/null 2>&1 && python3_is_installed=1
@@ -685,6 +696,35 @@ getbytes4unicode()
   fi
 } ##endof:  getbytes4unicode()
 
+
+##DWB added 2025-07-29
+get2byteandunicode4char()
+{
+  if [ "$@" = "-h" -o "$@" = "--help" ]; then
+    echo "Help for get2bytesandunicode4char:"
+    echo
+    echo "Get the UTF-8 byte encoding for the "
+    echo "character given as a unicode codepoint input."
+    echo
+    echo "Usage:"
+    echo "% getbytes4unicode <string-with-only-one_char>"
+    echo
+    echo "Examples:"
+    echo "% getbytes4unicode 'π'"
+    echo
+    echo "You can get more details on valid input from the help for"
+    echo "getbytes4char, which is done with the command,"
+    echo "% getbytes4char --help"
+  else
+    this_char=$@; 
+    first=$(gethex4char ${this_char} | tr -d '\n')
+    second=$(getunicode4char ${this_char} | tr -d '\n')
+    echo "( ${first} || ${second} )"
+  fi
+} ##endof:  get2byteandunicode4char()
+
+alias get2bu4char='get2byteandunicode4char'
+alias get24char='get2byteandunicode4char'
 
 ####################################
 ### More recent, small functions
@@ -1050,3 +1090,122 @@ EndOfDWC
 } ##endof:  diffwithcontrol
 
 alias dwc="diff_with_control"
+
+
+
+##  DWB, 2025-07-28. Allow opening of Notepad++ (optionally with the
+##+ filename whose contents should be displayed) alwayas in the
+##+ background.
+notepadplusplus() {
+  # @author : bballdave025
+  # @since  : 2025-07-28 (this time)
+  # @brief  : Opens Notepad++ in the background, opening FILENAME if given
+  
+  IFS=$'\n' read -r -d '' usage <<'EndUsage'
+.
+
+NAME
+       notepadplusplus - opens Notepad++ in background
+       Often invoked with aliases including
+         npp, n++, np++, notepadpp
+         (`notepad++' isn't given as an alias, in 
+          case the `PATH' variable includes the 
+          executable's path)
+
+SYNOPSIS
+       notepadplusplus [--help|-h] [FILENAME]
+       
+DESCRIPTION
+       Usable on Cygwin (running in Windows), assuming that
+       its filepath is
+         `/cygdrive/c/Program\ Files\ \(x86\)/Notepad++/notepad++.exe'
+       Opens Notepad++ in the background, with the possibility of
+       displaying a file represented by the FILENAME parameter.
+       
+       Optional first argument(s)
+         Unless passed `--help' or `-h' as the first argument,
+         the argument is tested for its existence as a file, 
+         and then opened if the results are positive, and the
+         return code will be `0'. (This means you cannot create a
+         file using the function; for that, you must use 
+         something like `touch'.) If the string given doesn't 
+         represent an existing filename, the function exit to 
+         the shell with return code, `1'.
+         
+         If I find I need it, I will extend this to where all 
+         arguments are opened (if they represent existing files), 
+         rather than just ignoring arguments $2, $3, $4. In the
+         meanwhile, I'll just output something saying that $1
+         (argument outputted) will be opened and the rest of the
+         arguments (outputted as well) will be ignored, after
+         which this usage string will be outputted, after which
+         the first argument will be opened in Notepad++ (again,
+         as long as `--help' or `-h' is given as the first
+         argument). The return code will be `0'.
+         
+         If `--help' or `-h' is given as the first argument,
+         this usage will be outputted, and the program will
+         give return code `0'
+
+AUTHOR
+         David BLACK,   GitHub  @bballdave025
+         This version, using a function instead of an alias
+         in order to ensure that Notepad++ is opened in the
+         background is   @since 2025-07-28.
+
+.
+EndUsage
+
+  this_arg=$1
+  this_param=
+  retval=0
+  shift  # If no $1, no problem, so no  &&  or  ||
+# if <help-requested>  
+  if [ "${this_arg}" = "--help" -o "${this_arg}" = "-h" ]; then
+    echo "${usage}" | sed 's#^[.]$##g' >&2
+    return ${retval}
+  else
+    this_param="${this_arg}"
+    this_used_param=$(cygpath -w "${this_param}")
+#   if <there are remaining parameters>
+    if [ ${#@} -gt 0 ]; then
+      echo " Extra parameters:" >&2
+      echo "$@" >&2
+      echo " will be ignored." >&2
+    fi ##endof:  if <there are remaining parameters>
+#   if <any parameter is given>
+    if [ ! -z "${this_used_param}" ]; then
+#     if <param is a real file>
+      if [ -f "${this_used_param}" ]; then
+        echo " Opening" >&2
+        echo "${this_used_param}" >&2
+        echo " in Notepad++" >&2
+      else
+        echo " Your parameter," >&2
+        echo "${this_used_param}" >&2
+        echo " is not a file." >&2
+        echo " Note that the file path from here is" >&2
+        echo "${this_used_param}" >&2
+        echo >&2
+        echo >&2
+        echo "${usage}" | sed 's#^[.]$##g' >&2
+        retval=1
+      fi ##endof:  if/else <param is a real file>
+    else
+      echo " Opening Notepad++" >&2
+    fi ##endof:  if <any parameter is given>
+  fi ##endof:  if/else <help-requested>
+# if <return value is zero (success)>
+  if [ ${retval} -eq 0 ]; then
+    #exe_filepath='/cygdrive/c/Program\ Files\ \(x86\)/Notepad++/notepad++'
+    /cygdrive/c/Program\ Files\ \(x86\)/Notepad++/notepad++ \
+      "${this_used_param}" &
+  fi ##endof:  if <return value is zero (success)>
+  return ${retval}
+}
+
+alias npp='notepadplusplus'
+alias n++='npp'
+alias np++='npp'
+alias notepadpp='npp'
+
