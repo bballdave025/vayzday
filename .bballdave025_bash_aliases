@@ -365,31 +365,44 @@ alias ttdatechk='      echo -e "$(ttdate)\nExitedNormally"     '\
 
 
 ## DWB, 2025-06-27, See commands and commentary for checking filenames
-IFS='\n' read -r -d '' str4fnameregexcheck <<'EOF'
+IFS='\n' read -r -d '' str4fnameregexcheck <<'EndofRegExInfo'
 
 ######### COMMANDS CAN BE COPY/PASTED, OR YOU CAN USE THE IDEAS #########
 ######### TO GET WHAT YOU WANT. (DON'T INCLUDE LEADING $S)      #########
 
-$ #  Any with non-printable ASCII?
-$ find . -type f | awk -F'/' '{print $NF}' | \
-    grep -P "[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]" | wc -l
-$ #  Any with undesired space-y (still non-printable --
-$ #+ tab, line feed, carriage return, space)?
-$ find . -type f | awk -F'/' '{print $NF}' | \
-    grep -P "[\x09-\x10\x0B\x0D\x20]" | wc -l
-$ #  Any that are actually non-ASCII?
-$ find . -type f | awk -F'/' '{print $NF}' | \
-    grep -vP "[\x00-\x7F]" | wc -l
-$ #  Sanity check: do we get the right number of files if we do
-$ #+ a slightly-changed negation of the previous (simple check
-$ #+ for ascii, naive actually)?
-$ #wrong#find . -type f | awk -F'/' '{print $NF}' | \
-  #wrong#  grep "^[\x00-\x7F]\+$" | wc -l
-$ #  Do we have any filenames with undesired
-$ #+ ASCII characters
+$ #
+#  USE THIS MOST - combined for characters, non-ascii; 
+#+ and characters, non-printable ascii--includes space,
+#+ tab, carriage return, linefeed
+# @@@@@@@@@@@@@@@@@@@@ IMPORTANT CHECK 1 @@@@@@@@@@@@@@@@@@@@
+$ find . -type f | awk -F'/' '{print $NF}' |
+    LC_ALL=C grep -oP "[\x00-\x20\x7F-\xFF]" | wc -l
+$ # @@@@@@@@@
+$ ##### Possible subsets if desired #####
+$ ##      - Any with non-printable ASCII (definitely control chars)
+    $ find . -type f | awk -F'/' '{print $NF}' | 
+        LC_ALL=C grep -oP "[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]" | wc -l
+$ #
+#  Any with undesired space-y (still 'printable' in that they show
+#+ up, but control-y), tab, line feed, carriage return, space
+#+ ( I don't include:
+#+        VERTICAL TAB  -  \x0B , \013 ;
+#+   or   FORM FEED     -  \x0C , \014 ;
+#+   I guess they're technically in the same group, but I don't
+#+   run into them nearly as often, so I put them in the
+#+   general control character group.)
+    $ find . -type f | awk -F'/' '{print $NF}' | 
+        LC_ALL=C grep -oP "[\x09-\x10\x0B\x0D\x20]" | wc -l
+$ ##### Any that are actually non-ASCII? #####
+    $ find . -type f | awk -F'/' '{print $NF}' | 
+        Do LC_ALL=C grep -oP "[\x80-\xFF]" | wc -l
+$ #  Do LC_ALL=C we have any filenames with undesired
+$ #+ ASCII characters (Dave's no-nos)
 $ # So, to find out if any filenames have those unwanted characters
-$ find . -type f | awk -F'/' '{print $NF}' | \
-    grep '[] ~!@#$%^&|\/)(}{[*?><;:"`'"'"']' | wc -l
+$ # @@@@@@@@@@@@@@@@@@@@ IMPORTANT CHECK 2 @@@@@@@@@@@@@@@@@@@@
+$ find . -type f | awk -F'/' '{print $NF}' | 
+    LC_ALL=C grep '[] ~!@#$%^&|\/)(}{[*?><;:"`'"'"']' | wc -l
+$ # @@@@@@@@@
 
 
 #  This is as good a place as any to put these next notes, which
@@ -411,8 +424,16 @@ $ find . -type f | awk -F'/' '{print $NF}' | \
 
 # and so forth with 240, 320, ... if needed. 
 
+
+#  For when copy/paste from Cygwin terminal puts spaces up to 80
+#+ (more accurately, `$(tput cols)') characters instead of using
+#+ a linefeed character.
+#+ Notepad++ RegEx (not perfect with 80 characters), but can find
+#+ them)
+   Srch:   ^([$].+[ ]{10,})([^ ]+.*)$
+
 #########################################################################
-EOF
+EndofRegExInfo
 
 export str4fnameregexcheck
 
@@ -424,30 +445,224 @@ alias c4cf=cfcf
 
 
 
+## DWB, 2025-08-25, TL;DR commands and commentary for checking filenames
+IFS='\n' read -r -d '' str4cfcfquick <<'EndofQuickRegExInfo'
+#                                                                       #
+######### COMMANDS CAN BE COPY/PASTED, OR YOU CAN USE THE IDEAS #########
+######### TO GET WHAT YOU WANT. (DON'T INCLUDE LEADING $S)      #########
 
-## Used classifications for FHTW-2025, greppable (BRE)
+#  USE THIS MOST - Find characters that are non-ascii; 
+#+ Find characters that are non-printable ascii - includes 
+#+ space, tab, carriage return, linefeed
+#+
+# @@@@@@@@@@@@@@@@@@@@ IMPORTANT CHECK 1 @@@@@@@@@@@@@@@@@@@@
+
+$ find . -type f | awk -F'/' '{print $NF}' |
+    LC_ALL=C grep -oP "[\x00-\x20\x7F-\xFF]" | wc -l
+
+# @@@@@@@@@
+
+
+#  Do we have any filenames with undesired ASCII
+#+ characters (Dave's no-nos, which are the characters
+#+ he has found to cause problems in later parsing.)
+#+
+# @@@@@@@@@@@@@@@@@@@@ IMPORTANT CHECK 2 @@@@@@@@@@@@@@@@@@@@
+
+$ find . -type f | awk -F'/' '{print $NF}' | 
+    LC_ALL=C grep '[] ~!@#$%^&|\/)(}{[*?><;:"`'"'"']' | wc -l
+
+# @@@@@@@@@
+
+#########################################################################
+EndofQuickRegExInfo
+
+export str4cfcfquick
+
+alias commandsforcheckingfilenamesquick='echo "${str4cfcfquick}"'
+alias cfcfq=commandsforcheckingfilenamesquick
+alias cfcfquick=commandsforcheckingfilenamesquick
+alias cmds4checkfnamesquick=commandsforcheckingfilenamesquick
+alias cfsquaredquick=commandsforcheckingfilenamesquick
+alias c4cfquick=commandsforcheckingfilenamesquick
+alias c4cfq=commandsforcheckingfilenamesquick
+alias cfcftldr=commandsforcheckingfilenamesquick
+
+
+## DWB, 2025-08-25, specifics for cleaning terminal logs in Notepad++
+IFS='\n' read -r -d '' strcleantermlog <<'EndofCleanTermLog'
+#                                                                       #
+######### COMMANDS CAN BE COPY/PASTED, OR YOU CAN USE THE IDEAS #########
+######### TO GET WHAT YOU WANT.                                 #########
+
+#  Useful when doing extra cleaning on terminal I/O
+#+ logs (specific for when `tput cols' returns `80')
+#+ I use them with Notepad++ regex Search&Replace
+#+ There shouldn't be any spaces.
+          Srch:   ^(.{80})\n(.+)$      Repl:   \1\2
+          Srch:   ^(.{160})\n(.+)$     Repl:   \1\2
+#+ and so forth with 240, 320, ... if needed. 
+
+#  For when copy/paste from Cygwin terminal puts spaces up to
+#+ the terminal width (though no reference to terminal width)
+          Srch:   ^([$].+[ ]{10,})([^ ]+.*)$
+#+ cf. my_unix_se="https://web.archive.org/web/20250825181356/"\
+#+ "https://unix.stackexchange.com/questions/798737/regex-to-find-"\
+#+ "text-plus-trailing-10-spaces-sum-of-two-matches-lengths-is-part" 
+
+#########################################################################
+EndofCleanTermLog
+
+export strcleantermlog
+
+alias forcleaningterminallog='echo "${strcleantermlog}"'
+alias forcleantl=forcleaningterminallog
+
+
+
+##################################################################
+##     fhtw2025information3lettgroups
+##       f25info     OR     f25groups
+##                   OR     f25guide
+##   
+##  Guide to the FHTW-2025 class-group aliases
+##+ The comments I've put before the alias definitions
+##+ make up this information
+## DWB, 2025-08-06
+IFS='\n' read -r -d '' str4fhtw2025infoguide <<'EndofFHTW2025InfoGuide'
+-----------------------------------------------------------------------
+INFORMATION AND ALIASES FOR 3-LETTER CLASSIFICATION EQUIVALENCIES;
+THE 3 LETTERS ARE PLACED AFTER THE BARE FILENAME, PREPENDED BY AN
+UNDERSCORE.
+
+Note that all reges are greppable BREs
+For ERE or PCRE, use the command,
+     $ echo $(<this_f25_alias>) | tr -n '\\'
+a couple of e.g.s
+     $ echo $(f25info) | tr -n '\\'
+     $ echo $(f25a3) | tr -n '\\'
+---
+    fhtw2025information3lettgroups
+      f25info     OR     f25groups
+      f253lett    OR     f25guide
+  
+ Guide to the FHTW-2025 class-group aliases
+ The comments I've put before the alias definitions
+ make up this information
+DWB, 2025-08-06
+--------------
+    fhtw2025all3lett
+      f25a3
+ Used classifications for FHTW-2025
+--------------
+    fhtw2025model3lett
+      f25m3
+ Classifications used by Reuse Model for FHTW 2025,
+ These will have a model made for a binary classifier
+--------------
+    fhtw2025nomod3lett
+      f25n3
+ Classifications NOT used by Reuse Model for FHTW 2025,
+ These will NOT have a model made for a binary classifier,
+ but are here for analysis purposes.
+ PLEASE NOTE that this doesn't mean no-reuse, it just
+ means this classification won't have its own model.
+--------------
+    fhtw2025singletypepos3lett
+      f25s3     OR     f25p3
+  Classifications used by Reuse Model for FHTW 2025,
+ but only those with single-type, positive reuse. 
+ (Nota Bene that 'nbr' is actually the deciding 
+  classification for the multi, yes_reuse vs. 
+  no_reuse binary classification via
+       yes_reuse=!{'nbr}'
+  We have 'nbr' in f25m3, but not in this f25s3)
+ I'm making two aliases to access this info
+    f25s3    # mnemonic "single"
+    f25p3    # mnemonic "positive
+ These will have a model made for a single-type
+  binary classifier
+-----------------------------------------------------------------------
+EndofFHTW2025InfoGuide
+
+export str4fhtw2025infoguide
+
+alias fhtw2025information3lettgroups='echo "${str4fhtw2025infoguide}"'
+alias f25info='fhtw2025information3lettgroups'
+alias f25guide='fhtw2025information3lettgroups'
+alias f25groups='fhtw2025information3lettgroups'
+alias f253lett='fhtw2025information3lettgroups'
+
+
+##---------------------------------------------------------------------
+
+##     fhtw2025all3lett
+##       f25a3
+##+ Used classifications for FHTW-2025
+##+
+##+ Greppable (BRE)
+##+ For ERE or PCRE, use the result of 
+##+   % echo $(f25a3) | tr -d '\\' 
 alias fhtw2025all3lett='echo "\(abg\|cwa\|fko\|fmr\|gni\|iac\|'\
 'mbr\|mcl\|mmx\|nbr\|oic\|orc\|scg\|spr\|suh\|tbr\|ucr\)";'
 alias f25a3='fhtw2025all3lett'
 
 
+##---------------------------------------------------------------------
 
-
+##     fhtw2025model3lett
+##       f25m3
 ##  Classifications used by Reuse Model for FHTW 2025,
 ##+ These will have a model made for a binary classifier
-##+ greppable (BRE)
+##+
+##+ Greppable (BRE)
+##+ For ERE or PCRE, use the result of 
+##+   % echo $(f25m3) | tr -d '\\' 
 alias fhtw2025model3lett=\
 'echo "\(cwa\|fmr\|gni\|nbr\|orc\|scg\|spr\|tbr\|ucr\)"'
 alias f25m3='fhtw2025model3lett'
 
 
+##---------------------------------------------------------------------
 
-
-##  Classifications used by Reuse Model for FHTW 2025,
+##     fhtw2025nomod3lett
+##       f25n3
+##+ Classifications NOT used by Reuse Model for FHTW 2025,
 ##+ These will NOT have a model made for a binary classifier,
-##+ but are here for analysis purposes
-##+ greppable (BRE)
+##+ but are here for analysis purposes.
+##+ PLEASE NOTE that this doesn't mean no-reuse, it just
+##+ means this classification won't have its own model.
+##+ 
+##+ Greppable (BRE)
+##+ For ERE or PCRE, use the result of 
+##+   % echo $(f25n3) | tr -d '\\' 
 alias fhtw2025nomod3lett=\
 'echo "\(abg\|fko\|iac\|mbr\|mcl\|mmx\|oic\|suh\)"'
 alias f25n3='fhtw2025nomod3lett'
+
+
+##---------------------------------------------------------------------
+
+##     fhtw2025singletypepos3lett
+##       f25s3     OR     f25p3
+##+  Classifications used by Reuse Model for FHTW 2025,
+##+ but only those with single-type, positive reuse. 
+##+ (Nota Bene that 'nbr' is actually the deciding 
+##+  classification for the multi, yes_reuse vs. 
+##+  no_reuse binary classification via
+##+       yes_reuse=!{'nbr}'
+##+  We have 'nbr' in f25m3, but not in this f25s3)
+##+ I'm making two aliases to access this info
+##+    f25s3    # mnemonic "single"
+##+    f25p3    # mnemonic "positive
+##+ These will have a model made for a single-type
+##+  binary classifier
+##+
+##+ greppable (BRE).
+##+ For ERE or PCRE, use the result of 
+##+   % echo $(f25p3) | tr -d '\\' 
+alias fhtw2025singletypepos3lett=\
+'echo "\(cwa\|fmr\|gni\|orc\|scg\|spr\|tbr\|ucr\)"'
+alias f25s3='fhtw2025singletypepos3lett'
+alias f25p3='fhtw2025singletypepos3lett'
 

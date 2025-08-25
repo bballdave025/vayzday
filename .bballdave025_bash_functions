@@ -321,7 +321,7 @@ settitlestring()
   # Set the PS1 title escape sequence;
   #+ see "Customizing the terminal window title" here:
   #+ source="https://wiki.archlinux.org/index.php/"\
-  #"Bash/Prompt_customization#Customizing_the_terminal_window_title
+  #"Bash/Prompt_customization#Customizing_the_terminal_window_title"
   ###DWB 2022-02-07, take care of icon title, maybe both.
   #ESCAPED_TITLE="\e]2;${TITLE}\a"
   #ESCAPED_ICON_TITLE="\e]1;${TITLE}\a"
@@ -1053,7 +1053,7 @@ HELP FOR:
 @DESCRIPTION
  This will give a diff of two files, but will include any control
  characters that are in the files' content. It won't contain the
- `$ at the end of a line.
+ `$' at the end of a line.
  This should be especially useful for files where `sed' commands
  are used to take out certain control characters.
  It's inspired by my `catwithcontrol' alias.
@@ -1093,119 +1093,259 @@ alias dwc="diff_with_control"
 
 
 
-##  DWB, 2025-07-28. Allow opening of Notepad++ (optionally with the
-##+ filename whose contents should be displayed) alwayas in the
-##+ background.
-notepadplusplus() {
-  # @author : bballdave025
-  # @since  : 2025-07-28 (this time)
-  # @brief  : Opens Notepad++ in the background, opening FILENAME if given
-  
-  IFS=$'\n' read -r -d '' usage <<'EndUsage'
-.
 
-NAME
-       notepadplusplus - opens Notepad++ in background
-       Often invoked with aliases including
-         npp, n++, np++, notepadpp
-         (`notepad++' isn't given as an alias, in 
-          case the `PATH' variable includes the 
-          executable's path)
 
-SYNOPSIS
-       notepadplusplus [--help|-h] [FILENAME]
-       
-DESCRIPTION
-       Usable on Cygwin (running in Windows), assuming that
-       its filepath is
-         `/cygdrive/c/Program\ Files\ \(x86\)/Notepad++/notepad++.exe'
-       Opens Notepad++ in the background, with the possibility of
-       displaying a file represented by the FILENAME parameter.
-       
-       Optional first argument(s)
-         Unless passed `--help' or `-h' as the first argument,
-         the argument is tested for its existence as a file, 
-         and then opened if the results are positive, and the
-         return code will be `0'. (This means you cannot create a
-         file using the function; for that, you must use 
-         something like `touch'.) If the string given doesn't 
-         represent an existing filename, the function exit to 
-         the shell with return code, `1'.
-         
-         If I find I need it, I will extend this to where all 
-         arguments are opened (if they represent existing files), 
-         rather than just ignoring arguments $2, $3, $4. In the
-         meanwhile, I'll just output something saying that $1
-         (argument outputted) will be opened and the rest of the
-         arguments (outputted as well) will be ignored, after
-         which this usage string will be outputted, after which
-         the first argument will be opened in Notepad++ (again,
-         as long as `--help' or `-h' is given as the first
-         argument). The return code will be `0'.
-         
-         If `--help' or `-h' is given as the first argument,
-         this usage will be outputted, and the program will
-         give return code `0'
+## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ##
+#############              BE CAREFUL!!!!!                #############
+#!##!#
+#!##!#  THE NEXT TWO COMMANDS, WHICH ALLOW WINDOWS EXECUTABLES TO BE
+#!##!#+ CALLED WITH ARGUMENTS, SHOULDN'T BE USED UNLESS YOU: 
+#!##!#+ 1) KNOW YOUR MACHINE/SYSTEM TO BE VERY SECURE
+#!##!#+ 2) KNOW WHAT THESE ARE DOING
+#!##!#+ 3) KNOW WHY "EXECUTABLES TO BE CALLED WITH ARGUMENTS" SHOULD
+#!##!#+    PUT UP A WARNING FLAG
+#!##!#
+#!#     FOR NOW, THEY ARE COMMENTED OUT WITH #!#
+#!#
+#!#
+#!###  DWB, 2025-07-28. Allow opening of Notepad++ (optionally with the
+#!###+ filename whose contents should be displayed) always in the
+#!###+ background.
+#!#notepadplusplus() {
+#!#  # @author : bballdave025
+#!#  # @since  : 2025-07-28 (this time)
+#!#  # @brief  : Opens Notepad++ in the background, opening FILENAME if given
+#!#  
+#!#  IFS=$'\n' read -r -d '' usage <<'EndUsage'
+#!#.
+#!#
+#!#NAME
+#!#       notepadplusplus - opens Notepad++ in background
+#!#       Often invoked with aliases including
+#!#         npp, n++, np++, notepadpp
+#!#         (`notepad++' isn't given as an alias, in 
+#!#          case the `PATH' variable includes the 
+#!#          executable's path)
+#!#
+#!#SYNOPSIS
+#!#       notepadplusplus [--help|-h] [FILENAME]
+#!#       
+#!#DESCRIPTION
+#!#       Usable on Cygwin (running in Windows), assuming that
+#!#       its filepath is
+#!#         '/cygdrive/c/Program\ Files\ \(x86\)/Notepad++/notepad++.exe'
+#!#       Opens Notepad++ in the background, with the possibility of
+#!#       displaying a file represented by the FILENAME parameter.
+#!#       
+#!#       Optional first argument(s)
+#!#         Unless passed `--help' or `-h' as the first argument,
+#!#         the argument is tested for its existence as a file, 
+#!#         and then opened if the results are positive, and the
+#!#         return code will be `0'. (This means you cannot create a
+#!#         file using the function; for that, you must use 
+#!#         something like 'touch'.) If the string given doesn't 
+#!#         represent an existing filename, the function exits to 
+#!#         the shell with return code, `1'.
+#!#         
+#!#         If I find I need it, I will extend this to where all 
+#!#         arguments are opened (if they represent existing files), 
+#!#         rather than just ignoring arguments $2, $3, $4. In the
+#!#         meanwhile, I'll just output something saying that $1
+#!#         (argument outputted) will be opened and the rest of the
+#!#         arguments (outputted as well) will be ignored, after
+#!#         which this usage string will be outputted, after which
+#!#         the first argument will be opened in Notepad++ (again,
+#!#         as long as `--help' or `-h' is given as the first
+#!#         argument). The return code will be '0'.
+#!#         
+#!#         If `--help' or `-h' is given as the first argument,
+#!#         this usage will be outputted, and the program will
+#!#         give return code `0'
+#!#
+#!#AUTHOR
+#!#         David BLACK,   GitHub  @bballdave025
+#!#         This version, using a function instead of an alias
+#!#         in order to ensure that Notepad++ is opened in the
+#!#         background is   @since 2025-07-28.
+#!#
+#!#.
+#!#EndUsage
+#!#
+#!#  this_arg=$1
+#!#  this_param=
+#!#  this_used_param=
+#!#  retval=0
+#!#  shift  # If no $1, no problem, so no  &&  or  ||
+#!## if <help-requested>  
+#!#  if [ "${this_arg}" = "--help" -o "${this_arg}" = "-h" ]; then
+#!#    echo "${usage}" | sed 's#^[.]$##g' >&2
+#!#    return ${retval}
+#!#  else
+#!#    this_param="${this_arg}"
+#!#    this_used_param=$(cygpath -w "${this_param}")
+#!##   if <there are remaining parameters>
+#!#    if [ ${#@} -gt 0 ]; then
+#!#      echo " Extra parameters:" >&2
+#!#      echo "$@" >&2
+#!#      echo " will be ignored." >&2
+#!#    fi ##endof:  if <there are remaining parameters>
+#!##   if <any parameter is given>
+#!#    if [ ! -z "${this_used_param}" ]; then
+#!##     if <param is a real file>
+#!#      if [ -f "${this_used_param}" ]; then
+#!#        echo " Opening" >&2
+#!#        echo "${this_used_param}" >&2
+#!#        echo " in Notepad++" >&2
+#!#      else
+#!#        echo " Your parameter," >&2
+#!#        echo "${this_used_param}" >&2
+#!#        echo " is not a file." >&2
+#!#        echo " Note that the file path from here is" >&2
+#!#        echo "${this_used_param}" >&2
+#!#        echo >&2
+#!#        echo >&2
+#!#        echo "${usage}" | sed 's#^[.]$##g' >&2
+#!#        retval=1
+#!#      fi ##endof:  if/else <param is a real file>
+#!#    else
+#!#      echo " Opening Notepad++" >&2
+#!#    fi ##endof:  if <any parameter is given>
+#!#  fi ##endof:  if/else <help-requested>
+#!## if <return value is zero (success)>
+#!#  if [ ${retval} -eq 0 ]; then
+#!#    echo >&2
+#!#    echo " YOU SHOULD SEE something similar (but with numbers) to" >&2
+#!#    echo >&2
+#!#    echo "----------" >&2
+#!#    echo "[a] bcde" >&2
+#!#    echo >&2
+#!#    echo "me@MACHINE /current/working/dir" >&2
+#!#    echo "\$ # HIT [ENTER] HERE, maybe a few times." >&2
+#!#    echo  "  # AFTER CLICKING BACK TO CYGWIN." >&2
+#!#    echo >&2
+#!#    echo " YOU SHOULD THEN SEE something like" >&2
+#!#    echo >&2
+#!#    echo "[2]+  Done                    /cygdrive/c/path/" >&2
+#!#    echo "to/notepad++ \"\${this_used_parameter}\"" >&2
+#!#    echo >&2
+#!#    echo "me@MACHINE /current/working/dir" >&2
+#!#    echo "\$" >&2
+#!#    echo >&2
+#!#    echo " TRUST ME!"
+#!#    echo " DOING SO WILL LIKELY RESOLVE SOME CONFUSION." >&2
+#!#    echo >&2
+#!#    echo " CLICK HERE, THEN PRESS [ENTER] A FEW TIMES." >&2
+#!#    echo >&2
+#!#    echo >&2
+#!#    echo "----------" >&2
+#!#    #exe_filepath='/cygdrive/c/Program\ Files\ \(x86\)/Notepad++/notepad++'
+#!#    
+#!#    #  Here is the command we'll use
+#!#    /cygdrive/c/Program\ Files\ \(x86\)/Notepad++/notepad++ \
+#!#      "${this_used_param}" &
+#!#  fi ##endof:  if <return value is zero (success)>
+#!#  return ${retval}
+#!#}
+#!#
+#!#alias npp='notepadplusplus'
+#!#alias n++='npp'
+#!#alias np++='npp'
+#!#alias notepadpp='npp'
+#!#
+#!#
+#!#
+#!#
+#!#windowsphotoviewer() {
+#!#  usage="Where did I put that string?"
+#!#  this_arg=$1
+#!#  this_param=
+#!#  this_used_param=
+#!#  retval=0
+#!#  shift  # If no $1, no problem, so no  &&  or  ||
+#!## if <help-requested>  
+#!#  if [ "${this_arg}" = "--help" -o "${this_arg}" = "-h" ]; then
+#!#    echo "${usage}" | sed 's#^[.]$##g' >&2
+#!#    return ${retval}
+#!#  else
+#!#    this_param="${this_arg}"
+#!#    this_pre_param=$(realpath "${this_param}")
+#!#    this_used_param=$(cygpath -w "${this_pre_param}")
+#!##   
+#!##    if <there are remaining parameters>
+#!#    if [ ${#@} -gt 0 ]; then
+#!#      echo " Extra parameters:" >&2
+#!#      echo "$@" >&2
+#!#      echo " will be ignored." >&2
+#!#    fi ##endof:  if <there are remaining parameters>
+#!##   if <any parameter is given>
+#!#    if [ ! -z "${this_used_param}" ]; then
+#!##     if <param is a real file>
+#!#      if [ -f "${this_used_param}" ]; then
+#!#        echo " Attempting to open" >&2
+#!#        echo "${this_used_param}" >&2
+#!#        echo " in Windows Photo Viewer" >&2
+#!#        echo >&2
+#!#        echo " YOU SHOULD SEE something (but with numbers) like" >&2
+#!#        echo >&2
+#!#        echo "----------" >&2
+#!#        echo "[f] ghij" >&2
+#!#        echo >&2
+#!#        echo "me@MACHINE /current/working/dir" >&2
+#!#        echo "\$ # HIT [ENTER] HERE, maybe a few times" >&2
+#!#        echo  "  # AFTER CLICKING BACK TO CYGWIN." >&2
+#!#        echo >&2
+#!#        echo " YOU SHOULD THEN SEE something like" >&2
+#!#        echo >&2
+#!#        echo "[2]+  Done                    powershell -c '" >&2
+#!#        echo "      rundll32  PhotoViewer  parameter" >&2
+#!#        echo "    '" >&2
+#!#        echo >&2
+#!#        echo "me@MACHINE /current/working/dir" >&2
+#!#        echo "\$" >&2
+#!#        echo >&2
+#!#        echo " TRUST ME!"
+#!#        echo " DOING SO WILL LIKELY RESOLVE SOME CONFUSION." >&2
+#!#        echo >&2
+#!#        echo " CLICK HERE, THEN PRESS [ENTER] A FEW TIMES." >&2
+#!#        echo >&2
+#!#        echo >&2
+#!#        echo "----------" >&2
+#!#      else
+#!#      # else for if <param is a real file>
+#!#        echo "#7#"
+#!#        echo " Your parameter," >&2
+#!#        echo "#8#"
+#!#        echo "${this_used_param}" >&2
+#!#        echo "#9#"
+#!#        echo " is not a file." >&2
+#!#        echo "#10#"
+#!#        echo " Note that the full file path is" >&2
+#!#        echo "#11#"
+#!#        echo "${this_used_param}" >&2
+#!#        echo "#12#"
+#!#        echo >&2
+#!#        echo >&2
+#!#        echo "${usage}" | sed 's#^[.]$##g' >&2
+#!#        retval=1
+#!#      fi ##endof:  if/else <param is a real file>
+#!#    else
+#!#    # else for if <any parameter is given>
+#!#      echo " You must call the function with a FILENAME parameter" >&2
+#!#      retval=2
+#!#    fi ##endof:  if/else <any parameter is given>
+#!#  fi ##endof:  if/else <help-requested>
+#!## if <the command will return 0 (success)>
+#!#  if [ $retval -eq 0 ]; then
+#!#    powershell -c '
+#!#      rundll32 "C:\Program Files\Windows Photo Viewer\PhotoViewer.dll",
+#!#                       ImageView_Fullscreen '\"${this_used_param}\"'
+#!#    ' & #  The ampersand must be outside the single quotes -> New 
+#!#        #+ Line clarifies for Cygwin vs. powershell/rundll32
+#!#  fi ##endof:  if <the command will return 0 (success)>
+#!#} ##endof:  windowsphotoviewer
+#!#
+#!#alias winphoto='windowsphotoviewer'
+#!#alias wpv='windowsphotoviewer'
+#!#
 
-AUTHOR
-         David BLACK,   GitHub  @bballdave025
-         This version, using a function instead of an alias
-         in order to ensure that Notepad++ is opened in the
-         background is   @since 2025-07-28.
-
-.
-EndUsage
-
-  this_arg=$1
-  this_param=
-  retval=0
-  shift  # If no $1, no problem, so no  &&  or  ||
-# if <help-requested>  
-  if [ "${this_arg}" = "--help" -o "${this_arg}" = "-h" ]; then
-    echo "${usage}" | sed 's#^[.]$##g' >&2
-    return ${retval}
-  else
-    this_param="${this_arg}"
-    this_used_param=$(cygpath -w "${this_param}")
-#   if <there are remaining parameters>
-    if [ ${#@} -gt 0 ]; then
-      echo " Extra parameters:" >&2
-      echo "$@" >&2
-      echo " will be ignored." >&2
-    fi ##endof:  if <there are remaining parameters>
-#   if <any parameter is given>
-    if [ ! -z "${this_used_param}" ]; then
-#     if <param is a real file>
-      if [ -f "${this_used_param}" ]; then
-        echo " Opening" >&2
-        echo "${this_used_param}" >&2
-        echo " in Notepad++" >&2
-      else
-        echo " Your parameter," >&2
-        echo "${this_used_param}" >&2
-        echo " is not a file." >&2
-        echo " Note that the file path from here is" >&2
-        echo "${this_used_param}" >&2
-        echo >&2
-        echo >&2
-        echo "${usage}" | sed 's#^[.]$##g' >&2
-        retval=1
-      fi ##endof:  if/else <param is a real file>
-    else
-      echo " Opening Notepad++" >&2
-    fi ##endof:  if <any parameter is given>
-  fi ##endof:  if/else <help-requested>
-# if <return value is zero (success)>
-  if [ ${retval} -eq 0 ]; then
-    #exe_filepath='/cygdrive/c/Program\ Files\ \(x86\)/Notepad++/notepad++'
-    /cygdrive/c/Program\ Files\ \(x86\)/Notepad++/notepad++ \
-      "${this_used_param}" &
-  fi ##endof:  if <return value is zero (success)>
-  return ${retval}
-}
-
-alias npp='notepadplusplus'
-alias n++='npp'
-alias np++='npp'
-alias notepadpp='npp'
 
