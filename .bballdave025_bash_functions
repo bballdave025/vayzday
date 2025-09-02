@@ -27,36 +27,36 @@ fi
 #  Some checks with Cygwin before and after the ~/.bballdave025_bash_functions
 #+ loaded at about 2025-06-08T080000-0600
 #
-# Anast@DESKTOP-O7KM5A5 /cygdrive/c/David/FHTW-2025-All_-_move_2024_get_new
+# bballdave025@MY_MACHINE /cygdrive/c/David/FHTW-2025-All_-_move_2024_get_new
 # $ echo $PROMPT_COMMAND
 # 
 # 
-# Anast@DESKTOP-O7KM5A5 /cygdrive/c/David/FHTW-2025-All_-_move_2024_get_new
+# bballdave025@MY_MACHINE /cygdrive/c/David/FHTW-2025-All_-_move_2024_get_new
 # $ echo $PS1
 # \[\e]0;\w\a\]\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]\n\$
 # 
-# Anast@DESKTOP-O7KM5A5 /cygdrive/c/David/FHTW-2025-All_-_move_2024_get_new
+# bballdave025@MY_MACHINE /cygdrive/c/David/FHTW-2025-All_-_move_2024_get_new
 # $ # Before ~/.bash_functions is above
 # 
-# Anast@DESKTOP-O7KM5A5 /cygdrive/c/David/FHTW-2025-All_-_move_2024_get_new
+# bballdave025@MY_MACHINE /cygdrive/c/David/FHTW-2025-All_-_move_2024_get_new
 # $ #
 # 
-# Anast@DESKTOP-O7KM5A5 /cygdrive/c/David/FHTW-2025-All_-_move_2024_get_new
+# bballdave025@MY_MACHINE /cygdrive/c/David/FHTW-2025-All_-_move_2024_get_new
 # $ # After ~/.bash_functions is below
 # 
-# Anast@DESKTOP-O7KM5A5 /cygdrive/c/David/FHTW-2025-All_-_move_2024_get_new
+# bballdave025@MY_MACHINE /cygdrive/c/David/FHTW-2025-All_-_move_2024_get_new
 # $ echo >/dev/null << EOF
-# > Anast@DESKTOP-O7KM5A5:~
+# > bballdave025@MY_MACHINE:~
 # $ echo $PROMPT_COMMAND
 # echo -ne "\033]0;${USER}@${HOSTNAME}: ${PWD/$HOME/~}\007"
-# Anast@DESKTOP-O7KM5A5:~
+# bballdave025@MY_MACHINE:~
 # $ ECHO $PS1
 # \[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\W\[\e[00m\]\[\e[1;36m\]$(git_branch)\[\e[00m\]\n$
-# Anast@DESKTOP-O7KM5A5:~
+# bballdave025@MY_MACHINE:~
 # $
 # > EOF
 # 
-# Anast@DESKTOP-O7KM5A5 /cygdrive/c/David/FHTW-2025-All_-_move_2024_get_new
+# bballdave025@MY_MACHINE /cygdrive/c/David/FHTW-2025-All_-_move_2024_get_new
 # $
 
 
@@ -180,14 +180,15 @@ if [ $DO_WANT_TO_CHANGE_CYGWIN -eq 1 ]; then
   # This source had been there before 2025-06-06
   source ~/.git-prompt.sh
 fi
-###DWB 2022-02-07 We actually have more than Ben's original, because I'm
+###DWB 2022-02-07 
+###We actually have more than colleague's original, because I'm
 ###+ taking out the title stuff from $PROMPT_COMMAND and putting it here.
 ### scratch that, I've changed this quite a bit. I'll call it
 ###+ NOW_ORIG_PS1 (maybe change for clarity to CONDA_GIT_ORIG_PS1)
 ###+ I can put back in the `debian_chroot' stuff if I decide to use `chroot'.
 ###++ ref1=""
 ###++ ref2=""
-###+ P.S. to see that `debian_chroot' stuff, enter `echo $BEN_ORIG_PS1'
+###+ P.S. to see that `debian_chroot' stuff, enter `echo $COLLEAGE_ORIG_PS1'
 ###+ from the command prompt.
 ##DWB, put in the next scope declaration, check git_branch, 
 ##+    and if/else on 2025-06-08, START04
@@ -208,10 +209,106 @@ fi
 export NOW_ORIG_PS1
 ##DWB, 2025-06-08 END04
 
+######################################
+## Last differences and export of PS1
+######################################
+## DWB 2025-09-01
+##--------------------------------------------
+## If I want to turn off the default conda
+## automatic prepending (not a great idea for
+## Cygwin while I'm pointing to the same
+##   conda  as Windows, but from prompt
+## $ conda config --set changeps1 false
+## Then here in something sourced by ~/.bashrc
+# # Conda environment in PS1 for Cygwin
+# _update_conda_env_prompt() {
+#   if [[ -n "$CONDA_PREFIX" ]]; then
+#     # Use 'cygpath' to convert the Windows path to a Cygwin path
+#     CYG_CONDA_PREFIX=$(cygpath "$CONDA_PREFIX")
+#     # Extract the environment name from the Cygwin path
+#     CONDA_ENV_NAME=$(basename "$CYG_CONDA_PREFIX")
+#     # Set a custom prompt string that includes the environment name
+#     # Customize the appearance with ANSI escape codes
+#     PS1="(\[$(tput setaf 6)\]$CONDA_ENV_NAME\[$(tput sgr0)\]) ${PS1}"
+#   fi
+# }
+##  Add the function to the list of functions to be executed 
+##+ before each prompt (that's what PROMPT_COMMAND does).
+#PROMPT_COMMAND="_update_conda_env_prompt; $PROMPT_COMMAND"
+#
+## ref="https://stackoverflow.com/a/58983010/6505499"
+## archived_ref="https://web.archive.org/web/20250901204226/"\
+##"https://stackoverflow.com/questions/58973417/"\
+##"how-to-set-ps1-that-make-both-git-and-conda-can-show-"\
+##"in-the-bash/58983010#58983010"
 
+# show git branch
+git_branch_func() {
+  my_env_name=$(git symbolic-ref HEAD --short 2>/dev/null)
+  if [ $? -eq 0 ]; then
+    printf %s "[${my_env_name}]"
+  else
+    printf %s ""
+  fi
+}
+
+alias git_branch=git_branch_func
+
+
+## Actually correct is below
+#NOW_ORIG_CYGWIN_PS1=" <=> conda environment, blank means none activated\n\[\e[38;5;48m\]\$(git_branch)\[\e[0m\] <=> git branch, blank means not in a git repo\[\e]0;\w\a\]\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]\n\$ "
+
+## This one lets me get things how I want to post them (as far as PS1)
+NOW_ORIG_CYGWIN_PS1=" <=> conda environment, blank means none activated\n\[\e[38;5;48m\]\$(git_branch)\[\e[0m\] <=> git branch, blank means not in a git repo\[\e]0;\w\a\]\n\[\e[32m\]bballdave025@MY-MACHINE \[\e[33m\]\w\[\e[0m\]\n\$ "
+
+export NOW_ORIG_CYGWIN_PS1
+NOW_ORIG_PS1="$NOW_ORIG_CYGWIN_PS1"
+export NOW_ORIG_PS1
+
+##Still DWB 2025-09-01, PROMPT_COMMAND
+## archived_ref_1="https://web.archive.org/web/20250901215913/"\
+##"https://gist.github.com/fnky/"\
+##"458719343aabd01cfb17a3a4f7296797"
+## archived_ref_2="https://web.archive.org/web/20250724010939/"\
+##"https://github.com/fidian/ansi"
+## archived_ref_3="https://web.archive.org/web/20250806173425/"\
+##"https://stackoverflow.com/questions/4842424/"\
+##"list-of-ansi-color-escape-sequences"
+
+
+five_equals="====="
+
+##sixty backticks
+fiftynine_bts=\
+"\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`"\
+"\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`\`"
+nine_bts=\
+"\`\`\`\`\`\`\`\`\`"
+three_bts="\`\`\`"
+
+
+export five_equals
+export fiftynine_bts
+export nine_bts
+export three_bts
+
+DEFAULT_PROMPT_COMMAND='
+myretval=$?;
+if [ $myretval -eq 0 ]; then
+  btw_str="retval=${myretval}"
+  echo -ne "\033[48;5;22m$five_equals\033[0m$fiftynine_bts$btw_str$nine_bts"
+  # 22 current best for green
+else
+  btw_str="retval=0d$(printf %05d $myretval)";
+  echo -ne "\033[48;5;167m$five_equals\033[0m$fiftynine_bts$btw_str$three_bts"
+  # 167 current best for red
+fi;
+echo -ne "\n\n";
+'
 
 ##DWB 2022-02-07 Choosing the default PS1
 PROMPT_COMMAND="$DEFAULT_PROMPT_COMMAND"
+export PROMPT_COMMAND
 ##DWB, 2025-06-08 putting in 'export', hopefully works, START05
 # Replaced
 ##PS1="$NOW_ORIG_PS1"
@@ -229,9 +326,9 @@ ESCAPED_BOTH_TITLE=
 ##+ My problem was:
 ##+ The environment variable, $PROMPT_COMMAND, was setting both the title
 ##+ and the icon title, while PS1 was setting neither. Neither the RHEL
-##+ default nor Ben's PS1 with git stuff had anything about the title, and
-##+ the answers all assumed that PS1 was changing the titles. I should get
-##+ back and add another answer.
+##+ default nor Colleague's PS1 with git stuff had anything about the title,
+##+ and the answers all assumed that PS1 was changing the titles. I should
+##+ get back and add another answer.
 #
 #
 ## DWB, 2022-02-07
@@ -357,7 +454,7 @@ settitlestring()
 
   #PS1="${PS1_STRIPPED}${ESCAPED_BOTH_TITLE}"
   #PROMPT_COMMAND="echo -ne \"${ESCAPED_BOTH_TITLE}\""
-  PROMPT_COMMAND='echo -ne "${ESCAPED_BOTH_TITLE}"'
+  PROMPT_COMMAND='echo -ne "${ESCAPED_BOTH_TITLE}"; $PROMPT_COMMAND'
   
   ##DWB, adding check 2025-06-08, START06
   do_allow_checking=1
@@ -1347,5 +1444,4 @@ alias dwc="diff_with_control"
 #!#alias winphoto='windowsphotoviewer'
 #!#alias wpv='windowsphotoviewer'
 #!#
-
 
