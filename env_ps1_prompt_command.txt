@@ -1,41 +1,3 @@
-# ~/.portable.bashrc (portable core)
-[ -f /etc/bash.bashrc ] && . /etc/bash.bashrc
-# Quiet defaults that won't hurt
-alias rmi='rm -i'
-alias cpi='cp -i'
-alias mvi='mv -i'
-alias lessraw='less -r'
-alias whence='type -a'                            # where, of a sort
-alias dir='ls --color=auto --format=vertical'
-alias vdir='ls --color=auto --format=long'
-alias ll='ls -l'                                  # long list
-alias lh='ls -lah'
-alias la='ls -A'                                  # all but . and ..
-alias l='ls -CF'
-alias ls_name_and_size='ls -Ss1pq --block-size=1'
-alias runlog='runscriptreplayclean'
-
-# Timestamp helpers, note ttdate and timestamp equivalent, muscle memory
-dbldate()      { date && date +'%s'; }
-tripledate()   { date && date +'%s' && date +'%s_%Y-%m-%dT%H%M%S%z'; }
-trpdate() { tripledate; }
-ttdate()       { date +'%s_%Y-%m-%dT%H%M%S%z'; }  # muscle memory
-timestamp() { date +"%s_%Y-%m-%dT%H%M%S%z"; }
-
-
-##### PORTABLE ADDITIONS ###########################################
-
-# ---- Portable functions and prompt setup brought from       ---- #
-# ---- ~/.bballdave025_bash_functions                         ---- #
-# ---- Checks for exernal dependencies, other safe things,    ---- #
-# ---- still to be checked with ChatGPT.                      ---- #
-
-## Try to import your function bodies if available (repo or HOME copies)
-#for PF in "$HOME/my_repos_dwb/vayzday/.bballdave025_bash_functions" \
-#          "$HOME/.bballdave025_bash_functions"; do
-#  [ -f "$PF" ] && . "$PF" && break
-#done
-
 export ORIG_RHEL_PROMPT_COMMAND=\
 'printf "\033]0;%s@%s:%s\007" "${USER}" "${HOSTNAME%%.*}" "${PWD/#$HOME/\~}"'
 export ORIG_UBUNTU_PROPMPT_COMMAND=
@@ -114,8 +76,8 @@ git_branch_func() {
 
 alias git_branch=git_branch_func
 
-##  This stuff lets me get things how I want to post them
-##+ (as far as PS1)                                  start-1
+##  This one lets me get things how I want to post them
+##+ (as far as PS1)
 NOW_ORIG_CYGWIN_PS1=" <=> conda environment, blank means none activated\n\[\e[38;5;48m\]\$(git_branch)\[\e[0m\] <=> git branch, blank means not in a git repo\[\e]0;\w\a\]\n\[\e[32m\]bballdave025@MY-MACHINE \[\e[33m\]\w\[\e[0m\]\n\$ "
 NOW_ORIG_UBUNTU_PS1=" <=> conda environment, blank means none activated\n\[\e[38;5;48m\]\$(git_branch)\[\e[0m\] <=> git branch, blank means not in a git repo\[\e]0;\w\a\]\n\[\e[32m\]bballdave025@MY-MACHINE \[\e[33m\]\w\[\e[0m\]\n\$ "
 NOW_ORIG_RHEL_PS1=" <=> conda environment, blank means none activated\n\[\e[38;5;48m\]\$(git_branch)\[\e[0m\] <=> git branch, blank means not in a git repo\[\e]0;\w\a\]\n\[\e[32m\]bballdave025@MY-MACHINE \[\e[33m\]\w\[\e[0m\]\n\$ "
@@ -154,7 +116,6 @@ else
 fi;
 echo -ne "\n\n";
 '
-#@ TODO, ADD TERMINALE WINDOW TITLE
 
 PROMPT_COMMAND="$DEFAULT_PROMPT_COMMAND"
 export PROMPT_COMMAND
@@ -165,6 +126,214 @@ export DEFAULT_PS1="$PS1"
 
 # scope
 ESCAPED_BOTH_TITLE=
+
+
+
+
+
+settitlestring()
+{
+  CMD_MOST_USED="settitle"
+  CMD="\`settitlestring'\n"\
+"   [ Or you can use any of its aliases, which are:\n"\
+"      \`set_title' ; \`set_title_string' ; \`set-title' ; \n"\
+"      \`gs_set_title' AND \`settitle'\n"\
+"     That last one is the one I use most often, so the\n"\
+"     help will be given using the command, \`settitle']\n"\
+"\n"\
+"   Note: you should also look at the RETURNING TO ORIGINAL\n"\
+"         section for the case in which you want to go back\n"\
+"         to what the title was when you started the terminal."
+  # Help menu
+  if [ "$1" == "-h" ] || [ "$1" == "-?" ] || [ "$1" == "--help" ]; then
+    echo
+    echo "HELP for:"
+    echo -e "$CMD"
+    echo
+    echo "SYNOPSIS"
+    echo "Set the title of your currently-opened terminal tab."
+    echo
+    echo "USAGE:   "
+    echo " $CMD_MOST_USED any title you want"
+    echo "   OR:"
+    echo " $CMD_MOST_USED \"any title you want\""
+    echo
+    echo "          OR (to make a dynamic title which"
+    echo "              relies on variables or functions):"
+    echo
+    echo " $CMD_MOST_USED '\$(some_cmd)'"
+    echo "   OR:"
+    echo " $CMD_MOST_USED '\${SOME_VARIABLE}'"
+    echo
+    echo "EXAMPLES:"
+    echo "    1. static title"
+    echo "      $CMD_MOST_USED my new title"
+    echo "    2. dynamic title"
+        echo "      $CMD_MOST_USED 'Current Directory is \"\$PWD\"'"
+    echo "         OR"
+    echo "      $CMD_MOST_USED 'Date and time of last "\
+"cmd is \"\$(date)\"'"
+    echo "    (Note the single quotes for the dynamic titles)"
+    echo
+    echo "EXAMPLES USING SPECIAL FORMATS OF TITLE:"
+    echo "1. For the RHEL 8 default title, use"
+    echo "    $CMD_MOST_USED '\$REAL_ORIG_PS1'"
+    echo "  For you, that would give (without formatting)"
+    printf "[%s@%s %s]\$\n" "${USER}" "${HOSTNAME%%.*}" "${PWD/#$HOME/\~}"
+    echo
+    echo "RETURNING TO ORIGINAL/DEFAULT:"
+    echo "There are several aliases for returning to the title as it"
+    echo " appeared when you entered the terminal. These include"
+    echo "  \`settitledefault' ; \`settitlepath' ; \`settitleorig' ; "
+    echo "  \`undosettitle' AND \`reverttitle'"
+    echo " The hope is that these will cover what people think should"
+    echo " be the command to return to the original."
+    #echo "However, they CANNOT BE USED BEFORE \`settitle' has been used."
+    echo
+    return $EXIT_SUCCESS
+  fi
+  ##DWB, 2025-06-08, adding if, START08
+  if [ $DO_WANT_TO_CHANGE_CYGWIN -eq 1 ]; then
+    source "${HOME}/.git-prompt.sh"
+  fi
+  ##DWB, 2025-06-08, END08
+
+  # finding out if it has been used - probably unnecessary
+  if [ -z "$PS1_BAK" ]; then
+    export PS1_BAK="$PS1"
+  fi
+
+  TITLE="$*"
+  # Set the PS1 title escape sequence;
+  #+ see "Customizing the terminal window title" here:
+  #+ source="https://wiki.archlinux.org/index.php/"\
+  #"Bash/Prompt_customization#Customizing_the_terminal_window_title"
+  ###DWB 2022-02-07, take care of icon title, maybe both.
+  #ESCAPED_TITLE="\e]2;${TITLE}\a"
+  #ESCAPED_ICON_TITLE="\e]1;${TITLE}\a"
+
+  #ESCAPED_BOTH_TITLE="\e]0;${TITLE}\a"
+  ESCAPED_BOTH_TITLE="\033]0;${TITLE}\007"
+
+  #echo "## ${ESCAPED_BOTH_TITLE} ##"
+
+  # Delete any existing title strings,
+  #+ if any, in the current PS1 variable. See my Q here:
+  #+ my_q="https://askubuntu.com/questions/1310665/"\
+  #"how-to-replace-terminal-title-using-sed-in-ps1-prompt-string"
+  ###DWB 2022-02-07 instead of just title, do all of
+  ###+ {title, icon title, both title and icon title}.
+  ###+ also strip out the strings setting title, icon title, or
+  ###+ both from $PROMPT_COMMAND (actually, scrap $PROMPT_COMMAND
+  #PS1_NO_TITLE="$(echo "$PS1" | sed 's|\\\[\\e\]2;.*\\a\\\]||g')"
+  ##DWB 2022-02-07 Incrementally strip stuff out.
+  ps1_stripped_incr="$PS1"
+  ps1_stripped_incr=\
+    sed 's|\(\\\[\)\?\\e\]2;.*\\a\(\\\]\)\?||g' <<<"${ps1_stripped_incr}" \
+      >/dev/null 2>&1
+  ps1_stripped_incr=\
+    sed 's|\(\\\[\)\?\\e\]1;.*\\a\(\\\]\)\?||g' <<<"${ps1_stripped_incr}" \
+      >/dev/null 2>&1
+  ps1_stripped_incr=\
+    sed 's|\(\\\[\)\?\\e\]0;.*\\a\(\\\]\)\?||g' <<<"${ps1_stripped_incr}" \
+      >/dev/null 2>&1
+  PS1_STRIPPED="${ps1_stripped_incr}"
+
+  #PS1="${PS1_NO_TITLE}${ESCAPED_TITLE}"
+
+  #PS1="${PS1_STRIPPED}${ESCAPED_BOTH_TITLE}"
+  #PROMPT_COMMAND="echo -ne \"${ESCAPED_BOTH_TITLE}\""
+  PROMPT_COMMAND='echo -ne "${ESCAPED_BOTH_TITLE}"; $PROMPT_COMMAND'
+
+  ##DWB, adding check 2025-06-08, START06
+  do_allow_checking=1
+  if [ $do_allow_checking -eq 1 ]; then
+    export PS1_STRIPPED
+        export PROMPT_COMMAND
+    export ESCAPED_BOTH_TITLE
+    export PS1
+  fi
+  ##DWB, 2025-06-08, END06
+  #echo "## ${PROMPT_COMMAND} ##"
+} ##endof:  settitlestring
+#
+alias set_title='settitlestring'
+alias set_title_string='settitlestring'
+alias set-title='settitlestring'
+alias gs_set_title='settitlestring'
+#
+alias settitle='settitlestring'
+#
+alias settitledefault='settitle "$DEFAULT_PROMPT_COMMAND_TITLE"'
+#
+alias settitlepath='settitledefault'
+alias reverttitle='settitledefault'
+alias settitleorig='settitledefault'
+alias undosettitle='settitledefault'
+
+
+#
+## This next one is actually from way back.
+#
+# b) function cd_func
+# This function defines a 'cd' replacement function capable of keeping,
+# displaying and accessing history of visited directories, up to 10 entries.
+# To use it, uncomment it, source this file and try 'cd --'.
+# acd_func 1.0.5, 10-nov-2004
+# Petar Marinov, http:/geocities.com/h2428, this is public domain
+cd_func ()
+{
+  local x2 the_new_dir adir index
+  local -i cnt
+
+  if [[ $1 ==  "--" ]]; then
+    dirs -v
+    return 0
+  fi
+
+  the_new_dir=$1
+  [[ -z $1 ]] && the_new_dir=$HOME
+
+  if [[ ${the_new_dir:0:1} == '-' ]]; then
+    #
+    # Extract dir N from dirs
+    index=${the_new_dir:1}
+    [[ -z $index ]] && index=1
+    adir=$(dirs +$index)
+    [[ -z $adir ]] && return 1
+    the_new_dir=$adir
+  fi
+
+  #
+  # '~' has to be substituted by ${HOME}
+  [[ ${the_new_dir:0:1} == '~' ]] && the_new_dir="${HOME}${the_new_dir:1}"
+
+  #
+  # Now change to the new dir and add to the top of the stack
+  pushd "${the_new_dir}" > /dev/null
+  [[ $? -ne 0 ]] && return 1
+  the_new_dir=$(pwd)
+
+  #
+  # Trim down everything beyond 11th entry
+  popd -n +11 2>/dev/null 1>/dev/null
+ 
+  #
+  # Remove any other occurence of this dir, skipping the top of the stack
+  for ((cnt=1; cnt <= 10; cnt++)); do
+    x2=$(dirs +${cnt} 2>/dev/null)
+    [[ $? -ne 0 ]] && return 0
+    [[ ${x2:0:1} == '~' ]] && x2="${HOME}${x2:1}"
+    if [[ "${x2}" == "${the_new_dir}" ]]; then
+      popd -n +$cnt 2>/dev/null 1>/dev/null
+      cnt=cnt-1
+    fi
+  done
+
+  return 0
+}
+
+alias cd=cd_func
 
 
 
@@ -719,403 +888,3 @@ EndOfDWC
 } ##endof:  diffwithcontrol
 
 alias dwc="diff_with_control"
-
-
-
-
-
-
-
-# ---- Portable wrappers (no external deps) ----
-
-# cat_with_control: show control chars (portable)
-cat_with_control() 
-{
-  command -v cat >/dev/null || return 127; 
-  cat -ETv -- "$@"; 
-}
-alias catwithcontrol='cat_with_control'
-
-# atree: ASCII tree (portable if `tree` exists)
-atree() 
-{ if command -v tree >/dev/null; then 
-    tree --charset=ascii "$@"; 
-  else 
-    echo "tree not installed"; 
-    return 127; 
-  fi; }
-
-# atreea: like atree, but shows hidden files and directories, needs `tree`
-atreea() 
-{
-  if command -v tree >/dev/null; then 
-    tree --charset=ascii -a "$@"; 
-  else 
-    echo "tree not installed"; 
-    return 127; 
-  fi; 
-} 
-
-
-#  checksituation: friendly timestamp trio 
-#+ and current working directory output
-#+ (uses trpdate if present; else fallback)
-checksituation() 
-{
-  echo "   Current date/tiime:"
-  if type trpdate >/dev/null 2>&1; then trpdate
-  else
-    date; date +'%s'; date +'%s_%Y-%m-%dT%H%M%S%z'
-  fi
-  echo "   Current working directory:"
-  pwd
-}
-
-
-
-# Color/ASCII sets — load if present; warn about grep+UTF-8 when relevant
-set_color_command_aliases() {
-  local f1="$HOME/.bballdave025_color4commands_set"
-  if [ -f "$f1" ]; then . "$f1"; fi
-  # Warn if grep may choke on non-UTF-8 locales
-  if ! locale | grep -qi 'utf-8'; then
-    echo "[warn] Non-UTF-8 locale detected; 'grep --color=auto' can mis-handle bytes." >&2
-  fi
-}
-alias set_aliases_coco='set_color_command_aliases'
-alias seta_coco='set_color_command_aliases'
-alias sacoco='set_color_command_aliases'
-
-# Main terminal aliases — placeholder; we’ll discuss grep unaliasing here later
-set_main_terminal_aliases() {
-  # TODO: decide policy for `alias grep='grep --color=auto'` vs unalias.
-  :
-}
-alias set_aliases_mt='set_main_terminal_aliases'
-alias seta_mt='set_main_terminal_aliases'
-alias samt='set_main_terminal_aliases'
-
-# ---- Alias the function-runners when the functions exist ----
-type git_branch_func        >/dev/null 2>&1 \
-  && alias git_branch='git_branch_func'
-type git_trace_cmd_func     >/dev/null 2>&1 \
-  && alias gittracecmd='git_trace_cmd_func'
-type git_trace_cmd_func     >/dev/null 2>&1 \
-  && alias gittracecommand='git_trace_cmd_func'
-type get2byteandunicode4char>/dev/null 2>&1 \
-  && alias get2bu4char='get2byteandunicode4char'
-type get2byteandunicode4char>/dev/null 2>&1 \
-  && alias get24char='get2byteandunicode4char'
-type definewithheredoc      >/dev/null 2>&1 \
-  && alias dhd='definewithheredoc'
-type help_definewithheredoc >/dev/null 2>&1 \
-  && alias help_dhd='help_definewithheredoc'
-
-# cd_func is requested even though it overrides the builtin `cd`
-type cd_func >/dev/null 2>&1 && alias cd='cd_func'
-
-# Provide $HELPDOC default text if unset (used by help_definewithheredoc)
-: "${HELPDOC:=Portable help: definewithheredoc usage text not set.}"
-
-# ---- Ubuntu test placeholders ----
-# ## Place for set_title function
-
-# ## Place for revert_title_path function
-
-# ## Place for exts_in_dir function
-# : '(consider replacing long alias with a function; TINN)'
-
-# ---- Explicitly excluded for now ----
-# htbetween_func
-# xterm_double_wide xterm_std xterm_std_width_dbl_height  # (helps tmux)
-
-###############################################################################
-
-: "${strcleantermlog:=Portable terminal log cleanup placeholder.}"
-alias forcleaningterminallog='echo "$strcleantermlog"'
-
-
-definewithheredoc ()
-{
-    IFS='
-' read -r -d '' ${1} || true
-}
-
-
-diffwithcontrol ()
-{
-    definewithheredoc dwc_help_str <<'EndOfDWC' | sed 's|^[.]$| |g'
-.
-HELP FOR:
- diffwithcontrol
-
-@AUTHOR
- David Wallace BLACK
- GitHub @bballdave025
-
-@SINCE
- 2022-03-09
-
-@DESCRIPTION
- This will give a diff of two files, but will include any control
- characters that are in the files' content. It won't contain the
- `$' at the end of a line.
- This should be especially useful for files where `sed' commands
- are used to take out certain control characters.
- It's inspired by my `catwithcontrol' alias.
-
-@USAGE
- % diffwithcontrol FILE1 FILE2
-
- Two arguments, no less and no more, should be given.
-
- If the `-h' or `--help' flag is used, this message will be
- outputted.
-.
-EndOfDWC
-
-    if [ "$1" = "-h" -o "$2" -eq "--help" ]; then
-        echo "${dwc_help_str}";
-        return 1;
-    fi;
-    if [ $# -ne 2 ]; then
-        echo "Exactly 2 arguments should be given." 1>&2;
-        echo "You gave %#";
-        echo "${dwc_help_str}";
-    fi;
-    first_file="$1";
-    second_file="$2";
-    diff "${first_file}" "${second_file}" | cat -ETv | sed 's#[$]$##g;';
-    return 0
-}
-
-
-
-# --- Grep policy: keep plain 'grep', use explicit helpers ---
-unalias grep 2>/dev/null || true
-alias grepcolor='grep --color=auto'
-alias ugrep='grep --color=never'
-alias bgrep='LC_ALL=C grep'
-gcolor(){ case "$1" in on)alias grep='grep --color=auto';; off)unalias grep 2>/dev/null;; status|'')type -a grep;; *)echo "usage: gcolor {on|off|status} OR grepcolorset {on|off|status}";return 2;; esac; }
-alias grepcolorset=gcolor
-
-# --- ls policy: keep plain 'ls', use explicit helpers ---
-unalias ls 2>/dev/null || true
-alias lscolor='grep --color=auto'
-alias uls='grep --color=never'
-lcolor(){ case "$1" in on)alias ls='ls --color=auto';; off)unalias ls 2>/dev/null;; status|'')type -a ls;; *)echo "usage: lcolor {on|off|status} OR lscolorset {on|off|status}";return 2;; esac; }
-alias lscolorset=lcolor
-
-# --- egrep/fgrep helpers (keep commands plain) ---
-unalias egrep 2>/dev/null || true
-unalias fgrep 2>/dev/null || true
-alias eg='grep -E'; alias fg='grep -F'
-alias egcolor='grep -E --color=auto'; alias fgcolor='grep -F --color=auto'
-
-# --- diff helpers ---
-diffcolor(){ if diff --help 2>&1 | grep -q ' --color'; then command diff --color=auto "$@"; else command diff "$@"; fi; }
-alias bdiff='LC_ALL=C diff'
-
-# --- iproute2 color helper ---
-ipcolor(){ command -v ip >/dev/null || { echo "ip not found" >&2; return 127; }; command ip -c "$@"; }
-
-
-# --- runscriptreplayclean: interactive OR one-shot command logging ----------
-# Usage:
-#   runscriptreplayclean           #  full interactive session; exit to finish
-#   runscriptreplayclean -l my.log            #  interactive; append to my.log
-#   runscriptreplayclean -- <cmd args...>      #  one-shot command with 
-#                                              #+ BEGIN/END markers
-#   runscriptreplayclean -l my.log -- <cmd args...>
-runscriptreplayclean() {
-  local saved_in_dir="${HOME}/work_logs"
-  local logfile="" cmd_str="" rc
-  mkdir -p "$saved_in_dir"
-
-  # Optional: -l/--log <file>
-  if [[ "$1" == "-l" || "$1" == "--log" ]]; then
-    logfile="$2"; shift 2
-  fi
-
-  # Default logfile
-  if [[ -z "$logfile" ]]; then
-    local ts; ts=$(ttdate 2>/dev/null || date +'%s_%Y-%m-%dT%H%M%S%z')
-    logfile="${saved_in_dir}/Lab_Notebook_${USER}_${ts}.log"
-  fi
-
-  # --- MODE A: interactive whole-session logging (no BEGIN/END markers) -----
-  if [[ "$1" != "--" ]]; then
-    script -afe "$logfile"
-    rc=$?
-  else
-    # --- MODE B: one-shot command with BEGIN/END markers in child shell ------
-    shift
-    # Safely quote the command line
-    if [[ $# -eq 0 ]]; then
-      echo "runscriptreplayclean: need command after --" >&2
-      return 2
-    fi
-    local q= arg
-    for arg in "$@"; do q+=" $(printf '%q' "$arg")"; done
-    cmd_str="${q# }"
-
-    # Run the command under a child bash, stamping BEGIN/END
-    script -afe "$logfile" bash -lc \
-'printf "[runlog] BEGIN %(%F %T %z)T\n" -1
-trap '\''rc=$?; printf "[runlog] END rc=%s %(%F %T %z)T\n" "$rc" -1'\'' EXIT
-'"$cmd_str"
-    rc=$?
-  fi
-  
-  #Make clean copy (ANSI escapes stripped) alongside the raw log
-  
-  ## -- simple regex-based cleaning --
-  ##  If you prefer screen-hardcopy cleaning, comment out the next
-  ##+ command and uncomment the screen block below.
-  #sed -r $'s/\x1B\\[[0-9;]*[[:alpha:]]//g' "$logfile" \
-  #            > "$clean" 2>/dev/null || cp -f "$logfile" "$clean"
-
-  # -- screen-based cleaner (optional; may vary across distros) --
-  #  If you prefer just the regex-based cleaning, comment out this
-  #+ next command and uncomment the previous sed block
-  if command -v screen >/dev/null 2>&1; then
-    screen -D -m -c /dev/null sh -c \
-"screen -X scrollback 500000; "\
-"cat < \"$logfile\"; "\
-"screen -X hardcopy -h \"$clean\"" \
-    || sed -r $'s/\x1B\\[[0-9;]*[[:alpha:]]//g' "$logfile" > "$clean"
-  fi
-
-  printf "Raw log:   %s\nClean log: %s\n" "$logfile" "$clean"
-  return "$rc"
-}
-# keep the muscle-memory alias
-alias runlog='runscriptreplayclean'
-
-
-# === verify_portable_bashrc: self-test =======================================
-verify_portable_bashrc() {
-  # Flags:
-  #   -f <rcfile>   : path to the rc file (default: ~/vezde/.portable.bashrc)
-  #   --quick       : skip isolated clean-shell source test
-  #   --no-samples  : skip tiny sample runs (catwithcontrol/atree)
-  #   --print       : print the names/arrays being checked and exit 0
-  local rc="$HOME/vezde/.portable.bashrc"
-  local QUICK=0 NOSAMPLES=0 PRINT=0
-  while [ $# -gt 0 ]; do
-    case "$1" in
-      -f) rc="$2"; shift 2 ;;
-      --quick) QUICK=1; shift ;;
-      --no-samples) NOSAMPLES=1; shift ;;
-      --print) PRINT=1; shift ;;
-      *) echo \
-"usage: verify_portable_bashrc [-f FILE] [--quick] [--no-samples] [--print]";
-        return 2 
-        ;;
-    esac
-  done
-
-  # Core lists (must/optional)
-  local -a MUST_ALIASES=(rmi cpi mvi lessraw whence grepcolor cgrep grepc ll la l dir vdir lsc lscolor lh ls_name_and_size runlog catwithcontrol atree checksituation dbldate tripledate ttdate)
-  local -a OPT_ALIASES=(forcleaningterminallog git_branch gittracecmd gittracecommand get2bu4char get24char dhd help_dhd eg fg egcolor fgcolor ugrep bgrep gcolor diffcolor bdiff ipcolor)
-  local -a MUST_FUNCS=(git_branch_func git_trace_cmd_func get2byteandunicode4char definewithheredoc cd_func)
-  local -a OPT_FUNCS=(diff_with_control help_definewithheredoc)
-
-  if [ "$PRINT" -eq 1 ]; then
-    printf "RC: %s\n" "$rc"
-    printf "MUST_ALIASES: %s\n" "${MUST_ALIASES[*]}"
-    printf "OPT_ALIASES : %s\n" "${OPT_ALIASES[*]}"
-    printf "MUST_FUNCS  : %s\n" "${MUST_FUNCS[*]}"
-    printf "OPT_FUNCS   : %s\n" "${OPT_FUNCS[*]}"
-    return 0
-  fi
-
-  echo "[verify] rc: $rc"
-  local failures=0
-
-  # 1) Syntax check
-  if bash -n "$rc"; then
-    echo "[verify] syntax: OK"
-  else
-    echo "[verify] syntax: FAIL"; failures=$((failures+1))
-  fi
-
-  # 2) Isolated clean-shell source test (unless --quick)
-  if [ "$QUICK" -eq 0 ]; then
-    if env -i HOME="$HOME" PATH="$PATH" \
-                       bash --noprofile --norc -ic ". \"$rc\""; then
-      echo "[verify] isolated source: OK"
-    else
-      echo "[verify] isolated source: FAIL"; failures=$((failures+1))
-    fi
-  else
-    echo "[verify] isolated source: SKIP (--quick)"
-  fi
-
-  # 3) Presence checks
-  local n t miss=0
-  for n in "${MUST_ALIASES[@]}"; do
-    t=$(type -t "$n" 2>/dev/null || true)
-    if    [ "$t" = "alias" ] \ 
-       || [ "$t" = "function" ] \
-       || [ "$t" = "file" ] \
-       || [ "$t" = "builtin" ]; then
-      printf "  OK alias/runner: %s\n" "$n"
-    else
-      printf "  MISSING alias/runner: %s\n" "$n"; miss=$((miss+1))
-    fi
-  done
-  for n in "${MUST_FUNCS[@]}"; do
-    t=$(type -t "$n" 2>/dev/null || true)
-    if [ "$t" = "function" ]; then
-      printf "  OK function: %s\n" "$n"
-    else
-      printf "  MISSING function: %s\n" "$n"; miss=$((miss+1))
-    fi
-  done
-  # Optional sets (report but do not fail build)
-  for n in "${OPT_ALIASES[@]}"; do
-    t=$(type -t "$n" 2>/dev/null || true)
-    if [ -n "$t" ]; then printf "  (opt) present: %s\n" "$n"; fi
-  done
-  for n in "${OPT_FUNCS[@]}"; do
-    t=$(type -t "$n" 2>/dev/null || true)
-    if [ "$t" = "function" ]; then 
-      printf "  (opt) present: %s\n" "$n"; 
-    fi
-  done
-  if [ "$miss" -gt 0 ]; then
-    echo "[verify] presence: $miss missing (see lines above)"; 
-    failures=$((failures+1))
-  else
-    echo "[verify] presence: OK"
-  fi
-
-  # 4) Tiny sample runs (skip with --no-samples)
-  if [ "$NOSAMPLES" -eq 0 ]; then
-    if type -t catwithcontrol >/dev/null 2>&1; then
-      printf "A\tB\n" | catwithcontrol >/dev/null 2>&1 \
-       && echo "  sample: catwithcontrol OK" \
-       || { echo "  sample: catwithcontrol FAIL"; failures=$((failures+1)); }
-    fi
-    if command -v tree >/dev/null 2>&1 \
-        && type -t atree >/dev/null 2>&1; then
-      atree . >/dev/null 2>&1 \
-        && echo "  sample: atree OK" \
-        || { echo "  sample: atree FAIL"; failures=$((failures+1)); }
-    else
-      echo "  sample: atree SKIP (no tree or alias missing)"
-    fi
-  else
-    echo "[verify] samples: SKIP (--no-samples)"
-  fi
-
-  # Summary/exit
-  if [ "$failures" -eq 0 ]; then
-    echo "[verify] ALL OK"
-  else
-    echo "[verify] $failures check(s) failed"
-  fi
-  return "$failures"
-}
-# ============================================================================ #
