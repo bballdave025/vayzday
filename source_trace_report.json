@@ -1,0 +1,222 @@
+{
+  "start_files": [
+    "/home/bballdave025/my_repos_dwb/vayzday/.bashrc",
+    "/home/bballdave025/my_repos_dwb/vayzday/.bash_aliases",
+    "/home/bballdave025/my_repos_dwb/vayzday/.bash_functions",
+    "/home/bballdave025/my_repos_dwb/vayzday/.bballdave025_bash_aliases",
+    "/home/bballdave025/my_repos_dwb/vayzday/.bballdave025_bash_functions"
+  ],
+  "all_files": [
+    "/home/bballdave025/my_repos_dwb/vayzday/.bash_aliases",
+    "/home/bballdave025/my_repos_dwb/vayzday/.bash_functions",
+    "/home/bballdave025/my_repos_dwb/vayzday/.bashrc",
+    "/home/bballdave025/my_repos_dwb/vayzday/.bballdave025_bash_aliases",
+    "/home/bballdave025/my_repos_dwb/vayzday/.bballdave025_bash_functions"
+  ],
+  "existing": [
+    "/home/bballdave025/my_repos_dwb/vayzday/.bash_aliases",
+    "/home/bballdave025/my_repos_dwb/vayzday/.bash_functions",
+    "/home/bballdave025/my_repos_dwb/vayzday/.bashrc",
+    "/home/bballdave025/my_repos_dwb/vayzday/.bballdave025_bash_aliases",
+    "/home/bballdave025/my_repos_dwb/vayzday/.bballdave025_bash_functions"
+  ],
+  "missing": [],
+  "graph": {
+    "/home/bballdave025/my_repos_dwb/vayzday/.bashrc": {
+      "exists": true,
+      "includes": [
+        {
+          "line": 15,
+          "raw": "/etc/bashrc",
+          "path": "/etc/bashrc",
+          "exists": false
+        },
+        {
+          "line": 202,
+          "raw": "${HOME}/.bash_aliases",
+          "path": "/home/bballdave025/.bash_aliases",
+          "exists": false
+        },
+        {
+          "line": 248,
+          "raw": "${HOME}/.bash_functions",
+          "path": "/home/bballdave025/.bash_functions",
+          "exists": false
+        }
+      ],
+      "markers": [
+        {
+          "line": 179,
+          "tag": "ls_color",
+          "snippet": "alias lsc='ls --color=auto'"
+        },
+        {
+          "line": 181,
+          "tag": "ls_color",
+          "snippet": "alias dir='ls --color=auto --format=vertical'"
+        },
+        {
+          "line": 182,
+          "tag": "ls_color",
+          "snippet": "alias vdir='ls --color=auto --format=long'"
+        }
+      ]
+    },
+    "/home/bballdave025/my_repos_dwb/vayzday/.bash_aliases": {
+      "exists": true,
+      "includes": [
+        {
+          "line": 6,
+          "raw": "${HOME}/.bballdave025_bash_aliases",
+          "path": "/home/bballdave025/.bballdave025_bash_aliases",
+          "exists": false
+        }
+      ],
+      "markers": []
+    },
+    "/home/bballdave025/my_repos_dwb/vayzday/.bash_functions": {
+      "exists": true,
+      "includes": [
+        {
+          "line": 6,
+          "raw": "${HOME}/.bballdave025_bash_functions",
+          "path": "/home/bballdave025/.bballdave025_bash_functions",
+          "exists": false
+        },
+        {
+          "line": 10,
+          "raw": "${HOME}/.git_bash_functions",
+          "path": "/home/bballdave025/.git_bash_functions",
+          "exists": false
+        }
+      ],
+      "markers": []
+    },
+    "/home/bballdave025/my_repos_dwb/vayzday/.bballdave025_bash_aliases": {
+      "exists": true,
+      "includes": [],
+      "markers": [
+        {
+          "line": 131,
+          "tag": "windows_cygwin",
+          "snippet": "#'/cygdrive/c/Users/$USER/AppData/Local/Programs/Python/ '\\"
+        },
+        {
+          "line": 132,
+          "tag": "windows_cygwin",
+          "snippet": "#'/cygdrive/c/Program\\ Files/Python/ '\\"
+        },
+        {
+          "line": 133,
+          "tag": "windows_cygwin",
+          "snippet": "#'/cygdrive/c/Program\\ Files\\ \\(x86\\)/Python/ '\\"
+        }
+      ]
+    },
+    "/home/bballdave025/my_repos_dwb/vayzday/.bballdave025_bash_functions": {
+      "exists": true,
+      "includes": [
+        {
+          "line": 22,
+          "raw": "~/.git-prompt.sh",
+          "path": "/home/bballdave025/.git-prompt.sh",
+          "exists": false
+        },
+        {
+          "line": 181,
+          "raw": "~/.git-prompt.sh",
+          "path": "/home/bballdave025/.git-prompt.sh",
+          "exists": false
+        },
+        {
+          "line": 408,
+          "raw": "${HOME}/.git-prompt.sh",
+          "path": "/home/bballdave025/.git-prompt.sh",
+          "exists": false
+        }
+      ],
+      "markers": [
+        {
+          "line": 30,
+          "tag": "windows_cygwin",
+          "snippet": "# bballdave025@MY_MACHINE /cygdrive/c/David/FHTW-2025-All_-_move_2024_get_new"
+        },
+        {
+          "line": 34,
+          "tag": "windows_cygwin",
+          "snippet": "# bballdave025@MY_MACHINE /cygdrive/c/David/FHTW-2025-All_-_move_2024_get_new"
+        },
+        {
+          "line": 38,
+          "tag": "windows_cygwin",
+          "snippet": "# bballdave025@MY_MACHINE /cygdrive/c/David/FHTW-2025-All_-_move_2024_get_new"
+        },
+        {
+          "line": 41,
+          "tag": "windows_cygwin",
+          "snippet": "# bballdave025@MY_MACHINE /cygdrive/c/David/FHTW-2025-All_-_move_2024_get_new"
+        },
+        {
+          "line": 44,
+          "tag": "windows_cygwin",
+          "snippet": "# bballdave025@MY_MACHINE /cygdrive/c/David/FHTW-2025-All_-_move_2024_get_new"
+        },
+        {
+          "line": 47,
+          "tag": "windows_cygwin",
+          "snippet": "# bballdave025@MY_MACHINE /cygdrive/c/David/FHTW-2025-All_-_move_2024_get_new"
+        },
+        {
+          "line": 59,
+          "tag": "windows_cygwin",
+          "snippet": "# bballdave025@MY_MACHINE /cygdrive/c/David/FHTW-2025-All_-_move_2024_get_new"
+        },
+        {
+          "line": 226,
+          "tag": "windows_cygwin",
+          "snippet": "#     # Use 'cygpath' to convert the Windows path to a Cygwin path"
+        },
+        {
+          "line": 227,
+          "tag": "windows_cygwin",
+          "snippet": "#     CYG_CONDA_PREFIX=$(cygpath \"$CONDA_PREFIX\")"
+        },
+        {
+          "line": 1233,
+          "tag": "windows_cygwin",
+          "snippet": "#!#         '/cygdrive/c/Program\\ Files\\ \\(x86\\)/Notepad++/notepad++.exe'"
+        },
+        {
+          "line": 1282,
+          "tag": "windows_cygwin",
+          "snippet": "#!#    this_used_param=$(cygpath -w \"${this_param}\")"
+        },
+        {
+          "line": 1325,
+          "tag": "windows_cygwin",
+          "snippet": "#!#    echo \"[2]+  Done                    /cygdrive/c/path/\" >&2"
+        },
+        {
+          "line": 1338,
+          "tag": "windows_cygwin",
+          "snippet": "#!#    #exe_filepath='/cygdrive/c/Program\\ Files\\ \\(x86\\)/Notepad++/notepad++'"
+        },
+        {
+          "line": 1341,
+          "tag": "windows_cygwin",
+          "snippet": "#!#    /cygdrive/c/Program\\ Files\\ \\(x86\\)/Notepad++/notepad++ \\"
+        },
+        {
+          "line": 1369,
+          "tag": "windows_cygwin",
+          "snippet": "#!#    this_used_param=$(cygpath -w \"${this_pre_param}\")"
+        },
+        {
+          "line": 1381,
+          "tag": "macos",
+          "snippet": "#!#        echo \" Attempting to open\" >&2"
+        }
+      ]
+    }
+  }
+}
