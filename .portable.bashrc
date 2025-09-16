@@ -154,7 +154,7 @@ else
 fi;
 echo -ne "\n\n";
 '
-#@ TODO, ADD TERMINALE WINDOW TITLE
+#@ TODO, ADD TERMINAL WINDOW TITLE
 
 PROMPT_COMMAND="$DEFAULT_PROMPT_COMMAND"
 export PROMPT_COMMAND
@@ -901,8 +901,8 @@ alias grepcolorset=gcolor
 
 # --- ls policy: keep plain 'ls', use explicit helpers ---
 unalias ls 2>/dev/null || true
-alias lscolor='grep --color=auto'
-alias uls='grep --color=never'
+alias lscolor='ls --color=auto'
+alias uls='ls --color=never'
 lcolor(){ case "$1" in on)alias ls='ls --color=auto';; off)unalias ls 2>/dev/null;; status|'')type -a ls;; *)echo "usage: lcolor {on|off|status} OR lscolorset {on|off|status}";return 2;; esac; }
 alias lscolorset=lcolor
 
