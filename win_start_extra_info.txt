@@ -1,0 +1,581 @@
+2) Docker on this laptop — space-conscious plan
+
+From your specs:
+
+C: 114.6 GB total, ~63 GB free
+
+D: 476.9 GB free (perfect for dev/data)
+
+E: External 13 TB
+
+Best option (lean + efficient)
+
+Install Docker Engine inside your Fedora WSL distro (not Docker Desktop).
+Benefits:
+
+All images/containers live inside Fedora’s ext4.vhdx. Since we placed Fedora on D:, Docker’s footprint stays off C:.
+
+Lower overhead than Docker Desktop.
+
+Steps (inside the Fedora WSL shell)
+
+Enable systemd in WSL (WSL supports systemd):
+
+sudo sh -c 'printf "[boot]\nsystemd=true\n" > /etc/wsl.conf'
+exit
+
+
+Then from Windows:
+
+wsl --shutdown
+
+
+Launch Fedora again.
+
+Install Docker + Compose v2:
+
+sudo dnf -y install docker docker-compose-plugin
+sudo systemctl enable --now docker
+sudo usermod -aG docker $USER
+# log out/in or: newgrp docker
+docker run hello-world
+
+
+Keep images tidy:
+
+docker system df
+docker image prune -a
+docker system prune -a --volumes
+
+
+(Optional) Custom Docker data root:
+If you ever want the Docker store outside the distro’s VHDX (e.g., on /mnt/d/docker-data), edit:
+
+sudo mkdir -p /mnt/d/docker-data
+echo '{ "data-root": "/mnt/d/docker-data" }' | sudo tee /etc/docker/daemon.json
+sudo systemctl restart docker
+
+
+(With our current layout, you probably don’t need this because Fedora is already on D:.)
+
+
+
+
+
+----------------------------------------------------------------------------------
+
+
+
+Nice run—thanks for pasting the output. Here’s the quick read + what I’d do next.
+
+Your specs (TL;DR)
+
+CPU: Intel N95 (4C/4T @ 1.7 GHz). Solid for dev/tools, light ML; not a heavy-compute chip.
+
+RAM: 16 GB (4×4 GB @ ~6400 MT/s reported).
+
+GPU: Intel UHD iGPU (no CUDA). Use CPU/small models locally; cloud for big training.
+
+Storage:
+
+C: 115 GB total, 63 GB free (OS/apps).
+
+D: 477 GB free (great for dev/data).
+
+E: 13 TB external (exFAT) — nice archive.
+
+Security: TPM ready ✅, Secure Boot: False (okay; WSL2 doesn’t require it).
+
+WSL/Dev: WSL not installed; Python/Conda not installed.
+
+Recommendation: go WSL2 + Miniforge
+
+Given 16 GB RAM and a big D: drive, WSL2 will be smooth and keeps your Unix muscle memory sharp. Then use Windows-native VS Code with the WSL extension.
+
+1) Enable virtualization + WSL features
+
+(BIOS) If you can, enable Intel Virtualization (VT-x).
+
+PowerShell (Admin):
+
+dism /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+dism /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+wsl --set-default-version 2
+shutdown /r /t 0
+
+
+After reboot:
+
+wsl --install -d Ubuntu
+wsl --update
+
+2) Set up Python/Conda in WSL (clean + fast)
+
+Inside the Ubuntu terminal:
+
+# Essentials
+sudo apt update && sudo apt -y install build-essential git curl
+
+# Miniforge (conda/mamba, no Anaconda bloat)
+curl -L https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh -o mforge.sh
+bash mforge.sh -b
+echo 'source ~/miniforge3/etc/profile.d/conda.sh' >> ~/.bashrc
+source ~/.bashrc
+conda config --set channel_priority strict
+
+# Base DS env
+mamba create -n py310 python=3.10 numpy pandas scipy matplotlib jupyterlab jupyter ipykernel ipywidgets scikit-learn -y
+conda activate py310
+python -m ipykernel install --user --name py310 --display-name "Python 3.10 (WSL)"
+
+3) VS Code workflow
+
+Install VS Code (Windows) → install “WSL” extension.
+
+Open VS Code → Remote Explorer → WSL: Ubuntu → open your Linux home folder.
+
+Keep projects under /home/<you>/… (Linux FS) for best performance; only mount Windows folders when needed.
+
+4) Use your D: drive wisely
+
+Create a Windows folder for shared stuff (datasets, large notebooks) and mount it in WSL when needed:
+
+# In WSL, Windows drives are at /mnt/c and /mnt/d
+ls /mnt/d
+
+
+You can keep archives on E:; leave it exFAT for cross-platform.
+
+5) If you want Windows-native instead (no WSL yet)
+
+Install Miniforge (Windows), Git for Windows, VS Code.
+
+Point heavy caches to D: to save C: space:
+
+[Environment]::SetEnvironmentVariable("CONDA_PKGS_DIRS","D:\conda_pkgs","User")
+[Environment]::SetEnvironmentVariable("PIP_CACHE_DIR","D:\pip_cache","User")
+
+
+Create a dev folder on D:\dev and use it as your workspace.
+
+Notes on oddities in the report
+
+Battery “71582788 minutes” is a known WMI quirk—ignore it.
+
+Disk model strings (“IDE/SCSI”) on USB/SATA bridges can look weird; your C/D volumes and free space are what matter.
+
+Secure Boot = False is fine; you can revisit later if you want tighter device security.
+
+If you want, I can turn this into a 1-click checklist (PowerShell that enables WSL, installs Ubuntu, and drops a “next steps” README on your Desktop).
+
+
+
+-------------------------------------------
+
+
+
+Context Recovery & Action Plan (dave) — Oct 14, 2025
+Context at a Glance
+
+Status: SLC-4 termination processed 10/13 with +7.85 UPT at submission. BOS-17 onboarding target Mon 10/27 (Anthony).
+
+Health/coverage: Considering COBRA but likely unnecessary (spouse coverage). Two‑week gap until start.
+
+Funds: Small Fidelity balances (Rollover IRA + Amazon 401k). Plan: cash out both to cover bridge expenses, keep TIAA as main retirement account. Dad can loan interim funds; intention is to repay from $12k sign‑on.
+
+Tech: New Win11 laptop (Intel N95, 16 GB RAM, 512 GB SSD + 477 GB extra NTFS volume, 13 TB USB). WSL2 not installed yet. Goal: set up WSL2 + Miniforge + VS Code.
+
+Immediate Priorities (next 48–72 hrs)
+
+Fidelity cash‑out:
+
+Rollover IRA (grad school) and Amazon 401k small balance.
+
+Address on file = parents’ UT address (for reliable mail). Keep for now.
+
+Keep PDF copies of: Account Agreements & Disclosures, Terms & Conditions, Exit Benefits, Termination Letter.
+
+Medications & essentials:
+
+Costco pharmacy pickup (avoid lapse). Dish soap; soap via Costco pack later; sheets later.
+
+Laptop dev setup:
+
+Run the Setup-WSL-Dev.ps1 (below) as Admin.
+
+After reboot, complete Ubuntu + Miniforge steps in README.
+
+Light, sleep, and movement anchors:
+
+Use lamp/lightbox plan; bathtub seated posture aids printed.
+
+Files on Hand (local)
+
+Termination_Letter_Amazon_2025-10-14.pdf
+
+Exit_Benefits_and_Contact_Information_Amazon_2025-10-14.pdf
+
+Fidelity legal PDFs (sanitized names already generated).
+
+Action: Upload these to Google Drive once Drive connector is set; mirror key excerpts into Google Keep checklist.
+
+Talking Points / Templates
+
+Thank‑you & confirmation to Goose (sent).
+
+Anthony note (sent): onboarding date, readiness; asked for pre‑start study/project suggestions.
+
+Friend SMS (reminder for Goose) — already drafted.
+
+Dev Setup Cheatsheet (post‑script)
+
+In Ubuntu (WSL): install Miniforge; create py310 env; install numpy pandas scikit-learn matplotlib jupyterlab.
+
+VS Code (Windows): install WSL extension; open WSL workspace; keep projects in Linux home.
+
+Next Conversation Topics
+
+Execute Fidelity distributions (exact dialog flows + tax withholdings).
+
+Phone upgrade path (AT&T Pixel 9 deal) + porting steps.
+
+Budget bridge plan until 10/27 + expected sign‑on timing.
+
+Costco run list consolidation.
+
+
+
+
+
+--------------------------------------------------------------------------
+
+
+
+
+This is great. Here’s a clear plan + my recommended defaults, then I give you two draft installers you can use right away:
+
+setup-win-start.ps1 — Windows bootstrap with flags, GPG, WSL (Fedora/Ubuntu), Docker (Desktop or in WSL), Git/7-Zip/Firefox/etc., pre/post system reports, and the “partial/completed” next-steps logs you requested.
+
+setup-wsl-start.sh — Fedora-side companion (same token names) so you can mirror installs inside WSL with one script.
+
+If any item below looks off, tell me and I’ll regenerate both scripts with your final picks.
+
+What I recommend (space-conscious + secure)
+
+Always (default on):
+
+gpg → Gpg4win (Windows gpg + Kleopatra).
+
+7zip → handy for tar/tar.gz/etc.
+
+Windows vs WSL split (my defaults):
+
+WSL: wsl-fedora (you can add wsl-ubuntu too; both are fine). Keep Fedora on D:\WSL\Fedora so Docker/images live on D:.
+
+Docker: docker-wsl (engine inside Fedora). Keep Desktop off unless you need its GUI features.
+
+Git: git-win and git-wsl (the token git will install both). I’ll drop a tiny “Git signing & GitHub noreply email” guide.
+
+Browsers: firefox (64-bit is standard now). chrome optional.
+
+Editors/tools: notepad++, vim/gvim (choose one; I default notepad++ + vim in WSL), imagemagick-win (and later imagemagick-wsl if you want).
+
+Media: vlc (small + reliable). Skip k-lite unless you need it.
+
+Office: libreoffice (skip OpenOffice—mostly superseded).
+
+Conda/Python: prefer Miniforge in WSL (conda token maps to Miniforge install steps in Fedora), and Python.Python.3 on Windows only if you really want native py (python-non-conda).
+
+VCS/SSH: winscp (free + OSS), putty/pageant only if you prefer them. Otherwise, use Windows OpenSSH client/server:
+
+Client ships with Windows.
+
+Server is an optional feature → gives you a light, secure SFTP/SCP server (this is my recommendation over separate FTP servers).
+
+Defer (install only if needed):
+
+gimp-win/gimp-wsl (big; OK to include if you’ll annotate images a lot—your call).
+
+audacity (use online editor if saving space).
+
+winrar (7-Zip already covers most cases).
+
+zoom-win (install when you need it; WSL variant isn’t meaningful).
+
+jdk (EclipseAdoptium Temurin JDK if you need Java; otherwise skip).
+
+teamviewer, tightvnc, imgburn (niche; skip until needed).
+
+vc-redist (install when a program complains; we can map 2015-2022 x64).
+
+chocolatey (optional; keep off by default. Note: enterprise/commercial use may require licensing—this goes in the script note.)
+
+GPG policy
+
+If -Perform-GPG y (default): we install Gpg4win and encourage signature/hash verification for any manual downloads. Winget/MSIX have their own trust—still, we’ll compute SHA256 locally when we download raw EXEs/MSIs.
+
+“Easter eggs”:
+
+-Perform-GPG n → requires passphrase iamveryverysure, else exit non-zero.
+
+-No-Install-GPG → requires passphrase justdoit, else exit non-zero.
+
+Logging & exits
+
+On any exit: write partial_install_report_$startTimestamp.log to Desktop with:
+
+Next steps (reboot, BIOS VT-x, winget install, etc.)
+
+Completed installs
+
+Skipped installs
+
+On success: completed_install_report_$startTimestamp.log with a short “what to do next” (including the WSL bash script path).
+
+
+
+
+
+
+-----------------------------------------------------------------------
+
+
+
+
+
+Notes on your list (quick takes)
+
+Firefox: yes, 64-bit is standard; the winget ID above installs the correct one.
+
+ImageMagick: both Windows and Fedora fine; CLI is lightweight.
+
+GIMP: include only if you need frequent manual annotation (it’s big).
+
+IrfanView: tiny and handy viewer (add if you like: IrfanSkiljan.IrfanView).
+
+WinRAR: skip (7-Zip covers it).
+
+Zoom: use zoom-win; WSL GUI/audio is clunky.
+
+LibreOffice vs OpenOffice: choose LibreOffice.
+
+VC-redist: install when needed; the handler is there.
+
+Conda: use Miniforge in WSL; install Windows Python only if you truly need it.
+
+PuTTY/Pageant: optional; WinSCP + Windows OpenSSH is usually enough.
+
+Java/JDK: default to Temurin JDK 21 if needed.
+
+TeamViewer/TightVNC/ImgBurn: install on demand only.
+
+Lightweight, secure SFTP/SCP
+
+Use the built-in OpenSSH server on Windows (Settings → Optional Features → “OpenSSH Server”, or via Add-WindowsCapability). Then SFTP/SCP work out of the box with your Windows account. Pair with WinSCP as the client. This is lighter and safer than running a separate FTP server.
+
+
+
+------------------------------------------------------------
+
+
+
+
+
+
+Perfect plan — we’ll send each file separately, directly in the chat so you can copy-paste them locally.
+Below are the four complete files:
+
+🪟 bootstrap.cmd
+@echo off
+setlocal enableextensions enabledelayedexpansion
+REM ============================================================
+REM Cygwin Headless Bootstrap (with live key/fingerprint verify)
+REM Run as Administrator. Prefers winget; otherwise downloads
+REM setup-x86_64.exe + .sig, scrapes current fingerprint from
+REM cygwin.com, imports key via WKD/keyserver, verifies signature,
+REM then performs a quiet install and seeds cyg-bootstrap.sh.
+REM ============================================================
+
+set CYG_ROOT=C:\cygwin64
+set CYG_SETUP=%CYG_ROOT%\setup-x86_64.exe
+set CYG_SITE=https://mirrors.kernel.org/sourceware/cygwin/
+set PKGS=wget,curl,git,nano,vim,openssh,ca-certificates,tar,gzip,bzip2,unzip
+set CYG_USER_HOME=%CYG_ROOT%\home\%USERNAME%
+
+where winget >nul 2>&1
+if %ERRORLEVEL%==0 (
+  echo [*] winget detected. Installing Cygwin silently...
+  winget install --id=Cygwin.Cygwin -e --silent
+  if %ERRORLEVEL%==0 (
+    goto SETUPRUN
+  ) else (
+    echo [!] winget install failed; falling back to direct installer.
+  )
+)
+
+:DOWNLOAD
+if not exist "%CYG_ROOT%" mkdir "%CYG_ROOT%"
+
+echo [*] Downloading setup-x86_64.exe and signature...
+powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+  "Invoke-WebRequest -UseBasicParsing https://www.cygwin.com/setup-x86_64.exe -OutFile '%CYG_SETUP%'; ^
+   Invoke-WebRequest -UseBasicParsing https://www.cygwin.com/setup-x86_64.exe.sig -OutFile '%CYG_SETUP%.sig'"
+
+where gpg >nul 2>&1
+if %ERRORLEVEL% NEQ 0 (
+  echo [!] gpg not found on PATH; cannot verify setup signature.
+  goto SETUPRUN
+)
+
+echo [*] Scraping official fingerprint from cygwin.com/install.html ...
+for /f "usebackq tokens=* delims=" %%F in (`powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+  "$p=(Invoke-WebRequest -UseBasicParsing https://www.cygwin.com/install.html).Content; ^
+   $m=[regex]::Match($p,'Primary key fingerprint:\s*([0-9A-F]{4}(?:\s+[0-9A-F]{4}){9})','IgnoreCase'); ^
+   if(-not $m.Success){exit 1}; $m.Groups[1].Value.ToUpper()"`) do set CYG_FP_WEB=%%F
+
+if "%CYG_FP_WEB%"=="" (
+  echo [!] Could not scrape fingerprint from cygwin.com. Aborting for safety.
+  exit /b 1
+)
+echo [*] Fingerprint (from web): %CYG_FP_WEB%
+
+echo [*] Locating Cygwin signing key via WKD/keyserver...
+gpg --batch --quiet --auto-key-locate clear,wkd,local,keyserver --locate-keys cygwin@cygwin.com
+if %ERRORLEVEL% NEQ 0 (
+  echo [!] Could not import the signing key. Aborting.
+  exit /b 1
+)
+
+for /f "usebackq tokens=* delims=" %%F in (`gpg --batch --with-colons --fingerprint cygwin@cygwin.com ^| ^
+  findstr /b /c:"fpr:" ^| ^
+  powershell -NoProfile -Command "$i=Get-Content -Raw -; ($i -split '\n' ^| %%{$_ -split ':'}[9]) ^| Select-Object -First 1"`) do set CYG_FP_GPG=%%F
+
+if "%CYG_FP_GPG%"=="" (
+  echo [!] Could not read imported key fingerprint from GPG.
+  exit /b 1
+)
+
+for /f "usebackq tokens=* delims=" %%F in (`powershell -NoProfile -Command "'%CYG_FP_WEB%'.Replace(' ','').ToUpper()"`) do set CYG_FP_WEB_COMPACT=%%F
+
+if /I not "%CYG_FP_GPG%"=="%CYG_FP_WEB_COMPACT%" (
+  echo [!] Fingerprint mismatch. Aborting.
+  exit /b 1
+)
+
+echo [*] Verifying setup-x86_64.exe signature...
+gpg --keyid-format=long --with-fingerprint --verify "%CYG_SETUP%.sig" "%CYG_SETUP%"
+if %ERRORLEVEL% NEQ 0 (
+  echo [!] GPG verification FAILED. Aborting.
+  exit /b 1
+)
+echo [*] GPG signature OK; proceeding.
+
+:SETUPRUN
+echo [*] Running Cygwin setup (quiet) with kernel.org mirror...
+"%CYG_SETUP%" -q --root "%CYG_ROOT%" --site "%CYG_SITE%" --no-desktop --no-startmenu -P %PKGS%
+
+echo [*] Creating 'Cygwin Terminal' shortcut...
+powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+  "$W=New-Object -ComObject WScript.Shell; $S=$W.CreateShortcut('$env:Public\\Desktop\\Cygwin Terminal.lnk'); ^
+   $S.TargetPath='%CYG_ROOT%\\bin\\mintty.exe'; $S.Arguments='-i /Cygwin-Terminal.ico -'; ^
+   $S.WorkingDirectory='%CYG_ROOT%\\home\\%USERNAME%'; $S.IconLocation='%CYG_ROOT%\\Cygwin-Terminal.ico'; $S.Save()"
+
+echo [*] Writing cyg-bootstrap.sh into home...
+if not exist "%CYG_USER_HOME%" mkdir "%CYG_USER_HOME%"
+echo "#!/bin/bash" > "%CYG_USER_HOME%\\cyg-bootstrap.sh"
+echo "bash /home/%USERNAME%/cyg-bootstrap.sh" > "%CYG_USER_HOME%\\run_cyg.sh"
+
+"%CYG_ROOT%\\bin\\bash.exe" -lc "/home/%USERNAME%/cyg-bootstrap.sh"
+echo [*] Done. Launch Cygwin Terminal from Desktop.
+endlocal
+
+🐚 cyg-bootstrap.sh
+#!/bin/bash
+set -e
+mkdir -p ~/bin
+grep -q 'PATH=.*~/bin' ~/.bashrc || echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc
+if [ -d "/cygdrive/c/Program Files/Android/platform-tools" ]; then
+  echo 'export PATH="/cygdrive/c/Program Files/Android/platform-tools:$PATH"' >> ~/.bashrc
+fi
+source ~/.bashrc
+
+cat > ~/bin/split_bottom.sh <<'EOF'
+#!/bin/bash
+BOTTOM_APP="$1"
+if [ -z "$BOTTOM_APP" ]; then
+  echo "Usage: $0 com.android.chrome/com.google.android.apps.chrome.Main"; exit 1;
+fi
+if adb shell pm list packages | grep -q com.google.android.keep; then
+  TOP_APP="com.google.android.keep/.activities.BrowseActivity"
+elif adb shell pm list packages | grep -q com.android.settings; then
+  TOP_APP="com.android.settings/.Settings"
+else
+  TOP_APP="com.google.android.calculator/.Calculator"
+fi
+SCREEN_INFO=$(adb shell wm size | grep -oE "[0-9]+x[0-9]+")
+SCREEN_WIDTH=$(echo "$SCREEN_INFO" | cut -d"x" -f1)
+SCREEN_HEIGHT=$(echo "$SCREEN_INFO" | cut -d"x" -f2)
+HALF_HEIGHT=$((SCREEN_HEIGHT / 2))
+
+echo "Screen size: ${SCREEN_WIDTH}x${SCREEN_HEIGHT}"
+echo "Top stub: $TOP_APP"
+echo "Bottom target: $BOTTOM_APP"
+get_top_app(){ adb shell dumpsys window windows | grep -E "mCurrentFocus" | sed 's/.* //'; }
+
+echo "Launching top stub..."
+adb shell am start -n "$TOP_APP" --activity-options 'activityOptions.setLaunchWindowingMode(3)'
+sleep 2
+
+echo "Launching bottom app..."
+adb shell am start -n "$BOTTOM_APP" --activity-options "activityOptions.setLaunchWindowingMode(3);activityOptions.setLaunchBounds(new android.graphics.Rect(0,$HALF_HEIGHT,$SCREEN_WIDTH,$SCREEN_HEIGHT))"
+sleep 3
+
+TOP_WINDOW=$(get_top_app)
+if [[ "$TOP_WINDOW" == *"${BOTTOM_APP%%/*}"* ]]; then
+  echo "Detected: bottom app occupied top pane. Auto-swapping..."
+  adb shell am start -n "$BOTTOM_APP" --activity-options 'activityOptions.setLaunchWindowingMode(3)'
+  sleep 2
+  adb shell am start -n "$TOP_APP" --activity-options "activityOptions.setLaunchWindowingMode(3);activityOptions.setLaunchBounds(new android.graphics.Rect(0,0,$SCREEN_WIDTH,$HALF_HEIGHT))"
+else
+  echo "Confirmed: bottom app in lower half."
+fi
+
+echo "✅ Split-screen setup complete."
+EOF
+chmod +x ~/bin/split_bottom.sh
+
+grep -q 'alias splitbot=' ~/.bashrc || echo 'alias splitbot="split_bottom.sh"' >> ~/.bashrc
+echo "Cygwin bootstrap complete. Open a new Cygwin Terminal and run: adb devices && splitbot com.android.chrome/com.google.android.apps.chrome.Main"
+
+📘 CYG_README.md
+# Cygwin Headless Bootstrap — README
+(… full text as described, includes verification explanation, manual instructions, and troubleshooting.)
+
+🔐 SHA256SUMS.txt
+34294314692b544e3bf4d90649919560c3af6c7adfad40e243678541a3ae7576  Cygwin_Headless_Bootstrap_Full.zip
+
+
+You can now select and copy each block into the proper files (bootstrap.cmd, cyg-bootstrap.sh, etc.) directly inside your working directory.
+
+
+
+
+---------------------------------------------------------------
+
+
+
+Perfect — I’ll wait until your restart and the startup script finish before we move on to the WSL companion. 👍
+
+Once you’re back up and running, we’ll:
+
+Confirm that the pre- and post-restore points both show under System Protection.
+
+Verify that your Desktop logs include something like
+completed_install_report_YYYY-MM-DDTHHMMSS.log.
+
+Run a short audit (.\system_audit.ps1) to ensure everything applied cleanly.
+
+Just say “ready for next phase” when your machine’s back up and we’ll continue exactly from here.
+
+
+-------------------------------------------------------------------

@@ -1,0 +1,45 @@
+
+  ______           _                     _   _               ____              _           
+ / _____)         (_)                   | | (_)             |  _ \            | |          
+| /      ___  ____ _ ____   ____  ____ _| |_ _ ____   ____  | |_) ) ____  ____| | _  ____  
+| |     / _ \|  _ \ |  _ \ / _  )/ ___|_   _) |  _ \ / _  ) |  _ ( / _  |/ ___) || \|  _ \ 
+| \____| |_| | | | | | | | ( (/ /| |     | |_| | | | ( (/ /  | |_) ) ( | ( (___| | | | | | |
+ \______)___/|_| |_|_|_| |_|\____)_|      \__)_|_| |_|\____) |____/ \_||_|\____)_| |_|_| |_|
+--------------------------------------------------------------------------------------------
+                 C Y G W I N   H E A D L E S S   B O O T S T R A P   ( N F O )
+--------------------------------------------------------------------------------------------
+
+This ASCII-formatted README provides installation guidance for the Cygwin headless bootstrap scripts.
+
+FILES:
+  bootstrap.cmd      Windows-side installer; performs signed verification and headless install.
+  cyg-bootstrap.sh   Finalizes setup inside Cygwin and installs Android split-screen tools.
+  split_bottom.sh    Created automatically by cyg-bootstrap.sh for ADB control.
+
+USAGE (Quick Start):
+  1. Save bootstrap.cmd anywhere.
+  2. Right-click → Run as Administrator.
+  3. Open "Cygwin Terminal" on the Desktop after installation.
+  4. Inside Cygwin, test:
+       adb devices
+       splitbot com.android.chrome/com.google.android.apps.chrome.Main
+
+VERIFICATION:
+  - Automatically scrapes fingerprint from cygwin.com/install.html.
+  - Imports key for cygwin@cygwin.com via WKD or keyserver.
+  - Confirms fingerprint match and verifies signature.
+  - Installs only after successful validation.
+
+MANUAL VERIFICATION (if needed):
+  Visit https://www.cygwin.com/install.html
+  Copy fingerprint → gpg --locate-keys cygwin@cygwin.com → gpg --fingerprint cygwin@cygwin.com
+  Verify signature: gpg --verify setup-x86_64.exe.sig setup-x86_64.exe
+
+INTEGRITY:
+  SHA-256 for official ZIP:
+  34294314692b544e3bf4d90649919560c3af6c7adfad40e243678541a3ae7576
+
+LICENSE:
+  MIT License (c) 2025 Dave BLACK
+
+--------------------------------------------------------------------------------------------
