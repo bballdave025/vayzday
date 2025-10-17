@@ -36,6 +36,7 @@ timestamp() { date +"%s_%Y-%m-%dT%H%M%S%z"; }
 #  [ -f "$PF" ] && . "$PF" && break
 #done
 
+export ORIG_FEDORA_PROMPT_COMMAND=
 export ORIG_RHEL_PROMPT_COMMAND=\
 'printf "\033]0;%s@%s:%s\007" "${USER}" "${HOSTNAME%%.*}" "${PWD/#$HOME/\~}"'
 export ORIG_UBUNTU_PROPMPT_COMMAND=
@@ -65,6 +66,7 @@ DEFAULT_PROMPT_COMMAND=
 DEFAULT_PROMPT_COMMAND_TITLE=
 
 # from xterm part of pre-change ~/.bashrc
+DEFAULT_DWB_FEDORA_PROMPT_COMMAND=
 DEFAULT_DWB_RHEL_PROMPT_COMMAND=\
 'echo -ne "\033]0;${USER}@${HOSTNAME}: ${PWD/$HOME/~}\007"'
 DEFAULT_DWB_UBUNTU_PROMPT_COMMAND=\
@@ -74,6 +76,7 @@ DEFAULT_DWB_CYGWIN_PROMPT_COMMAND=\
 
 DEFAULT_PROMPT_COMMAND="${ORIG_PROMPT_COMMAND}"
 
+DEFAULT_DWB_FEDORA_PROMPT_COMMAND_TITLE=
 DEFAULT_DWB_RHEL_PROMPT_COMMAND_TITLE=\
 "${USER}@${HOSTNAME}: ${PWD/$HOME/~}"
 DEFAULT_DWB_UBUNTU_PROMPT_COMMAND_TITLE=\
@@ -94,6 +97,7 @@ REAL_LINUX_DEFAULT_PROMPT_COMMAND_TITLE=\
 '$($0-$(awk -F'"'"'.'"'"' '"'"'{print $1 "." $2}'"'"' <<<$BASH_VERSION)'
 
 # from the pre-change ~/.bashrc
+export REAL_ORIG_FEDORA_PS1=
 export REAL_ORIG_RHEL_PS1="[\u@\h \W]\\$ "
 export READ_ORIG_UBUNTU_PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 export REAL_ORIG_CYGWIN_PS1=\
@@ -116,10 +120,12 @@ alias git_branch=git_branch_func
 
 ##  This stuff lets me get things how I want to post them
 ##+ (as far as PS1)                                  start-1
+NOW_ORIG_FEDORA_PS1=
 NOW_ORIG_CYGWIN_PS1=" <=> conda environment, blank means none activated\n\[\e[38;5;48m\]\$(git_branch)\[\e[0m\] <=> git branch, blank means not in a git repo\[\e]0;\w\a\]\n\[\e[32m\]bballdave025@MY-MACHINE \[\e[33m\]\w\[\e[0m\]\n\$ "
 NOW_ORIG_UBUNTU_PS1=" <=> conda environment, blank means none activated\n\[\e[38;5;48m\]\$(git_branch)\[\e[0m\] <=> git branch, blank means not in a git repo\[\e]0;\w\a\]\n\[\e[32m\]bballdave025@MY-MACHINE \[\e[33m\]\w\[\e[0m\]\n\$ "
 NOW_ORIG_RHEL_PS1=" <=> conda environment, blank means none activated\n\[\e[38;5;48m\]\$(git_branch)\[\e[0m\] <=> git branch, blank means not in a git repo\[\e]0;\w\a\]\n\[\e[32m\]bballdave025@MY-MACHINE \[\e[33m\]\w\[\e[0m\]\n\$ "
 
+export NOW_ORIG_FEDORA_PS1
 export NOW_ORIG_CYGWIN_PS1
 export NOW_ORIG_UBUNTU_PS1
 export NOW_ORIG_RHEL_PS1
@@ -155,6 +161,9 @@ fi;
 echo -ne "\n\n";
 '
 #@ TODO, ADD TERMINAL WINDOW TITLE
+#        This will be a  set_title  function, with other possible aliases
+#        Allow change to arbitrary text (MVP is text only, could do commands, later).
+#        Also include a  revert_title  function.
 
 PROMPT_COMMAND="$DEFAULT_PROMPT_COMMAND"
 export PROMPT_COMMAND
@@ -178,6 +187,7 @@ ESCAPED_BOTH_TITLE=
 #####################################
 ##DWB: get the binary value for a character's bytes
 ##@author: David Wallace BLACK
+# GitHub: @bballdave025
 gethex4char()
 {
   if [ "$@" = "-h" -o "$@" = "--help" ]; then
@@ -514,6 +524,11 @@ git_trace_cmd_func() {
 alias gittracecmd=git_trace_cmd_func
 alias gittracecommand=git_trace_cmd_func
 
+
+#  FIRST definewithheredoc FUNCTION DEF, NOT THE ONE THAT'S USED, NOW,
+#+ ( 2025-10-17 )
+#+ BUT THIS ONE HAS BETTER IN-FILE DOCUMENTATION
+# @TODO: check
 ## DWB put in 2022-01-18, taken from
 ##+ https://stackoverflow.com/a/8088167/6505499
 ##+ defining a variable using a heredoc.
@@ -663,6 +678,11 @@ EndOfHelpDHD
 alias help_definewithheredoc='echo "$HELPDOC"'
 alias help_dhd='help_definewithheredoc'
 
+
+#  FIRST diffwithcontrol FUNCTION DEF, NOT THE ONE THAT'S USED, NOW
+#+ ( 2025-10-17 )
+#+ any differences now -^- unknown
+#+ @TODO: check
 diffwithcontrol()
 {
   dhd dwc_help_str <<'EndOfDWC' | sed 's#^[.]$##g'
@@ -672,9 +692,7 @@ HELP FOR:
 
 @AUTHOR
  David Wallace BLACK
- contact via electronic mail
- user: dblack          server: captioncall   tld: com
- user: thedavidwblack  server: google        tld: com
+GitHub: @bballdave025
 
 @SINCE
  2022-03-09
@@ -788,7 +806,7 @@ alias sacoco='set_color_command_aliases'
 
 # Main terminal aliases — placeholder; we’ll discuss grep unaliasing here later
 set_main_terminal_aliases() {
-  # TODO: decide policy for `alias grep='grep --color=auto'` vs unalias.
+  # @TODO: decide policy for `alias grep='grep --color=auto'` vs unalias.
   :
 }
 alias set_aliases_mt='set_main_terminal_aliases'
@@ -811,7 +829,9 @@ type definewithheredoc      >/dev/null 2>&1 \
 type help_definewithheredoc >/dev/null 2>&1 \
   && alias help_dhd='help_definewithheredoc'
 
-# cd_func is requested even though it overrides the builtin `cd`
+#  cd_func is included even though it overrides the builtin `cd`
+#+ to use the standard version, find it with  type cd, and use
+#+ the absolute path
 type cd_func >/dev/null 2>&1 && alias cd='cd_func'
 
 # Provide $HELPDOC default text if unset (used by help_definewithheredoc)
@@ -834,14 +854,18 @@ type cd_func >/dev/null 2>&1 && alias cd='cd_func'
 : "${strcleantermlog:=Portable terminal log cleanup placeholder.}"
 alias forcleaningterminallog='echo "$strcleantermlog"'
 
-
+# SECOND definewithheredoc FUNCTION DEF, THE ONE THAT'S USED, NOW
+# @TODO: check
 definewithheredoc ()
 {
     IFS='
 ' read -r -d '' ${1} || true
 }
 
-
+# SECOND diffwithcontrol FUNCTION DEF, THE ONE THAT'S USED, NOW
+#+ ( 2025-10-17 )
+#+ any differences now -^- unknown
+# @TODO: check
 diffwithcontrol ()
 {
     definewithheredoc dwc_help_str <<'EndOfDWC' | sed 's|^[.]$| |g'
@@ -967,7 +991,7 @@ trap '\''rc=$?; printf "[runlog] END rc=%s %(%F %T %z)T\n" "$rc" -1'\'' EXIT
     rc=$?
   fi
   
-  #Make clean copy (ANSI escapes stripped) alongside the raw log
+  # Make clean copy (ANSI escapes stripped) alongside the raw log
   
   ## -- simple regex-based cleaning --
   ##  If you prefer screen-hardcopy cleaning, comment out the next
