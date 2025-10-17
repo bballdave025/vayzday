@@ -579,3 +579,131 @@ Just say “ready for next phase” when your machine’s back up and we’ll co
 
 
 -------------------------------------------------------------------
+
+
+
+🪜 2. Walkthrough — from emission to reboot
+
+Here’s your full workflow for tonight:
+
+A. Emit and archive documentation-ready versions
+
+In an elevated PowerShell terminal:
+
+cd "$HOME\Desktop"
+.\setup-win-start.ps1 -Installs "emit-cygwin-bootstrap,emit-wsl-setup" -Interactive n -Archive4Doc y
+
+
+What this does:
+
+Emits normal versions to Desktop:
+
+Cygwin_Bootstrap_<timestamp>/
+
+WSL_Setup_<timestamp>/
+
+Creates archival versions:
+
+.4doc_Cygwin_<timestamp>/
+
+.4doc_WSL_<timestamp>/
+
+Inside each archive, filenames gain .{timestamp}.4doc extensions — ready for Git commits under your .4doc inclusion rules.
+
+Generates completed_install_report_<timestamp>.log on Desktop (summarizing emissions + archive paths).
+
+✅ When that finishes, you’ll have both runnable and archival copies safely versioned.
+
+B. Create a pre-update system restore point
+
+Since your PowerShell version is 5.1, you can call the native WMI restore point creation.
+Run this as administrator:
+
+Checkpoint-Computer -Description "Pre-update checkpoint before major setup" -RestorePointType "MODIFY_SETTINGS"
+
+
+If you see a “throttled to one per 24 hours” message, use the GUI fallback:
+
+Press ⊞ Win → type Create a restore point
+
+Select your system drive → Create
+
+Description: “Pre-update checkpoint before major setup”
+
+Wait for completion notice.
+
+(You only need one. The script will include restore-point logic later for automatic runs.)
+
+C. Restart for update
+
+Once the restore point is confirmed:
+
+Save any open files.
+
+Hit Start → Power → Restart → Update and restart.
+
+Let the update cycle fully complete (it may take 15–45 min).
+
+🌅 3. What to do after you wake up
+
+Tomorrow morning:
+
+Boot up and let Windows finish post-update indexing.
+
+Run:
+
+Get-WmiObject Win32_QuickFixEngineering | Sort-Object -Property InstalledOn | Select-Object -Last 10
+
+
+→ to verify latest updates applied.
+
+Check that winget still works:
+
+winget list | Select-Object -First 5
+
+
+Then we’ll proceed to:
+
+Relocate WSL to D:\
+
+Initialize Fedora inside WSL
+
+Run your newly emitted wsl-setup.sh
+
+Verify your GPG keypair and archive signing chain
+
+🧾 Recap: What you’ll have before bed
+
+✅ Fully updated setup-win-start.ps1 with archival capability
+
+✅ Both live and .4doc emission directories on Desktop
+
+✅ .gitignore ready to include .4doc_* directories
+
+✅ System restore point created
+
+✅ Safe reboot path for updates
+
+Would you like me to also emit a short Markdown summary (END_OF_DAY_README_YYYY-mm-ddTHHMMSS.md) you can stash in your repo alongside your .4doc folders to mark this session’s state before restart? It can serve as a “snapshot README” for version continuity.
+
+
+
+------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+--------------------------------------------------------------------------
+
+
+
+
