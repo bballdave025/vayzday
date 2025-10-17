@@ -1,5 +1,5 @@
 <#
-  setup-win-start.ps1  (renamed .ppss11 for safe download)
+  setup-win-start.ps1
   Features:
     - Tokens: emit-cygwin-bootstrap, emit-wsl-setup
     - Archive switch: -Archive4Doc y|n  (copies emissions into .4doc_* dirs and appends .{timestamp}.4doc to filenames)
@@ -8,19 +8,57 @@
     - .gitignore advisory (non-fatal): prints missing lines or entire block if file absent
 #>
 
+# ------------------------------------------------------------
+# TEMPORARY EXECUTION POLICY (SAFE FOR THIS SESSION ONLY)
+# ------------------------------------------------------------
+# Before running this setup script, open PowerShell **as Administrator**
+# and allow script execution only for the current session:
+#
+#   Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+#
+# This change is temporary and reverts automatically when PowerShell closes.
+# It does NOT modify your system-wide policy.
+#
+# Example full run (no interaction, archival enabled):
+#
+#   cd "$HOME\Desktop"
+#   .\setup-win-start.ps1 -Installs "emit-cygwin-bootstrap,emit-wsl-setup" -Interactive n -Archive4Doc y
+#
+# ------------------------------------------------------------
+
 [CmdletBinding()]
 param(
-  [Parameter(Mandatory=$true)] [string]$Installs,
+  [string]$Installs,
   [ValidateSet('y','n')] [string]$Interactive = 'y',
   [ValidateSet('y','n')] [string]$VerifyManualDownloads = 'y',
   [ValidateSet('y','n')] [string]$RestorePoints = 'y',
-  [ValidateSet('y','n')] [string]$Archive4Doc = 'n'
+  [ValidateSet('y','n')] [string]$Archive4Doc = 'n',
+  [switch]$Help
 )
+
+# Output Help if requested. First, we define usage/help message.
+
+if ($Help) {
+  # (print help and exit 0)
+  exit 0
+}
+
+if ([string]::IsNullOrWhiteSpace($Installs)) {
+  Write-Host "Error: -Installs is required. Try: -Installs `"emit-cygwin-bootstrap,emit-wsl-setup`"" -ForegroundColor Red
+  Write-Host "Or get help/usage: .\setup-win-start.ps1 -Help"
+  exit 1
+}
 
 $ErrorActionPreference = 'Stop'
 
-function NowStr { (Get-Date).ToString('yyyy-MM-ddTHHmmss-0400') }  # Boston offset as requested
+function NowStr {
+    # Use Unix-style seconds, human date, and timezone offset automatically
+    $raw = Get-Date -UFormat "%s_%Y-%m-%dT%H%M%S%Z00"
+    # Clean the fractional seconds PowerShell sometimes injects (e.g., .12345_)
+    return ($raw -replace '[.][0-9]{1,5}_','_')
+}
 $startTimestamp = NowStr
+
 $desk = [Environment]::GetFolderPath('Desktop')
 $cwd  = (Get-Location).Path
 
@@ -154,7 +192,7 @@ SCREEN_WIDTH=$(echo "$SCREEN_INFO" | cut -d"x" -f1)
 SCREEN_HEIGHT=$(echo "$SCREEN_INFO" | cut -d"x" -f2)
 HALF_HEIGHT=$((SCREEN_HEIGHT / 2))
 
-echo "Screen size: ${{SCREEN_WIDTH}}x${{SCREEN_HEIGHT}}"
+echo "Screen size: `$SCREEN_WIDTH x `$SCREEN_HEIGHT"
 echo "Top stub: $TOP_APP"
 echo "Bottom target: $BOTTOM_APP"
 get_top_app(){{ adb shell dumpsys window windows | grep -E "mCurrentFocus" | sed 's/.* //'; }}
@@ -168,7 +206,7 @@ adb shell am start -n "$BOTTOM_APP" --activity-options "activityOptions.setLaunc
 sleep 3
 
 TOP_WINDOW=$(get_top_app)
-if [[ "$TOP_WINDOW" == *"${{BOTTOM_APP%%/*}}"* ]]; then
+if [[ "$TOP_WINDOW" == *"`$BOTTOM_APP"* ]]; then
   echo "Detected: bottom app occupied top pane. Auto-swapping..."
   adb shell am start -n "$BOTTOM_APP" --activity-options 'activityOptions.setLaunchWindowingMode(3)'
   sleep 2
@@ -177,7 +215,7 @@ else
   echo "Confirmed: bottom app in lower half."
 fi
 
-echo "✅ Split-screen setup complete."
+echo "Split-screen setup complete."
 EOF
 chmod +x ~/bin/split_bottom.sh
 grep -q 'alias splitbot=' ~/.bashrc || echo 'alias splitbot="split_bottom.sh"' >> ~/.bashrc
@@ -245,7 +283,7 @@ $PKG git curl wget zip unzip tar ca-certificates
 #   $PKG openssh-server && sudo service ssh start
 # fi
 
-echo "✓ Base packages installed. Customize this script as needed."
+echo "Base packages installed. Customize this script as needed."
 '@
 
   $wsl_readme = @"
@@ -335,7 +373,7 @@ WSL_SETUP_README.md
 $giPath = Join-Path $cwd ".gitignore"
 if (-not (Test-Path $giPath)) {
   Log "'.gitignore' not found in $cwd."
-  Log "Add the following before committing:"
+  Log "Create it and add the following before committing:"
   Log $giBlock
 } else {
   $currentGi = Get-Content $giPath -Raw
