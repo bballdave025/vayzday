@@ -2,5 +2,21 @@
 #  New Windows machine setup -- specifically keeping out emitted files for
 #+ WSL and Cygwin setup steps. 2025-10-16T-0500
 
+# --- Bootstrap emissions (ignored) ---
+Cygwin_Bootstrap_*/
+WSL_Setup_*/
+completed_install_report_*.log
+partial_install_report_*.log
+bootstrap_cyg.cmd
+cyg-bootstrap.sh
+wsl-setup.sh
+SHA256SUMS.txt
+CYG_README.md
+WSL_SETUP_README.md
 
-## Can we add to the .gitignore to allow for two directories, each with the simple timestamp, `2025-10-16Z-0500` (as long as Boston is indeed `UTC-0500` right now): `/.4doc_Cygwin_..._<timestamp}` and `/.4doc_WSL_..._{timestamp}`, each of which will have our current versions of the emitted files, but with a `.{timestamp}.4doc` appended to the end of any filename-including-extension? To clarify, I want the `4doc` stuff to make it past the `.gitignore`. I will personally take care of it when we want to clear out any of these `4doc`, and they should not be part of the `setup_win_start.ps1` script (unless you think adding a flag would be worth it.) I'll just do the rename after running the script with both emit flags.
+# --- Allow explicit 4doc documentation snapshots ---
+# Keep timestamped documentation copies (e.g., .4doc_2025-10-16Z-0500)
+!/.4doc_Cygwin_*/
+!/.4doc_WSL_*/
+!/.4doc_Cygwin_*/**
+!/.4doc_WSL_*/**
