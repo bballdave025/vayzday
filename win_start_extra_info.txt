@@ -3888,3 +3888,97 @@ PS C:\Users\bball\Desktop>
 PS C:\Users\bball\Desktop> # I'll ask ChatGPT about doing the System Restore Point without the script.
 PS C:\Users\bball\Desktop>
 ```
+
+
+
+
+
+
+---------------------------------------------
+
+
+
+
+Okay. Current version saved, running until the first restore point leads to a reset. See you on the other side! (Is that a reference to astronauts passing behind the moon during Apollo missions?)
+You said:
+I got some syntax errors, which doesn't surprise me, since both of us were trying to emit bash from a PowerShell script. At this point, my scaffolding is there, and the fixes for syntax are likely trivial.
+
+Could you tell me how to run the first system restore, including the name that would have been used by the script, from the elevated PS prompt, now, so that the updates and any ... (is rebasing the word?) post-install-startup fixes can be happening while I sleep.
+
+N.B. I have already run
+
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+
+Let me know other PS commands I'll need before the one that kicks off the System Restore Point and finally the update+restart.
+
+
+
+
+
+-----------------------------------------
+
+
+
+
+Yep—“rebasing” is a Cygwin thing (fixes DLL address space collisions). For Windows itself you’ll hear “servicing stack,” “component cleanup,” etc.
+
+Here’s a clean, admin-PowerShell sequence to (1) make the restore point with the same name our script uses and then (2) kick off updates + reboot so it can churn while you sleep.
+
+### 1) Turn on System Protection (in case it’s off) and create the restore point
+
+```powershell
+# (You already did this for the session, but harmless to repeat)
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+
+# Ensure protection is on for C:
+Enable-ComputerRestore -Drive "C:\" 2>$null
+
+# Create the exact restore point name our script uses:
+Checkpoint-Computer -Description "Pre Initial Update" -RestorePointType MODIFY_SETTINGS
+
+# Optional: verify it exists (most recent 3 points)
+Get-ComputerRestorePoint | Sort-Object SequenceNumber -Descending | Select-Object -First 3
+```
+
+### 2) Start Windows Update and reboot automatically
+
+#### Option A — no extra modules (built-in)
+
+```powershell
+# Kick the Windows Update Orchestrator
+usoclient StartScan
+usoclient StartDownload
+usoclient StartInstall
+
+# Reboot after 10 minutes to give installs a head start (adjust /t as you like)
+shutdown /r /t 600 /c "Rebooting after updates to complete installation" /f
+```
+
+#### Option B — with PSWindowsUpdate (more thorough, but installs a module)
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+Install-Module PSWindowsUpdate -Force
+Import-Module PSWindowsUpdate
+
+# Finds, installs everything, and reboots when done
+Get-WindowsUpdate -Install -AcceptAll -AutoReboot
+```
+
+#### (Nice to have while you sleep)
+
+* Plug in power and set the machine not to sleep for a bit:
+
+  * Settings → System → Power & battery → set “Screen” and “Sleep” to longer/never for AC.
+* Or from PS (optional):
+
+  ```powershell
+  powercfg /change standby-timeout-ac 0   # 0 = never sleep on AC
+  ```
+
+If `Checkpoint-Computer` complains about protection being off or about the “one per 24 hours” throttle, the `Enable-ComputerRestore` line handles the first case; the daily throttle is a Windows safeguard—if you’ve already made one very recently, you can proceed with updates and rely on the next two checkpoints in our flow later.
+
+
+
+
+-------------------------
