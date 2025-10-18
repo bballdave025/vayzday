@@ -3162,6 +3162,487 @@ verify_portable_bashrc() {
 
 
 
+Awesome—thanks for the fresh start. I pulled your context and wired up the exact pieces you asked for (using your own .portable.bashrc as the base). I also generated ready-to-drop artifacts so you can keep rolling without fighting the lag.
+
+Here’s what I built for you (all are already created and downloadable):
+
+.portable.bashrc (your uploaded content + tiny brightness helpers appended):
+Download 
+
+portable_bashrc
+
+check_new_linux_bash.sh + instruction sheet:
+Script · How-to TXT
+
+PowerShell helper module you can dot-source from your main script:
+emit_wsl_cygwin_artifacts.ps1
+
+Your portable PowerShell profile, patched with Night Light + brightness helpers:
+portable_profile_patched.ps1
+
+A safe example “patched” setup script that shows how to call the helpers and do the restore-point sequence you described:
+setup-win-start_patched.ps1
+
+Quick notes on what’s inside
+
+I preserved your uploaded .portable.bashrc exactly and appended a small, self-contained brightness helper block (dim_for_reading, max_brightness) that prefers brightnessctl, falls back to xrandr, and otherwise no-ops with a friendly message. This gives you brightness helpers in WSL and Cygwin without touching your established aliases/functions. 
+
+portable_bashrc
+
+check_new_linux_bash.sh implements your baseline snapshot plan: backs up dotfiles, grabs /etc pre-dotfile configs when readable, records IFS/PATH/MANPATH/PS1/PROMPT_COMMAND/TITLE_STRING, and writes a timestamped .out file to ~/.important_backups/. It matches the behavior you outlined (and what we summarized in your run-book). 
+
+WIN_HOUSEKEEPING_README
+
+emit_wsl_cygwin_artifacts.ps1 exposes:
+
+New-SafeRestorePoint (uses Checkpoint-Computer and enables restore if needed)
+
+Write-PortableBashrc (drops your merged .portable.bashrc into ...\vezde\.portable.bashrc under each destination root)
+
+Write-CheckNewLinuxArtifacts (emits the check_new_linux_bash.sh + .txt)
+
+Add-PortableProfileHelpers (adds Open-NightLightSettings and a robust Set-Brightness WMI/Twinkle-Tray fallback to your portable PowerShell profile; optional winget installs for f.lux and Twinkle Tray)
+
+setup-win-start_patched.ps1 is a minimal, safe “how to wire it” example so you can copy the calls straight into your real setup-win-start.ps1 where you want them:
+
+New-SafeRestorePoint "Pre Initial Update"
+
+(you restart + let Windows updates run)
+
+New-SafeRestorePoint "Post Beginning, Pre Big Setup"
+
+Emit WSL + Cygwin artifacts (your .portable.bashrc + baseline scripts)
+
+Patch portable PowerShell profile; optionally -InstallFlux and/or -InstallTwinkleTray
+
+New-SafeRestorePoint "Post Big Setup"
+
+How to integrate with your real setup-win-start.ps1
+
+Put these files next to your script (or adjust paths):
+
+emit_wsl_cygwin_artifacts.ps1
+
+portable_bashrc.txt (your upload; I used it as the source) 
+
+portable_bashrc
+
+portable_profile.ps1 (your original; or use the patched one as a drop-in)
+
+In setup-win-start.ps1, add:
+
+. "$PSScriptRoot\emit_wsl_cygwin_artifacts.ps1"
+
+# 1) Pre-initial update restore point
+New-SafeRestorePoint "Pre Initial Update"
+
+# (You: restart, let Windows updates run)
+
+# 2) Post beginning, pre big setup restore point
+New-SafeRestorePoint "Post Beginning, Pre Big Setup"
+
+# 3) Emit WSL + Cygwin artifacts (pick your roots)
+$roots = @("$env:USERPROFILE\Desktop\WSL_Setup", "$env:USERPROFILE\Desktop\Cygwin_Bootstrap")
+Write-PortableBashrc -DestRoots $roots -SourceBashrcPath (Join-Path $PSScriptRoot "portable_bashrc.txt")
+Write-CheckNewLinuxArtifacts -DestRoots $roots
+
+# 4) Patch portable PS profile (and optionally install f.lux / Twinkle Tray)
+Add-PortableProfileHelpers -PortableProfilePath (Join-Path $PSScriptRoot "portable_profile.ps1") -InstallFlux:$true -InstallTwinkleTray:$true
+
+# 5) Final restore point
+New-SafeRestorePoint "Post Big Setup"
+
+
+What to test (fast)
+
+Help/emit: run setup-win-start_patched.ps1 once to confirm emit locations show up on the Desktop.
+
+Linux baseline: in WSL Fedora (and/or Cygwin), chmod +x check_new_linux_bash.sh then ./check_new_linux_bash.sh; verify ~/.important_backups/ contents are created.
+
+Bash helpers: source your emitted .portable.bashrc and run dim_for_reading then max_brightness (if brightnessctl or xrandr are present).
+
+PowerShell Night Light & brightness:
+
+Open-NightLightSettings should jump straight to the Night Light page.
+
+Set-Brightness 30 should work on many laptops via WMI; if it can’t, it’ll try Twinkle Tray if installed.
+
+Restore points: verify they’re created in System Protection (and that protection is enabled for C:).
+
+If you want me to splice the emitter calls directly into your actual setup-win-start.ps1, upload the current version and I’ll produce a clean, minimal diff with the exact insertion points you prefer. Meanwhile, the drop-in module + example above is safe to use and mirrors your plan precisely.
+
+(And thank you for trusting me with your own .portable.bashrc—I kept your content intact and only appended the brightness block, per your preference. 
+
+portable_bashrc
+
+)
+
+
+
+
+
+-----------------------------------------------------------------------
+
+
+
+
+
+I do want you to splice the emitter calls (including an option with that runs like something we discussed before, checking the emission with documentation folders beginning with .4doc_ and ending with a shared timestamp) and all of the emitted scripts in their folders with .{shared_timestamp}.4doc appended at the end as a file extension. Before we begin anything, please answer my questions 0.1 and 0.2. 0.1) You stated, "If you want me to splice the emitter calls directly into your actual setup-win-start.ps1, upload the current version..." What do you mean by the "current version"? Is it the setup-win-start.ps1 that I uploaded earlier in this chat? Is it the patched version (setup-win-start-patched.ps1) you sent? 0.2) What is $PSScriptRoot. Also, is the whole
+powershell
+. "$PSScriptRoot\emit_wsl_cygwin_artifacts.ps1"
+
+# 1) Pre-initial update restore point
+New-SafeRestorePoint "Pre Initial Update"
+
+# (You: restart, let Windows updates run)
+
+# 2) Post beginning, pre big setup restore point
+New-SafeRestorePoint "Post Beginning, Pre Big Setup"
+
+# 3) Emit WSL + Cygwin artifacts (pick your roots)
+$roots = @("$env:USERPROFILE\Desktop\WSL_Setup", "$env:USERPROFILE\Desktop\Cygwin_Bootstrap")
+Write-PortableBashrc -DestRoots $roots -SourceBashrcPath (Join-Path $PSScriptRoot "portable_bashrc.txt")
+Write-CheckNewLinuxArtifacts -DestRoots $roots
+
+# 4) Patch portable PS profile (and optionally install f.lux / Twinkle Tray)
+Add-PortableProfileHelpers -PortableProfilePath (Join-Path $PSScriptRoot "portable_profile.ps1") -InstallFlux:$true -InstallTwinkleTray:$true
+
+# 5) Final restore point
+New-SafeRestorePoint "Post Big Setup"
+one script? Will it keep running after I restart? I want to test emitting things tonight, but without installing or testing on Cygwin or WSL (and without testing portable_profile.ps1, yet). I want .portable.bashrc emitted without the need for the inclusion of portable_bashrc.txt I want portable_profile.ps1 emitted _with your suggested patches_, i.e. the one with the InstallFlux and -InstallTwinkleTray (both options, please). The one I test tonight will use an updated call, similar to one you sent before, but with additions. The call we had before, without the extra emit option that should be part of the new setup-win-start.ps1, was something like what follows. (I don't know if this is the most recent one, NOTE that I'm going to ADD SOMETHING NEW, so that you can wire emit_wsl_cygwin_artifacts.ps1 into our new setup-win-start.ps1 and add another -Installs argument. ## **THIS NEXT ONE IS THE PREVIOUS ONE, AND NOT THE ONE TO BE USED TONIGHT**
+cd "$HOME\Desktop"
+.\setup-win-start.ps1 -Installs "emit-cygwin-bootstrap,emit-wsl-setup" -Interactive n -Archive4Doc y
+## **THE NEW ONE** The new one should be run as follows:
+cd "$HOME\Desktop"
+.\setup-win-start.ps1 -Installs "emit-cygwin-bootstrap,emit-wsl-setup,emit-wsl-cywin-artifacts" -Interactive n -Archive4Doc y
+The results should be the following (where I've added to a list you created before, so the voice is yours) 1) Nothing (not even GPG, WSL, or Cygwin) should actually be installed. 2) Normal versions of scripts/descriptions/READMEs emitted to $HOME\Desktop\default_setup_2025-10-18-Early\ (directory created if it doesn't exist) into the appropriate subfolder (as below) 2a) $HOME\Desktop\default_setup_2025-10-18-Early\Cygwin_Bootstrap_<timestamp>/ 2a-i) with the following inside the Cygwin_Bootstrap_<timestamp> folder 2a-i-1) [If I hit Enter too soon and don't get to the file list, something with too high of a probability, please state what you think this list should be, based on the existing setup script and the additions we have discussed. Put it in the same format as my expected results outline, here.] 2b) $HOME\Desktop\default_setup_2025-10-18-Early\WSL_Setup_<timestamp>/ 2b-i) with the following inside the WSL_Setup_<timstamp> folder 2b-i1) [Again, if I hit Enter too soon and don't get to the file list, something with too high of a probability, please state what you think this list should be, based on the existing setup script and the additions we have discussed. Put it in the same format as my expected results outline, here.] 3) The portable_profile.ps1, as patched, outputted to $HOME\Desktop\default_setup_2025-10-18-Early\ 4) Archival versions of scripts/instructions/READMEs also emitted to $HOME\Desktop\default_setup_2025-10-18-Early\ into the appropriate subfolders (as below), while each script/instruction/README simply gets a .<timestamp>.4doc suffix/extension .4doc_Cygwin_<timestamp>/ .4doc_WSL_<timestamp>/ - (Restatement from before) Inside each archive, filenames gain .{timestamp}.4doc extensions — ready for Git commits under your .4doc inclusion rules. You said you plan to - Generation of completed_install_report_<timestamp>.log in `$HOME\Desktop\default_setup_2025-10-18-Early\ (summarizing emissions + archive paths).
+
+
+
+
+------------------------
+
+
+
+
+Great—answering 0.1 and 0.2 first, then I’ve already produced a spliced script you can use tonight.
+
+# 0.1) What do I mean by “current version”?
+
+By “current version,” I mean **the one you want me to modify right now**. Since you uploaded `setup-win-start.ps1` earlier in this chat, that counts as the current version unless you tell me to use something else. The `setup-win-start_patched.ps1` I sent is only an **example wiring**—useful as a reference, not a replacement.
+
+# 0.2) What is `$PSScriptRoot`, and will the script keep running after restart?
+
+* `$PSScriptRoot` is the PowerShell variable that resolves to **the directory where the running script file lives**. It’s handy for loading neighbor files like:
+
+  ```powershell
+  . "$PSScriptRoot\emit_wsl_cygwin_artifacts.ps1"
+  ```
+* The block you pasted is **part of a script** (not something that survives a reboot by itself). After you reboot for Windows Updates, you’d run the script again for the next steps. PowerShell scripts don’t automatically resume after restarts unless you set up a scheduled task or similar machinery.
+
+---
+
+## What I’ve prepared for tonight’s test (no installs, just emissions)
+
+I created a **spliced** version that matches your new CLI and adds your `.4doc_...` archival mode with a **shared timestamp**:
+
+* **Spliced script** (drop it alongside `emit_wsl_cygwin_artifacts.ps1`):
+  [setup-win-start_spliced.ps1](sandbox:/mnt/data/setup-win-start_spliced.ps1)
+
+### How to run (your new call)
+
+```
+cd "$HOME\Desktop"
+.\setup-win-start_spliced.ps1 -Installs "emit-cygwin-bootstrap,emit-wsl-setup,emit-wsl-cywin-artifacts" -Interactive n -Archive4Doc y
+```
+
+Notes:
+
+* I accept your exact spelling `emit-wsl-cywin-artifacts` **and** the properly spelled `emit-wsl-cygwin-artifacts`. Either works.
+* **No WSL/Cygwin install happens.** This just emits files/folders and builds `.4doc_` archives.
+* `.portable.bashrc` is **embedded** in the script (it uses your uploaded `portable_bashrc.txt` content with brightness helpers appended), so **no external `portable_bashrc.txt` is required** tonight.
+* `portable_profile.ps1` is **emitted with the Night Light / brightness helpers patched in**. The script supports `-InstallFlux` and `-InstallTwinkleTray` switches, but since you’re not installing tonight, simply omit them (default is off).
+
+### Where things land
+
+Base directory (created if missing):
+
+```
+$HOME\Desktop\default_setup_2025-10-18-Early\
+```
+
+Shared timestamp (used consistently across names), e.g.:
+
+```
+<epoch>_<YYYY-MM-DDTHHMMSS-0400>   # zzz removed colon for Windows-safe filenames
+```
+
+#### 2a) Cygwin “normal” emissions
+
+```
+$HOME\Desktop\default_setup_2025-10-18-Early\Cygwin_Bootstrap_<shared_ts>\
+```
+
+##### 2a-i-1) Expected contents (minimum guaranteed by tonight’s run)
+
+* `vezde\.portable.bashrc`  (your content + brightness helpers)
+* `linux_baseline\check_new_linux_bash.sh`  (executable baseline snapshot script)
+* `linux_baseline\check_new_linux_bash.txt` (how-to)
+* (If your original script also emits other Cygwin bootstrap assets/READMEs, they’ll appear in addition to these when we splice those sections next.)
+
+#### 2b) WSL “normal” emissions
+
+```
+$HOME\Desktop\default_setup_2025-10-18-Early\WSL_Setup_<shared_ts>\
+```
+
+##### 2b-i1) Expected contents (minimum guaranteed by tonight’s run)
+
+* `vezde\.portable.bashrc`  (same merged body)
+* `linux_baseline\check_new_linux_bash.sh`
+* `linux_baseline\check_new_linux_bash.txt`
+* (Plus any WSL assets your existing flow already emits, when we splice those sections next.)
+
+#### 3) Portable PowerShell profile (patched) at the base
+
+```
+$HOME\Desktop\default_setup_2025-10-18-Early\portable_profile.ps1
+```
+
+* Includes:
+
+  * `Open-NightLightSettings`
+  * `Set-Brightness <0..100>` (WMI path with Twinkle Tray fallback)
+* Optional: later you can re-run with `-InstallFlux` and/or `-InstallTwinkleTray` to install tools. (Tonight we’re not installing.)
+
+#### 4) `.4doc_…` archives with suffixed filenames
+
+Archival copies (only when `-Archive4Doc y`):
+
+```
+$HOME\Desktop\default_setup_2025-10-18-Early\.4doc_Cygwin_<shared_ts>\
+$HOME\Desktop\default_setup_2025-10-18-Early\.4doc_WSL_<shared_ts>\
+```
+
+Inside each archive, every file is duplicated with the suffix:
+
+```
+.<shared_ts>.4doc
+```
+
+Example:
+
+```
+.portable.bashrc.<shared_ts>.4doc
+check_new_linux_bash.sh.<shared_ts>.4doc
+check_new_linux_bash.txt.<shared_ts>.4doc
+```
+
+#### 5) Completion report
+
+```
+$HOME\Desktop\default_setup_2025-10-18-Early\completed_install_report_<shared_ts>.log
+```
+
+Summarizes base dir, shared timestamp, and every emitted path.
+
+---
+
+## Files you can grab now
+
+* **Spliced script for tonight**:
+  [Download setup-win-start_spliced.ps1](sandbox:/mnt/data/setup-win-start_spliced.ps1)
+* (From earlier) **Emitter module it invokes** (already built):
+  [Download emit_wsl_cygwin_artifacts.ps1](sandbox:/mnt/data/emit_wsl_cygwin_artifacts.ps1)
+
+If you want me to splice this logic directly into your uploaded `setup-win-start.ps1` (instead of using the spliced standalone), just say the word and I’ll produce a unified file that preserves your structure and CLI while adding the `emit-wsl-cywin-artifacts` action and the `.4doc_` archival behavior.
+
+
+
+
+-------------------------------------------
+
+
+
+
+
+
+Done. I spliced the emit logic directly into your uploaded setup-win-start.ps1 and produced a drop-in replacement that preserves your original content and adds the new actions inline (no external module needed).
+
+Integrated script (use this one):
+Download setup-win-start.integrated.ps1
+
+What I added (inline)
+
+Actions recognized via -Installs:
+
+emit-cygwin-bootstrap
+
+emit-wsl-setup
+
+emit-wsl-cywin-artifacts (and I also accept the correctly spelled emit-wsl-cygwin-artifacts)
+
+Shared timestamp function and .4doc_… archival logic with file suffix .<shared_ts>.4doc
+
+Embedded .portable.bashrc body = your uploaded content + brightness helpers (so no separate portable_bashrc.txt required)
+
+Emission of linux_baseline/check_new_linux_bash.sh + .txt in each target root
+
+Emission of a patched portable_profile.ps1 (with Open-NightLightSettings + Set-Brightness) at the base directory
+
+A completion log: completed_install_report_<shared_ts>.log
+
+Tonight’s test command (no installs)
+cd "$HOME\Desktop"
+.\setup-win-start.integrated.ps1 -Installs "emit-cygwin-bootstrap,emit-wsl-setup,emit-wsl-cywin-artifacts" -Interactive n -Archive4Doc y
+
+Where outputs go
+
+Base dir (auto-created):
+
+$HOME\Desktop\default_setup_2025-10-18-Early\
+
+
+Inside it:
+
+Cygwin (normal)
+Cygwin_Bootstrap_<shared_ts>\
+
+vezde\.portable.bashrc
+
+linux_baseline\check_new_linux_bash.sh
+
+linux_baseline\check_new_linux_bash.txt
+
+WSL (normal)
+WSL_Setup_<shared_ts>\
+
+vezde\.portable.bashrc
+
+linux_baseline\check_new_linux_bash.sh
+
+linux_baseline\check_new_linux_bash.txt
+
+Patched portable profile at base
+portable_profile.ps1 (contains Open-NightLightSettings and Set-Brightness)
+
+Archives (when -Archive4Doc y)
+.4doc_Cygwin_<shared_ts>\ and .4doc_WSL_<shared_ts>\
+Each file duplicated with suffix .<shared_ts>.4doc, e.g.:
+
+.portable.bashrc.<shared_ts>.4doc
+
+check_new_linux_bash.sh.<shared_ts>.4doc
+
+check_new_linux_bash.txt.<shared_ts>.4doc
+
+Report
+completed_install_report_<shared_ts>.log
+(lists base dir, timestamp, and every emitted path)
+
+If you want me to also wire in your restore-point calls (Pre Initial Update / Post Beginning Pre Big Setup / Post Big Setup) exactly where you want them within your original flow, I can add those now—just say where they belong relative to your existing sections.
+
+
+-----------------------------------------
+
+
+
+Nice catch on that typo : ) I can eventually take it out, but it will work for tonight. Let me think about the restore points. I'm thinking that, whenever I get a new machine (or adapt a machine that was used by someone earlier, but will be used by me), I'm going to want the same three system restore points. That being the case, I _do_ want you to wire in the restore point calls. (Am I thinking through this right?)
+
+
+
+
+
+----------------------------------------------------
+
+
+
+You’re thinking about it exactly right. Those three restore points are a solid “new machine / repurpose machine” ritual. I’ve wired them directly into your integrated script with a flexible control so you can use them in one pass or step-by-step across reboots.
+
+### Updated integrated script (with restore points wired in)
+
+* **Download:** [setup-win-start.integrated.with_restore.ps1](sandbox:/mnt/data/setup-win-start.integrated.with_restore.ps1)
+
+### How it works now
+
+New params added:
+
+* `-RestorePointPhase` with options:
+
+  * `All` *(default)* – creates **all three** restore points during the run:
+
+    1. **Pre Initial Update**
+    2. **Post Beginning, Pre Big Setup**
+    3. **Post Big Setup**
+  * `PreInitialUpdate` – only creates the first
+  * `PostBeginningPreBigSetup` – only the second
+  * `PostBigSetup` – only the third
+* `-SkipRestorePoints` – bypass restore point creation entirely (handy for quick test runs)
+
+Where they fire:
+
+* On script start (dispatcher): creates **Pre Initial Update** if `RestorePointPhase` is `All` or `PreInitialUpdate`.
+* Just after the shared timestamp/base-dir are set: creates **Post Beginning, Pre Big Setup** if `All` or `PostBeginningPreBigSetup`.
+* Right before the completion message: creates **Post Big Setup** if `All` or `PostBigSetup`.
+
+### Tonight’s emission-only test (no installs)
+
+```
+cd "$HOME\Desktop"
+.\setup-win-start.integrated.with_restore.ps1 `
+  -Installs "emit-cygwin-bootstrap,emit-wsl-setup,emit-wsl-cywin-artifacts" `
+  -Interactive n `
+  -Archive4Doc y `
+  -RestorePointPhase All
+```
+
+This will:
+
+* Create the three restore points (per the default `All`)
+* Emit:
+
+  * `Cygwin_Bootstrap_<shared_ts>\vezde\.portable.bashrc`
+  * `WSL_Setup_<shared_ts>\vezde\.portable.bashrc`
+  * Linux baseline scripts (`check_new_linux_bash.sh` + `.txt`) in each
+  * `portable_profile.ps1` (patched with Night Light/brightness helpers) at base
+* Archive `.4doc_…` copies with `.<shared_ts>.4doc` suffixes
+* Write `completed_install_report_<shared_ts>.log` summarizing everything
+
+If you prefer to separate the phases across reboots:
+
+1. Before updates:
+
+   ```
+   .\setup-win-start.integrated.with_restore.ps1 -RestorePointPhase PreInitialUpdate
+   ```
+2. After updates, before big setup:
+
+   ```
+   .\setup-win-start.integrated.with_restore.ps1 -RestorePointPhase PostBeginningPreBigSetup
+   ```
+3. After big setup:
+
+   ```
+   .\setup-win-start.integrated.with_restore.ps1 -RestorePointPhase PostBigSetup
+   ```
+
+Want me to make `All` the default for your “emit-only” path but suppress restore points unless a flag is passed? Or leave as-is?
+
+
+
+-------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
