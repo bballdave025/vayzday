@@ -3635,6 +3635,65 @@ Want me to make `All` the default for your “emit-only” path but suppress res
 
 
 
+Yes, I want All default for "emit-only" but suppress restore points unless a flag is passed. I also want you only to accept the correct spelling you noticed, emit-wsl-cygwin-artifacts (don't accept emit-wsl-cywin-artifacts). Please send the next setup script with the original name -- setup-win-start.ps1. I'm committing things to GitHub as we go (just via file uploads, since I don't have git installed, yet), and I'll eventually remove the filenames with extra infixes. Do any of the steps above change?
+
+
+
+
+
+--------------------------------------------------------
+
+
+
+
+Got it. I’ve baked in your preferences and produced the final script with the original name.
+
+* **Download:** [setup-win-start.ps1](sandbox:/mnt/data/setup-win-start.ps1)
+
+### What changed vs. the last build
+
+* **Restore points are suppressed by default.**
+
+  * `RestorePointPhase` still defaults to `All`, **but nothing is created unless you pass `-EnableRestorePoints`**.
+  * This keeps your “emit-only” runs clean by default.
+* **Only the correct action is accepted now:** `emit-wsl-cygwin-artifacts`.
+
+  * The earlier acceptance of the typo is removed.
+
+### Tonight’s “emit-only” test (unchanged except the action spelling)
+
+```
+cd "$HOME\Desktop"
+.\setup-win-start.ps1 `
+  -Installs "emit-cygwin-bootstrap,emit-wsl-setup,emit-wsl-cygwin-artifacts" `
+  -Interactive n `
+  -Archive4Doc y
+```
+
+* Emits normal folders + `.4doc_…` archives
+* Writes `portable_profile.ps1` (patched) at the base
+* **No restore points** (since you didn’t pass `-EnableRestorePoints`)
+
+### When you want the 3 restore points
+
+Run the same, adding `-EnableRestorePoints` (defaults to phase `All`):
+
+```
+.\setup-win-start.ps1 `
+  -Installs "emit-cygwin-bootstrap,emit-wsl-setup,emit-wsl-cygwin-artifacts" `
+  -Interactive n `
+  -Archive4Doc y `
+  -EnableRestorePoints
+```
+
+### Do any steps above change?
+
+Only two behavioral tweaks vs. your prior plan:
+
+1. **Restore points now require `-EnableRestorePoints`.** Without it, they’re skipped even though `RestorePointPhase` defaults to `All`.
+2. **Use the corrected action token** `emit-wsl-cygwin-artifacts` in `-Installs`.
+
+Everything else (folder layout, shared timestamp behavior, archive suffix `.<shared_ts>.4doc`, and the completion report) remains the same.
 
 
 
@@ -3642,10 +3701,86 @@ Want me to make `All` the default for your “emit-only” path but suppress res
 
 
 
+-----------------------------------------
+
+
+
+
+
+Okay. Current version saved, running until the first restore point leads to a reset. See you on the other side! (Is that a reference to astronauts passing behind the moon during Apollo missions?)
+
+
+
+
+
+----------------------------------------------
+
+
+Exactly — that is the Apollo reference 🙂.
+During each lunar-orbit mission, radio contact dropped out when the spacecraft went behind the Moon; controllers said, “We’ll see you on the other side.” Perfect metaphor for running a system restore or reboot.
+
+Your plan sounds great. Nothing in the workflow changes:
+
+Run the script normally (emit-only) until the system restore triggers the reboot.
+
+After reboot, pick up at step 2 or 3 depending on what phase you’re in.
+
+Later runs can include -EnableRestorePoints if you want the automated checkpoints; otherwise, restore creation stays off.
+
+Everything else—shared timestamps, .4doc_ archives, and completion log—continues exactly as before.
+
+Good luck with the reboot; see you on the other side 🚀
+
+
+
+
+
+------------------------------------------------
+
+
+My runs:
+
+
+cd "$HOME\Desktop"
+
+.\setup-win-start.ps1 -Help
+
+
+.\setup-win-start.ps1 `
+  -Installs "emit-cygwin-bootstrap,emit-wsl-setup,emit-wsl-cygwin-artifacts" `
+  -Interactive n `
+  -Archive4Doc y
+
+
+.\setup-win-start.ps1 `
+  -Installs "emit-cygwin-bootstrap,emit-wsl-setup,emit-wsl-cygwin-artifacts" `
+  -Interactive y `
+  -Archive4Doc n `
+  -EnableRestorePoints `
+  -RestorePointPhase PreInitialUpdate
+
+
+NOTE that I'm overriding the `All` default for `-RestorePointPhase`. I might want to change the code to reflect this, but later. I'll later start from number 2 in the sequence:
+
+If you prefer to separate the phases across reboots:
+
+Before updates:
+
+`.\setup-win-start.ps1 -EnableRestorePoints -RestorePointPhase PreInitialUpdate`
+
+
+After updates, before big setup:
+
+`.\setup-win-start.ps1 -EnableRestorePoints -RestorePointPhase PostBeginningPreBigSetup`
+
+
+After big setup:
+
+`.\setup-win-start.ps1 -RestorePointPhase PostBigSetup`
 
 
 
 
 
 
-
+---------------------------------------------------

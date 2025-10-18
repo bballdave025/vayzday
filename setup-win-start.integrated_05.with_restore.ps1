@@ -30,8 +30,7 @@
 param(
   [string]$Installs,
   [ValidateSet('y','n'
-  [ValidateSet("All","PreInitialUpdate","PostBeginningPreBigSetup","PostBigSetup",
-  [switch]$EnableRestorePoints)][string]$RestorePointPhase = "All",
+  [ValidateSet("All","PreInitialUpdate","PostBeginningPreBigSetup","PostBigSetup")][string]$RestorePointPhase = "All",
 function New-SafeRestorePoint {
   [CmdletBinding()]
   param([Parameter(Mandatory)][string]$Description)
