@@ -1,0 +1,22 @@
+check_new_linux_bash — quick baseline capture (WSL, Fedora, Ubuntu, Cygwin)
+
+What it does
+• Saves a timestamped environment snapshot to ~/.important_backups/new_linux_bash_<epoch>_<ISO>.out
+• Backs up common dotfiles (.bashrc, .profile, .vimrc, .gitconfig, etc.) with the same timestamp.
+• Backs up pre‑dotfile system files when readable (/etc/profile, /etc/bashrc or /etc/bash.bashrc, /etc/environment, /etc/manpath.config).
+• Saves single‑value captures (IFS, PATH, MANPATH, PS1, PROMPT_COMMAND, TITLE_STRING) into separate .bak files.
+
+How to run
+  1) Place both files in any shell environment (WSL, Fedora, Ubuntu, or Cygwin):
+     - check_new_linux_bash.sh
+     - .portable.bashrc   (optional, but nice!)
+  2) Make the script executable and run it:
+       chmod +x check_new_linux_bash.sh
+       ./check_new_linux_bash.sh
+  3) Review outputs in ~/.important_backups/
+
+Tips
+• If you plan to adopt .portable.bashrc, you can source it first:
+     . "$HOME/vezde/.portable.bashrc"  # or wherever you placed it
+• If `tree` is installed, try `atree` for ASCII directory views.
+• For a clean session log, try:  runlog -- bash -lc 'echo hello'
