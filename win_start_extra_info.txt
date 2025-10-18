@@ -3784,3 +3784,107 @@ After big setup:
 
 
 ---------------------------------------------------
+
+
+
+#####################################################
+## UNSURPRISING ERRORS, BUT IT'S TOO LATE TO WORRY
+## ABOUT DEBUGGING
+##
+## HERE IS THE POWERSHELL SESSION I/O FOR LATER
+#####################################################
+
+```powershell
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Install the latest PowerShell for new features and improvements! https://aka.ms/PSWindows
+
+PS C:\WINDOWS\system32> cd "$HOME\Desktop"
+PS C:\Users\bball\Desktop> .\setup-win-start.ps1 -Help
+.\setup-win-start.ps1 : File C:\Users\bball\Desktop\setup-win-start.ps1 cannot be loaded because running scripts is
+disabled on this system. For more information, see about_Execution_Policies at
+https:/go.microsoft.com/fwlink/?LinkID=135170.
+At line:1 char:1
++ .\setup-win-start.ps1 -Help
++ ~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : SecurityError: (:) [], PSSecurityException
+    + FullyQualifiedErrorId : UnauthorizedAccess
+PS C:\Users\bball\Desktop> # That's expected. I look at the file for docuentation and see:
+PS C:\Users\bball\Desktop> # ------------------------------------------------------------
+>> #
+>> #   .\setup-win-start.ps1 -Installs "emit-cygwin-bootstrap,emit-wsl-setup" -Interactive n -Archive4Doc y
+>> #   cd "$HOME\Desktop"
+>> #
+>> # Example full run (no interaction, archival enabled):
+>> #
+>> # It does NOT modify your system-wide policy.
+>> # This change is temporary and reverts automatically when PowerShell closes.
+>> #
+>> #   Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+>> #
+>> # and allow script execution only for the current session:
+>> # Before running this setup script, open PowerShell **as Administrator**
+>> # ------------------------------------------------------------
+>> # TEMPORARY EXECUTION POLICY (SAFE FOR THIS SESSION ONLY)
+>> # ------------------------------------------------------------
+PS C:\Users\bball\Desktop> # All of that got put in backwards, because it's a Unix (LF) file.
+PS C:\Users\bball\Desktop> # Not sure why ChatGPT gave it to me that way, but it's okay. Just remember
+PS C:\Users\bball\Desktop> # to read it backwards.
+PS C:\Users\bball\Desktop>
+PS C:\Users\bball\Desktop> Get-Date -UFormat "%s_%Y-%m-%dT%H%M%S%Z00"
+1760758867.94507_2025-10-18T034107-0400
+PS C:\Users\bball\Desktop> # Oh, I need to change the example with the third '-Installs' token for emit.
+PS C:\Users\bball\Desktop> Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+PS C:\Users\bball\Desktop> .\setup-win-start.ps1 -Help
+At C:\Users\bball\Desktop\setup-win-start.ps1:32 char:23
++   [ValidateSet('y','n'
++                       ~
+Missing closing ')' in expression.
+At C:\Users\bball\Desktop\setup-win-start.ps1:34 char:68
++   [switch]$EnableRestorePoints)][string]$RestorePointPhase = "All",
++                                                                    ~
+Missing expression after ','.
+At C:\Users\bball\Desktop\setup-win-start.ps1:34 char:67
++   [switch]$EnableRestorePoints)][string]$RestorePointPhase = "All",
++                                                                   ~
+Missing ')' in function parameter list.
+At C:\Users\bball\Desktop\setup-win-start.ps1:49 char:29
++   [switch]$SkipRestorePoints)] [string]$Interactive = 'y',
++                             ~
+Unexpected token ')' in expression or statement.
+At C:\Users\bball\Desktop\setup-win-start.ps1:54 char:1
++ )
++ ~
+Unexpected token ')' in expression or statement.
+At C:\Users\bball\Desktop\setup-win-start.ps1:513 char:19
++   echo "TTY=$(tty || true)"
++                   ~~
+The token '||' is not a valid statement separator in this version.
+At C:\Users\bball\Desktop\setup-win-start.ps1:688 char:3
++ '<<<$BASH_VERSION)"'
++   ~
+Missing file specification after redirection operator.
+At C:\Users\bball\Desktop\setup-win-start.ps1:688 char:2
++ '<<<$BASH_VERSION)"'
++  ~
+The '<' operator is reserved for future use.
+At C:\Users\bball\Desktop\setup-win-start.ps1:688 char:4
++ '<<<$BASH_VERSION)"'
++    ~
+Missing file specification after redirection operator.
+At C:\Users\bball\Desktop\setup-win-start.ps1:688 char:3
++ '<<<$BASH_VERSION)"'
++   ~
+The '<' operator is reserved for future use.
+Not all parse errors were reported.  Correct the reported errors and try again.
+    + CategoryInfo          : ParserError: (:) [], ParseException
+    + FullyQualifiedErrorId : MissingEndParenthesisInExpression
+
+PS C:\Users\bball\Desktop> # Yeah, this won't go through, and I'm not going to worry about all the emission stuff.
+PS C:\Users\bball\Desktop>
+PS C:\Users\bball\Desktop> # NOTE ALSO THAT THIS ERROR, SYNTAX-BASED, DIDN'T RESULT IN AN INSTALL REPORT!
+PS C:\Users\bball\Desktop>
+PS C:\Users\bball\Desktop> # I'll ask ChatGPT about doing the System Restore Point without the script.
+PS C:\Users\bball\Desktop>
+```
