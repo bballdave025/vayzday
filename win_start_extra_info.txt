@@ -3982,3 +3982,80 @@ If `Checkpoint-Computer` complains about protection being off or about the “on
 
 
 -------------------------
+
+
+
+
+I got some syntax errors, which doesn't surprise me, since both of us were trying to emit bash from a PowerShell script. At this point, my scaffolding is there, and the fixes for syntax are likely trivial.
+
+Could you tell me how to run the first system restore, including the name that would have been used by the script, from the elevated PS prompt, now, so that the updates and any ... (is rebasing the word?) post-install-startup fixes can be happening while I sleep.
+
+N.B. I have already run
+
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+
+Let me know other PS commands I'll need before the one that kicks off the System Restore Point and finally the update+restart.
+You said:
+Awesome. You hit all the concerns I might have brought up. I'll save my notes on next steps to GitHub and then follow the steps, asking questions if they come up.
+
+
+
+DWB, remember
+
+```powershell
+powercfg /change standby-timeout-ac 0   # 0 = never sleep on AC
+```
+
+------------------------------------------
+
+
+
+Perfect plan 👍 — your notes will make future setups trivial.
+
+Once you’ve saved them to GitHub and are ready to run, the short version of your **elevated PowerShell prep sequence** looks like this:
+
+```powershell
+# 1. Let this session run anything (you’ve already done this, but harmless to repeat)
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+
+# 2. Make sure System Restore is enabled for C:
+Enable-ComputerRestore -Drive "C:\" 2>$null
+
+# 3. Create the same restore point our setup script would make
+Checkpoint-Computer -Description "Pre Initial Update" -RestorePointType MODIFY_SETTINGS
+
+# 4. Confirm it was created
+Get-ComputerRestorePoint | Sort-Object SequenceNumber -Descending | Select-Object -First 3
+
+# 5. Begin updates and reboot automatically
+usoclient StartScan
+usoclient StartDownload
+usoclient StartInstall
+
+# Give Windows 10 minutes to begin installing, then reboot and finish while you sleep
+shutdown /r /t 600 /c "Rebooting after updates to complete installation" /f
+
+> # DWB, using 7200, might as well give it a big window and have no worries while sleeping. Rebooting and doing whatever comes after won't take 6 hours.
+
+
+That’s it — same restore point label the script would have used (“Pre Initial Update”), then a full update + reboot cycle.
+
+Once the system’s back and stable, you can later run:
+
+```powershell
+Checkpoint-Computer -Description "Post Beginning, Pre Big Setup" -RestorePointType MODIFY_SETTINGS
+```
+
+and after your full setup:
+
+```powershell
+Checkpoint-Computer -Description "Post Big Setup" -RestorePointType MODIFY_SETTINGS
+```
+
+— giving you the exact three-stage snapshot baseline you wanted 🚀
+
+
+
+
+
+------------------------
