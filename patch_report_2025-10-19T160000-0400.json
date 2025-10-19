@@ -1,0 +1,13 @@
+{
+  "added_params": {
+    "DryRun": true,
+    "WithRestorePoints": true,
+    "RestorePointPhase": false
+  },
+  "found_legacy_restore_flags": [
+    "SkipRestorePoints",
+    "RestorePoints",
+    "EnableRestorePoints"
+  ],
+  "portable_profile_helper_patched": true
+}

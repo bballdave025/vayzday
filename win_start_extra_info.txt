@@ -4058,4 +4058,397 @@ Checkpoint-Computer -Description "Post Big Setup" -RestorePointType MODIFY_SETTI
 
 
 
+
+
+
+
+---------------------------------------------------------------
+
+
+
+
+
+
+
+
+---------------------------------------
+
+## Place for full analysis of `setup-win-start.ps1` by ChatGPT, started at around 2025-10-19T16:00:00-04:00 . Hopefully will finish before my bike ride, but who knows?
+
+
+
+---Start paste---
+You said:
+Let's actually go through the dry-run stuff, because I don't remember if we've finished putting the code it. We won't get a run-through, because we still need to take care of some of the syntax details with emitting bash scripts, but let's make sure we have everything.
+
+How about this. Can you play interpreter/compiler, going through the script I'm uploading to give me a five lists (or at least descriptions). (I'm not sure that my ask is for what one would exactly call interpreter/compiler tasks, but it's what I wrote and seems close enough).
+
+1) List of emitted scripts, READMEs, and instructions (the bash start instructions, however we named them). Possible one-line not about each.
+
+2) List of all options and ... whatever the term is for was options take. I'll keep using the word, values. (I went through a discussion of arguments and parameters with you, and I feel I have that straight, but that's all programming-language stuff and not CLI stuff. Can you clarify? I'll use the word, option, for, e.g. -Installs, and the word, value, for each of, e.g. git,adb-win,adb-wsl,gimp-win,.... I'll do that until you tell me the correct terminology, anyway. I'm pretty sure that an option that doesn't take a value, but changes behavior, is a 'switch'. However, I don't know if there's a specific word for the type of value like -Help. I would think that the help option would be called a flag, but then again, I'd call all the options flags.
+  2a) This is where we can see if the -Dry-Run, or whatever we might have named it, has been integrated or at least scaffolded in, so please make sure to go into a little more detail about this _if_ we have already written it in.
+3) List of the names the setup-progress output files (whatever we called them) and when they are outputted.
+
+4) List of any file inputs or files-as-helpers the script currently looks for. This should eventually be an empty list, and I hope that's what we'll get, but I want to fix it if it isn't what we get.
+
+5) I can't remember what this fifth one was going to be, for the life of me. It's one that keeps flashing through my mind but never sticks. haha.
+
+
+
+
+
+Love this plan. I pulled your uploaded `setup-win-start.ps1` apart and “compiled” a quick field guide so we can finish wiring dry-run + fix the bash emit quoting later.
+
+# 1) What this script **emits** (by token)
+
+*(one-liners in italics)*
+
+**When `emit-cygwin-bootstrap` is included**
+
+* `Cygwin_Bootstrap_<timestamp>\bootstrap_cyg.cmd` — *headless bootstrap (winget -> fallback download + GPG verify + cli packages).*
+* `Cygwin_Bootstrap_<timestamp>\cyg-bootstrap.sh` — *Cygwin-side helper shell.*
+* `Cygwin_Bootstrap_<timestamp>\CYG_README.md` — *how to run the bootstrap.*
+* `Cygwin_Bootstrap_<timestamp>\SHA256SUMS.txt` — *checksums of emitted files.*
+
+**When `emit-wsl-setup` is included**
+
+* `WSL_Setup_<timestamp>\wsl-setup.sh` — *WSL-side helper shell.*
+* `WSL_Setup_<timestamp>\WSL_SETUP_README.md` — *how to run it inside WSL.*
+
+**Always emitted in the “emit run” (base dir on Desktop)**
+
+* `portable_profile.ps1` — *portable PS profile (with your helper block added).*
+* `.portable.bashrc` — *portable bash rc (written inline; no external file required).*
+* `check_new_linux_bash.sh` — *baseline capture script (home + system pre-dotfiles, PATH/MANPATH/etc).*
+* `check_new_linux_bash.txt` — *mini how-to for the baseline script.*
+
+**Archival / documentation**
+
+* `.4doc_Cygwin_<timestamp>\**` — *copy of the Cygwin emission tree with every file suffixed `.<timestamp>.4doc` (only when `-Archive4Doc y`).*
+* `.4doc_WSL_<timestamp>\**` — *same for WSL.*
+* `END_OF_DAY_README_<timestamp>.4doc.md` — *snapshot summary of what was emitted/run (written to the current working directory).*
+
+> FYI: I also see optional archival grabs if present **inside** the emitted roots (not external):
+> `vezde\.portable.bashrc` and a `linux_baseline` directory are copied into the `.4doc_*` archives when found.
+
+---
+
+# 2) Command-line **parameters** (what the script accepts)
+
+**Main selector**
+
+* `-Installs "<csv tokens>"`
+  Accepted tokens in this version:
+
+  * `emit-cygwin-bootstrap`
+  * `emit-wsl-setup`
+  * `emit-wsl-cywin-artifacts`  ← **typo present here (“cywin”); the script currently recognizes this misspelling.**
+    *(You asked to only accept `emit-wsl-cygwin-artifacts`; that correction isn’t applied yet.)*
+
+**Behavior toggles / mode**
+
+* `-Interactive y|n` (default `y`) — *suppress prompts when `n`.*
+* `-Archive4Doc y|n` (default `n`) — *copy emissions to `.4doc_*` folders and suffix files with `.<timestamp>.4doc`.*
+* `-Help` (switch) — *prints help & exits.*
+
+**Restore-point related (present but inconsistent; see “Issues” below)**
+
+* `-EnableRestorePoints` (switch) — *intended master switch to allow RP creation.*
+* `-RestorePointPhase All|PreInitialUpdate|PostBeginningPreBigSetup|PostBigSetup` (default `"All"`) — *chooser.*
+* `-SkipRestorePoints` (switch) — *conflicts with the above pair.*
+* `-RestorePoints y|n` (string) — *legacy flag; also conflicts.*
+
+**Internal helper params (not CLI for you)**
+
+* e.g., `-Path/-Body` for file writers; `-PortableProfilePath` for the profile patcher function, etc.
+
+## 2a) Dry-run status
+
+* **No `-DryRun` parameter yet.** I don’t find any guard that routes actions to “log only.” We’ll add `-DryRun` and wrap file writes / dir creates / downloads with `if ($DryRun) { Log … } else { real work }`.
+
+---
+
+# 3) **Progress / output** files and when they’re written
+
+* `partial_install_report_<timestamp>.log` (Desktop)
+  *Log sink used during the run.*
+  *(Note: the variable `$logCurrent` is set to the partial log and never switched later—see Issues.)*
+
+* `completed_install_report_<timestamp>.log` (Desktop)
+  *Declared but not actually switched to at end in this version. We’ll fix by setting `$logCurrent = $logComplete` during the closing section.*
+
+* `END_OF_DAY_README_<timestamp>.4doc.md` (CWD)
+  *Emitted after the main work; lists tokens executed, Archive4Doc setting, emitted folders, and the completed log path.*
+
+* `SHA256SUMS.txt` (inside `Cygwin_Bootstrap_<timestamp>`)
+  *Hashes for the Cygwin pack outputs.*
+
+---
+
+# 4) **Inputs / external files** the script currently expects
+
+* **None required** for emission. All core artifacts (`.portable.bashrc`, `portable_profile.ps1`, `check_new_linux_bash.*`, `wsl-setup.sh`, `cyg-bootstrap.sh`, etc.) are **generated inline**.
+* **Optional advisory read:** `.gitignore` (in the current working directory) — the script *reads* it if present and prints missing lines for your bootstrap/4doc rules; non-fatal if absent.
+* **Optional archival pickups (if present inside emissions):**
+  `vezde\.portable.bashrc`, `linux_baseline` — only to include in `.4doc_*` copies.
+* **Network fetches** are referenced in the Cygwin bootstrap batch (e.g., `setup-x86_64.exe` and `.sig`, scraping fingerprint). Those only matter when you run the batch itself, not when you’re just emitting files.
+
+> Bottom line: you can test “emit-only” on Windows **offline** and **without** WSL/Cygwin installed.
+
+---
+
+# 5) Notables / deltas to address before tonight’s dry-run
+
+* **Token typo**: script currently accepts `emit-wsl-cywin-artifacts`. You asked to **only** accept `emit-wsl-cygwin-artifacts`. We’ll correct and map the old misspelling to a warning + exit (or a friendly hint).
+* **No `-DryRun` yet**: add `-DryRun` (switch) and route all side-effects through it.
+* **Restore-point flags conflict**: you’ve got **four** variants (`-EnableRestorePoints`, `-SkipRestorePoints`, `-RestorePoints y|n`, `-RestorePointPhase …`). We should reduce to **two**:
+
+  * `-WithRestorePoints` (switch; default off)
+  * `-RestorePointPhase All|PreInitialUpdate|PostBeginningPreBigSetup|PostBigSetup`
+    *(Your preference was: default “emit-only,” suppress RPs unless a flag is passed.)*
+* **Log rollover:** `$logCurrent` never flips to the “completed” log near the end. We’ll set it before the final summary and write the wrap-up there.
+* **Portable profile options:** the current `Add-PortableProfileHelpers` **does not** expose `-InstallFlux` / `-InstallTwinkleTray` flags yet; it just writes the helper block. We’ll add optional winget stubs gated behind switches.
+* **Help text:** `-Help` exists, but we should update the usage block to reflect the corrected token names, `-DryRun`, and the streamlined restore-point interface.
+* **Bash emit quoting:** known edge case you mentioned—will fix by using here-strings and `Set-Content -Encoding UTF8` (no interpolation) for `.sh` and `.bashrc` outputs.
+
+---
+
+If you want, I can now:
+
+* patch in `-DryRun`,
+* normalize the restore-point flags,
+* correct the token spelling (and reject the misspelling), and
+* flip the logger to the “completed” file at the end,
+
+and send you **`setup-win-start.ps1`** back with just those changes (no behavior drift otherwise).
+
+
+
+
+
+
+
+
+You said:
+I'd like you to do all the suggestions:
+
+- Take care of token typo (only accept the spelling with cygwin
+- Fix the confusion with System Backup runs. Note that I am completely onboard with the two you suggested:
+  - -WithRestorePoints (switch; default off)
+  - -RestorePointPhase All|PreInitialUpdate|PostBeginningPreBigSetup|PostBigSetup
+  - You're exactly correct that my preference was: default “emit-only,” suppress RPs unless a flag is passed. It's good to check.
+- Log rollover (flip to "completed")
+- Portable profile options
+- Updated -Help text. Good call on an update to reflect what we're doing.
+- Bash emit quoting
+
+I'd love to receive the updated setup-win-start.ps1, upload it to GitHub, then start the new chat with an updated context document. However, I will have one more prompt (I should say, "at least one"), with some questions about your process and a note on George. Actually, the note about George will mean there will be at least two more prompts from me.
+
+
+
+
+
+Love this plan. I pulled your uploaded `setup-win-start.ps1` apart and “compiled” a quick field guide so we can finish wiring dry-run + fix the bash emit quoting later.
+
+# 1) What this script **emits** (by token)
+
+*(one-liners in italics)*
+
+**When `emit-cygwin-bootstrap` is included**
+
+* `Cygwin_Bootstrap_<timestamp>\bootstrap_cyg.cmd` — *headless bootstrap (winget -> fallback download + GPG verify + cli packages).*
+* `Cygwin_Bootstrap_<timestamp>\cyg-bootstrap.sh` — *Cygwin-side helper shell.*
+* `Cygwin_Bootstrap_<timestamp>\CYG_README.md` — *how to run the bootstrap.*
+* `Cygwin_Bootstrap_<timestamp>\SHA256SUMS.txt` — *checksums of emitted files.*
+
+**When `emit-wsl-setup` is included**
+
+* `WSL_Setup_<timestamp>\wsl-setup.sh` — *WSL-side helper shell.*
+* `WSL_Setup_<timestamp>\WSL_SETUP_README.md` — *how to run it inside WSL.*
+
+**Always emitted in the “emit run” (base dir on Desktop)**
+
+* `portable_profile.ps1` — *portable PS profile (with your helper block added).*
+* `.portable.bashrc` — *portable bash rc (written inline; no external file required).*
+* `check_new_linux_bash.sh` — *baseline capture script (home + system pre-dotfiles, PATH/MANPATH/etc).*
+* `check_new_linux_bash.txt` — *mini how-to for the baseline script.*
+
+**Archival / documentation**
+
+* `.4doc_Cygwin_<timestamp>\**` — *copy of the Cygwin emission tree with every file suffixed `.<timestamp>.4doc` (only when `-Archive4Doc y`).*
+* `.4doc_WSL_<timestamp>\**` — *same for WSL.*
+* `END_OF_DAY_README_<timestamp>.4doc.md` — *snapshot summary of what was emitted/run (written to the current working directory).*
+
+> FYI: I also see optional archival grabs if present **inside** the emitted roots (not external):
+> `vezde\.portable.bashrc` and a `linux_baseline` directory are copied into the `.4doc_*` archives when found.
+
+---
+
+# 2) Command-line **parameters** (what the script accepts)
+
+**Main selector**
+
+* `-Installs "<csv tokens>"`
+  Accepted tokens in this version:
+
+  * `emit-cygwin-bootstrap`
+  * `emit-wsl-setup`
+  * `emit-wsl-cywin-artifacts`  ← **typo present here (“cywin”); the script currently recognizes this misspelling.**
+    *(You asked to only accept `emit-wsl-cygwin-artifacts`; that correction isn’t applied yet.)*
+
+**Behavior toggles / mode**
+
+* `-Interactive y|n` (default `y`) — *suppress prompts when `n`.*
+* `-Archive4Doc y|n` (default `n`) — *copy emissions to `.4doc_*` folders and suffix files with `.<timestamp>.4doc`.*
+* `-Help` (switch) — *prints help & exits.*
+
+**Restore-point related (present but inconsistent; see “Issues” below)**
+
+* `-EnableRestorePoints` (switch) — *intended master switch to allow RP creation.*
+* `-RestorePointPhase All|PreInitialUpdate|PostBeginningPreBigSetup|PostBigSetup` (default `"All"`) — *chooser.*
+* `-SkipRestorePoints` (switch) — *conflicts with the above pair.*
+* `-RestorePoints y|n` (string) — *legacy flag; also conflicts.*
+
+**Internal helper params (not CLI for you)**
+
+* e.g., `-Path/-Body` for file writers; `-PortableProfilePath` for the profile patcher function, etc.
+
+## 2a) Dry-run status
+
+* **No `-DryRun` parameter yet.** I don’t find any guard that routes actions to “log only.” We’ll add `-DryRun` and wrap file writes / dir creates / downloads with `if ($DryRun) { Log … } else { real work }`.
+
+---
+
+# 3) **Progress / output** files and when they’re written
+
+* `partial_install_report_<timestamp>.log` (Desktop)
+  *Log sink used during the run.*
+  *(Note: the variable `$logCurrent` is set to the partial log and never switched later—see Issues.)*
+
+* `completed_install_report_<timestamp>.log` (Desktop)
+  *Declared but not actually switched to at end in this version. We’ll fix by setting `$logCurrent = $logComplete` during the closing section.*
+
+* `END_OF_DAY_README_<timestamp>.4doc.md` (CWD)
+  *Emitted after the main work; lists tokens executed, Archive4Doc setting, emitted folders, and the completed log path.*
+
+* `SHA256SUMS.txt` (inside `Cygwin_Bootstrap_<timestamp>`)
+  *Hashes for the Cygwin pack outputs.*
+
+---
+
+# 4) **Inputs / external files** the script currently expects
+
+* **None required** for emission. All core artifacts (`.portable.bashrc`, `portable_profile.ps1`, `check_new_linux_bash.*`, `wsl-setup.sh`, `cyg-bootstrap.sh`, etc.) are **generated inline**.
+* **Optional advisory read:** `.gitignore` (in the current working directory) — the script *reads* it if present and prints missing lines for your bootstrap/4doc rules; non-fatal if absent.
+* **Optional archival pickups (if present inside emissions):**
+  `vezde\.portable.bashrc`, `linux_baseline` — only to include in `.4doc_*` copies.
+* **Network fetches** are referenced in the Cygwin bootstrap batch (e.g., `setup-x86_64.exe` and `.sig`, scraping fingerprint). Those only matter when you run the batch itself, not when you’re just emitting files.
+
+> Bottom line: you can test “emit-only” on Windows **offline** and **without** WSL/Cygwin installed.
+
+---
+
+# 5) Notables / deltas to address before tonight’s dry-run
+
+* **Token typo**: script currently accepts `emit-wsl-cywin-artifacts`. You asked to **only** accept `emit-wsl-cygwin-artifacts`. We’ll correct and map the old misspelling to a warning + exit (or a friendly hint).
+* **No `-DryRun` yet**: add `-DryRun` (switch) and route all side-effects through it.
+* **Restore-point flags conflict**: you’ve got **four** variants (`-EnableRestorePoints`, `-SkipRestorePoints`, `-RestorePoints y|n`, `-RestorePointPhase …`). We should reduce to **two**:
+
+  * `-WithRestorePoints` (switch; default off)
+  * `-RestorePointPhase All|PreInitialUpdate|PostBeginningPreBigSetup|PostBigSetup`
+    *(Your preference was: default “emit-only,” suppress RPs unless a flag is passed.)*
+* **Log rollover:** `$logCurrent` never flips to the “completed” log near the end. We’ll set it before the final summary and write the wrap-up there.
+* **Portable profile options:** the current `Add-PortableProfileHelpers` **does not** expose `-InstallFlux` / `-InstallTwinkleTray` flags yet; it just writes the helper block. We’ll add optional winget stubs gated behind switches.
+* **Help text:** `-Help` exists, but we should update the usage block to reflect the corrected token names, `-DryRun`, and the streamlined restore-point interface.
+* **Bash emit quoting:** known edge case you mentioned—will fix by using here-strings and `Set-Content -Encoding UTF8` (no interpolation) for `.sh` and `.bashrc` outputs.
+
+---
+
+If you want, I can now:
+
+* patch in `-DryRun`,
+* normalize the restore-point flags,
+* correct the token spelling (and reject the misspelling), and
+* flip the logger to the “completed” file at the end,
+
+and send you **`setup-win-start.ps1`** back with just those changes (no behavior drift otherwise).
+
+
+---Endof paste---
+
+Note associated patch_report_2025-10-19T160000-0400.json
+
+
+
+
+-------------------------------------------------------
+
+
+#################  Future ideas  ######################
+
+
+
+
+Let's actually go through the dry-run stuff, because I don't remember if we've finished putting the code it. We won't get a run-through, because we still need to take care of some of the syntax details with emitting bash scripts, but let's make sure we have everything. 
+
+How about this? Can you play interpreter/compiler, going through the script I'm uploading to give me a five lists (or at least descriptions). (I'm not sure that my ask is for what one would exactly call interpreter/compiler tasks, but it's what I wrote and seems close enough). 
+
+For the last prompt, your indication indicator (Thinking...) went on for 3 minutes, and I looked at some details (I would love to get the whole "thinking" output as a markdown file, especially the code you used. However, I got a "problem with this prompt/response error". I don't remember details. I'll give the list items one by one, starting in the next prompt.
+
+
+
+1) List of emitted scripts, READMEs, and instructions (the bash start instructions, however we named them). Possible one-line not about each. 
+
+
+
+2) List of all options and ... whatever the term is for was options take. I'll keep using the word, values. (I went through a discussion of arguments and parameters with you, and I feel I have that straight, but that's all programming-language stuff and not CLI stuff. Can you clarify? I'll use the word, option, for, e.g. -Installs, and the word, value, for each of, e.g. git,adb-win,adb-wsl,gimp-win,.... I'll do that until you tell me the correct terminology, anyway. I'm pretty sure that an option that doesn't take a value, but changes behavior, is a 'switch'. However, I don't know if there's a specific word for the type of value like -Help. I would think that the help option would be called a flag, but then again, I'd call all the options flags. 
+  2a) This is where we can see if the -Dry-Run, or whatever we might have named it, has been integrated or at least scaffolded in, so please make sure to go into a little more detail about this _if_ we have already written it in. 
+
+
+
+
+3) List of the names the setup-progress output files (whatever we called them) and when they are outputted. 
+
+
+
+
+
+4) List of any file inputs or files-as-helpers the script currently looks for. This should eventually be an empty list, and I hope that's what we'll get, but I want to fix it if it isn't what we get. 
+
+
+
+5) I can't remember what this fifth one was going to be, for the life of me. It's one that keeps flashing through my mind but never sticks. haha.
+
+
+
+
+
+
+For the last prompt, your action indicator (Thinking...) went: 
+
+Thought for 12s >
+Thought for 4m 44s >
+Thought for 5m 56s >
+
+There was an initial attempt to output before this successful attempt, where I used the chevron/half-a-right-guillemet to see the details at about 3 minutes, I enjoyed looking at the activity steps you outputted. Then, at some point, there was some kind of "problem with this prompt/response error". I don't remember details. I would love to get the whole "thinking" output as a markdown file, especially the code you used. 
+
+As I'm writing this prompt in Notepad, you have outputted about a line: "Love this plan. I pulled your uploaded `setup-win-start.ps1` apart and "compil", and that's where it's stuck, with no 'e' on the end of 'compil'. It's been 2-3 minutes. I'm going to take the warm bath we'd discussed before, then I'll see if things went through, or if there will be another error. If there is an error, I'll break down my request into an introduction and one prompt for each of the 4 lists (since I couldn't remember the 5th.
+
+Coming back after turning off the water, it looks like you've progressed, but ... Frozen (buffering?) again after a sentence, a header, a list beginning for `emit-cygwin-bootstrap` and four list points.
+
+I have no idea if this means there's enough momentum for you to finish, but I'm hopeful.
+
+Yes, you have finished. I've written most of my next prompt, but I'll be adding this one in after you'll have written a new setup script and context document.
+
+I'll tell you about Georgie Porgie (the cat) in the next prompt, first.
+
+
+
+
+
+-------------------------------------------
+
+
+
+
 ------------------------
